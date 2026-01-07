@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - BanArts</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav role="navigation" aria-label="Main navigation">
+            <div class="logo">
+                <img src="img/bantayanon artists logo.jpg" alt="BanArts Logo" class="logo-img">
+                BanArts
+            </div>
+            <div class="nav-menu">
+                <div class="search-bar">
+                    <label for="search-input" class="sr-only">Search artworks, artists, galleries...</label>
+                    <input type="text" id="search-input" placeholder="Search artworks, artists..." aria-describedby="search-help">
+                    <button type="submit" aria-label="Submit search">Search</button>
+                    <div id="search-help" class="sr-only">Type to search for artworks, artists, or galleries</div>
+                </div>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="artists.html">Artists</a></li>
+                    <li><a href="artworks.html">Artworks</a></li>
+                    <li><a href="galleries.html">Galleries</a></li>
+                    <li><a href="museums.html">Museums</a></li>
+                    <li><a href="events.html">Events</a></li>
+                    <li><a href="videos.html">Videos</a></li>
+                    <li><a href="collections.html">Collections</a></li>
+                </ul>
+                <div class="auth-buttons">
+                    <div class="profile-dropdown-container">
+                        <a href="profile.html" class="profile-icon" id="profile-icon-link"><div class="nav-profile-avatar" id="nav-profile-avatar"></div></a>
+                        <div class="profile-dropdown">
+                            <div class="profile-dropdown-header">
+                                <img src="img/profile icon.webp" alt="Profile" class="dropdown-profile-icon" id="dropdown-profile-icon">
+                                <div class="dropdown-profile-name">John Doe</div>
+                                <a href="profile.html" class="view-profile-btn">View Profile</a>
+                            </div>
+                            <div class="profile-dropdown-item">My Collection</div>
+                            <a href="artworks.html" class="profile-dropdown-item">Artworks</a>
+                            <div class="dropdown-divider"></div>
+                            <div class="profile-dropdown-item">Favorites</div>
+                            <a href="#saved" class="profile-dropdown-item">Saves</a>
+                            <a href="#followed" class="profile-dropdown-item">Follows</a>
+                            <div class="dropdown-divider"></div>
+                            <div class="profile-dropdown-item settings-header">Settings</div>
+                            <a href="settings.html" class="profile-dropdown-item edit-profile-btn">Edit Profile</a>
+                            <a href="#" class="profile-dropdown-item logout-item">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mobile-header-icons">
+                <div class="notification-container"></div>
+                <div class="profile-dropdown-container mobile-icon">
+                    <a href="profile.html" class="profile-icon" id="profile-icon-link"><div class="nav-profile-avatar" id="nav-profile-avatar"></div></a>
+                    <div class="profile-dropdown">
+                        <div class="profile-dropdown-header">
+                            <img src="img/profile icon.webp" alt="Profile" class="dropdown-profile-icon" id="dropdown-profile-icon">
+                            <div class="dropdown-profile-name">John Doe</div>
+                            <a href="profile.html" class="view-profile-btn">View Profile</a>
+                        </div>
+                        <div class="profile-dropdown-item">My Collection</div>
+                        <a href="artworks.html" class="profile-dropdown-item">Artworks</a>
+                        <div class="dropdown-divider"></div>
+                        <div class="profile-dropdown-item">Favorites</div>
+                        <a href="#saved" class="profile-dropdown-item">Saves</a>
+                        <a href="#followed" class="profile-dropdown-item">Follows</a>
+                        <div class="dropdown-divider"></div>
+                        <div class="profile-dropdown-item settings-header">Settings</div>
+                        <a href="settings.html" class="profile-dropdown-item edit-profile-btn">Edit Profile</a>
+                        <a href="#" class="profile-dropdown-item logout-item">Logout</a>
+                    </div>
+                </div>
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu">
+                    &#9776;
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="settings-section">
+            <div class="settings-container">
+                <h1>Settings</h1>
+                
+                <!-- Edit Profile Section -->
+                <div class="settings-form-section">
+                    <h2>Edit Profile</h2>
+                    <form id="settings-form">
+                        <label for="settings-name">Name:</label>
+                        <input type="text" id="settings-name" required>
+                        <label for="settings-location">Location:</label>
+                        <input type="text" id="settings-location" required>
+                        <button type="submit">Save Changes</button>
+                    </form>
+                </div>
+
+                <!-- Change Password Section -->
+                <div class="settings-form-section" id="change-password-section">
+                    <h2>Change Password</h2>
+                    <div id="login-status" style="padding: 10px; margin-bottom: 15px; background: #f0f0f0; border-radius: 4px; font-size: 0.9rem;"></div>
+                    <button type="button" id="test-server-btn" style="display: none; padding: 8px 15px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 15px; font-size: 0.85rem;">Test Server Connection</button>
+                    <div id="test-result" style="display: none; padding: 10px; margin-bottom: 15px; border-radius: 4px; font-size: 0.9rem;"></div>
+                    <form id="change-password-form">
+                        <label for="current-password">Current Password:</label>
+                        <input type="password" id="current-password" placeholder="Enter your current password" required>
+                        <label for="new-password">New Password:</label>
+                        <input type="password" id="new-password" placeholder="Enter new password (min 4 characters)" required>
+                        <label for="confirm-password">Confirm New Password:</label>
+                        <input type="password" id="confirm-password" placeholder="Confirm your new password" required>
+                        <button type="submit" id="change-password-btn">Change Password</button>
+                    </form>
+                    <div id="password-message" class="password-message" style="display: none;"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About BanArts</h3>
+                <p>BanArts is the official platform of the Bantayanon Artists Group, dedicated to showcasing the rich artistic heritage and contemporary creativity of Bantayan Island, Philippines. We connect local artists with art enthusiasts worldwide.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@banarts.com<br>Phone: +63 123 456 7890<br>Address: Bantayan Island, Cebu, Philippines</p>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-icons">
+                    <a href="#" class="social-icon-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon-link" aria-label="Gmail"><i class="fas fa-envelope"></i></a>
+                    <a href="#" class="social-icon-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 BanArts. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="settings.js"></script>
+</body>
+</html>

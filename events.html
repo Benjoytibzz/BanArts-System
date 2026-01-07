@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BanArts - Modern Art Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <header>
+        <nav role="navigation" aria-label="Main navigation">
+            <div class="logo">
+                <img src="img/bantayanon artists logo.jpg" alt="BanArts Logo" class="logo-img">
+                BanArts
+            </div>
+            <div class="nav-menu">
+                <div class="search-bar">
+                    <label for="search-input" class="sr-only">Search artworks, artists, galleries...</label>
+                    <input type="text" id="search-input" placeholder="Search artworks, artists..." aria-describedby="search-help">
+                    <button type="submit" aria-label="Submit search">Search</button>
+                    <div id="search-help" class="sr-only">Type to search for artworks, artists, or galleries</div>
+                </div>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="artists.html">Artists</a></li>
+                    <li><a href="artworks.html">Artworks</a></li>
+                    <li><a href="galleries.html">Galleries</a></li>
+                    <li><a href="museums.html">Museums</a></li>
+                    <li><a href="events.html">Events</a></li>
+                    <li><a href="videos.html">Videos</a></li>
+                    <li><a href="collections.html">Collections</a></li>
+                </ul>
+                <div class="auth-buttons">
+                    <button type="button" class="login-link">Login</button>
+                    <button type="button" class="signup-btn">Signup</button>
+                </div>
+            </div>
+            <div class="mobile-header-icons">
+                <div class="notification-container"></div>
+                <div class="profile-dropdown-container mobile-icon">
+                    <a href="profile.html" class="profile-icon" id="profile-icon-link">
+                        <div class="nav-profile-avatar" id="nav-profile-avatar"></div>
+                    </a>
+                    <div class="profile-dropdown">
+                        <div class="profile-dropdown-header">
+                            <img src="img/profile icon.webp" alt="Profile" class="dropdown-profile-icon" id="dropdown-profile-icon">
+                            <div class="dropdown-profile-name">John Doe</div>
+                            <a href="profile.html" class="view-profile-btn">View Profile</a>
+                        </div>
+                        <div class="profile-dropdown-item">My Collection</div>
+                        <a href="/profile.html#uploads" class="profile-dropdown-item">Artworks</a>
+                        <div class="dropdown-divider"></div>
+                        <div class="profile-dropdown-item">Favorites</div>
+                        <a href="/profile.html#saved" class="profile-dropdown-item">Saves</a>
+                        <a href="/profile.html#followed" class="profile-dropdown-item">Follows</a>
+                        <div class="dropdown-divider"></div>
+                        <div class="profile-dropdown-item settings-header">Settings</div>
+                        <a href="settings.html" class="profile-dropdown-item edit-profile-btn">Edit Profile</a>
+                        <a href="#" class="profile-dropdown-item logout-item">Logout</a>
+                    </div>
+                </div>
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu">
+                    &#9776;
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main style="margin-top: 80px;">
+        <section class="current-events">
+            <h2>Current Event</h2>
+            <div class="events-grid">
+                <!-- Current events will be loaded dynamically -->
+            </div>
+        </section>
+
+        <section class="past-events">
+            <h2>Past Events</h2>
+            <div class="events-grid">
+                <!-- Past events will be loaded dynamically -->
+            </div>
+        </section>
+
+        <section class="upcoming-events">
+            <h2>Upcoming Events</h2>
+            <div class="events-grid">
+                <!-- Upcoming events will be loaded dynamically -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About BanArts</h3>
+                <p>BanArts is the official platform of the Bantayanon Artists Group, dedicated to showcasing the rich artistic heritage and contemporary creativity of Bantayan Island, Philippines. We connect local artists with art enthusiasts worldwide.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@banarts.com<br>Phone: +63 123 456 7890<br>Address: Bantayan Island, Cebu, Philippines</p>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-icons">
+                    <a href="#" class="social-icon-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon-link" aria-label="Gmail"><i class="fas fa-envelope"></i></a>
+                    <a href="#" class="social-icon-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 BanArts. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Login/Signup Modal -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-tabs">
+                <button class="tab-btn active" onclick="openTab('login')">Login</button>
+                <button class="tab-btn" onclick="openTab('signup')">Signup</button>
+            </div>
+            <div id="login-tab" class="tab-content active">
+                <img src="img/bantayanon artists logo.jpg" alt="BanArts Logo" class="modal-logo">
+                <h2>Login</h2>
+                <form id="login-form">
+                    <input type="email" id="login-email" placeholder="Email" required>
+                    <input type="password" id="login-password" placeholder="Password" required>
+                    <button type="submit">Login</button>
+                    <div id="login-error" style="color: red; margin-top: 1rem; display: none;"></div>
+                </form>
+                <div class="divider">or</div>
+                <div class="social-login">
+                    <a href="/auth/facebook" class="social-link facebook"><img src="img/facebook-logo.avif" alt="Facebook"></a>
+                    <a href="/auth/google" class="social-link google"><img src="img/google-icon-logo-png-transparent.png" alt="Google"></a>
+                    <a href="/auth/twitter" class="social-link apple"><img src="img/twitter-x.webp" alt="Twitter"></a>
+                </div>
+                <p class="legal-text">By clicking Sign Up or Continue with Email, Twitter, Google, or Facebook, you agree to BanArts Terms and Conditions and Privacy Policy. This site is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply.</p>
+            </div>
+            <div id="signup-tab" class="tab-content">
+                <img src="img/bantayanon artists logo.jpg" alt="BanArts Logo" class="modal-logo">
+                <h2>Signup</h2>
+                <form id="signup-form">
+                    <input type="text" id="signup-name" placeholder="Full Name" required>
+                    <input type="email" id="signup-email" placeholder="Email" required>
+                    <input type="password" id="signup-password" placeholder="Password" required>
+                    <input type="password" id="signup-confirm-password" placeholder="Confirm Password" required>
+                    <button type="submit">Signup</button>
+                    <div id="signup-error" style="color: red; margin-top: 1rem; display: none;"></div>
+                </form>
+                <div class="divider">or</div>
+                <div class="social-login">
+                    <a href="/auth/facebook" class="social-link facebook"><img src="img/facebook-logo.avif" alt="Facebook"></a>
+                    <a href="/auth/google" class="social-link google"><img src="img/google-icon-logo-png-transparent.png" alt="Google"></a>
+                    <a href="/auth/twitter" class="social-link apple"><img src="img/twitter-x.webp" alt="Twitter"></a>
+                </div>
+                <p class="legal-text">By clicking Sign Up or Continue with Email, Twitter, Google, or Facebook, you agree to BanArts Terms and Conditions and Privacy Policy. This site is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Event Details Modal -->
+    <div id="event-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEventModal()">&times;</span>
+            <h2 id="event-title"></h2>
+            <p id="event-overview"></p>
+            <h3>Artworks</h3>
+            <div id="event-artworks"></div>
+            <h3>Exhibitors</h3>
+            <div id="event-exhibitors"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCurrentEvents();
+            loadPastEvents();
+            loadUpcomingEvents();
+
+            // Mobile menu toggle
+            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+
+            if (mobileMenuToggle && navMenu) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    navMenu.classList.toggle('show');
+                    const isOpen = navMenu.classList.contains('show');
+                    this.setAttribute('aria-expanded', isOpen);
+                    this.innerHTML = isOpen ? '&#10006;' : '&#9776;';
+                });
+
+                // Close mobile menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!navMenu.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+                        navMenu.classList.remove('show');
+                        mobileMenuToggle.setAttribute('aria-expanded', 'false');
+                        mobileMenuToggle.innerHTML = '&#9776;';
+                    }
+                });
+
+                // Close mobile menu when clicking on a link
+                navMenu.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', function() {
+                        navMenu.classList.remove('show');
+                        mobileMenuToggle.setAttribute('aria-expanded', 'false');
+                        mobileMenuToggle.innerHTML = '&#9776;';
+                    });
+                });
+            }
+        });
+
+        function loadCurrentEvents() {
+            fetch('/events')
+                .then(response => response.json())
+                .then(events => {
+                    // Filter for current events
+                    const currentEvents = events.filter(event => event.status === 'current');
+                    const container = document.querySelector('.current-events .events-grid');
+                    if (currentEvents.length > 0) {
+                        container.innerHTML = currentEvents.map(event => `
+                            <div class="event-card">
+                                <img src="${event.image_url || 'img/bantayanon artists logo.jpg'}" alt="${event.name}">
+                                <h3>${event.name}</h3>
+                                <p>Date: ${event.date ? new Date(event.date).toLocaleDateString() : ''}</p>
+                                <p>Location: ${event.location || ''}</p>
+                                <p>Status: ${event.status}</p>
+                                <p>${event.about || ''}</p>
+                                <a href="event-details.html?id=${event.event_id}" class="event-link">Learn More</a>
+                            </div>
+                        `).join('');
+                    } else {
+                        container.innerHTML = '<p>No current events found.</p>';
+                    }
+                })
+                .catch(error => console.error('Error loading current events:', error));
+        }
+
+        function loadPastEvents() {
+            fetch('/events')
+                .then(response => response.json())
+                .then(events => {
+                    // Filter for past events
+                    const pastEvents = events.filter(event => event.status === 'past');
+                    const container = document.querySelector('.past-events .events-grid');
+                    if (pastEvents.length > 0) {
+                        container.innerHTML = pastEvents.map(event => `
+                            <div class="event-card">
+                                <img src="${event.image_url || 'img/bantayanon artists logo.jpg'}" alt="${event.name}">
+                                <h3>${event.name}</h3>
+                                <p>Date: ${event.date ? new Date(event.date).toLocaleDateString() : ''}</p>
+                                <p>Location: ${event.location || ''}</p>
+                                <p>Status: ${event.status}</p>
+                                <p>${event.about || ''}</p>
+                                <a href="event-details.html?id=${event.event_id}" class="event-link">View Photos</a>
+                            </div>
+                        `).join('');
+                    } else {
+                        container.innerHTML = '<p>No past events found.</p>';
+                    }
+                })
+                .catch(error => console.error('Error loading past events:', error));
+        }
+
+        function loadUpcomingEvents() {
+            fetch('/events')
+                .then(response => response.json())
+                .then(events => {
+                    // Filter for upcoming events
+                    const upcomingEvents = events.filter(event => event.status === 'upcoming');
+                    const container = document.querySelector('.upcoming-events .events-grid');
+                    if (upcomingEvents.length > 0) {
+                        container.innerHTML = upcomingEvents.map(event => `
+                            <div class="event-card">
+                                <img src="${event.image_url || 'img/bantayanon artists logo.jpg'}" alt="${event.name}">
+                                <h3>${event.name}</h3>
+                                <p>Date: ${event.date ? new Date(event.date).toLocaleDateString() : ''}</p>
+                                <p>Location: ${event.location || ''}</p>
+                                <p>Status: ${event.status}</p>
+                                <p>${event.about || ''}</p>
+                                <a href="event-details.html?id=${event.event_id}" class="event-link">RSVP</a>
+                            </div>
+                        `).join('');
+                    } else {
+                        container.innerHTML = '<p>No upcoming events found.</p>';
+                    }
+                })
+                .catch(error => console.error('Error loading upcoming events:', error));
+        }
+
+        function showEventDetails(id) {
+            fetch(`/events/${id}`)
+                .then(response => response.json())
+                .then(event => {
+                    document.getElementById('event-title').textContent = event.name;
+                    document.getElementById('event-overview').textContent = event.about || '';
+                    if (event.artworks && Array.isArray(event.artworks)) {
+                        document.getElementById('event-artworks').innerHTML = event.artworks.map(artwork => `<p>${artwork.title || artwork}</p>`).join('');
+                    } else {
+                        document.getElementById('event-artworks').innerHTML = '<p>No artworks listed.</p>';
+                    }
+                    if (event.exhibitors && Array.isArray(event.exhibitors)) {
+                        document.getElementById('event-exhibitors').innerHTML = event.exhibitors.map(artist => `<p>${artist.name || artist}</p>`).join('');
+                    } else {
+                        document.getElementById('event-exhibitors').innerHTML = '<p>No exhibitors listed.</p>';
+                    }
+                    document.getElementById('event-modal').style.display = 'block';
+                })
+                .catch(error => console.error('Error loading event details:', error));
+        }
+
+        function closeEventModal() {
+            document.getElementById('event-modal').style.display = 'none';
+        }
+    </script>
+    <script src="/socket.io/socket.io.js"></script>
+    
+</body>
+</html>

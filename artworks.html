@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BanArts - Modern Art Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: #007bff;
+                flex-direction: column;
+                padding: 20px;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+                z-index: 1000;
+            }
+
+            .nav-menu.show {
+                display: flex;
+            }
+
+            .nav-menu ul {
+                flex-direction: column;
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+
+            .nav-menu ul li {
+                margin: 0;
+            }
+
+            .search-bar {
+                margin-bottom: 15px;
+            }
+
+            .auth-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <header>
+        <nav role="navigation" aria-label="Main navigation">
+            <div class="logo">
+                <img src="img/bantayanon artists logo.jpg" alt="BanArts Logo" class="logo-img">
+                BanArts
+            </div>
+            <div class="nav-menu">
+                <div class="search-bar">
+                    <label for="search-input" class="sr-only">Search artworks, artists, galleries...</label>
+                    <input type="text" id="search-input" placeholder="Search artworks, artists..." aria-describedby="search-help">
+                    <button type="submit" aria-label="Submit search">Search</button>
+                    <div id="search-help" class="sr-only">Type to search for artworks, artists, or galleries</div>
+                </div>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="artists.html">Artists</a></li>
+                    <li><a href="artworks.html">Artworks</a></li>
+                    <li><a href="galleries.html">Galleries</a></li>
+                    <li><a href="museums.html">Museums</a></li>
+                    <li><a href="events.html">Events</a></li>
+                    <li><a href="videos.html">Videos</a></li>
+                    <li><a href="collections.html">Collections</a></li>
+                </ul>
+                <div class="auth-buttons">
+                    <button type="button" class="login-link">Login</button>
+                    <button type="button" class="signup-btn">Signup</button>
+                </div>
+            </div>
+            <div class="mobile-header-icons">
+                <div class="notification-container"></div>
+                <div class="profile-dropdown-container mobile-icon">
+                    <a href="profile.html" class="profile-icon" id="profile-icon-link">
+                        <div class="nav-profile-avatar" id="nav-profile-avatar"></div>
+                    </a>
+                    <div class="profile-dropdown">
+                        <div class="profile-dropdown-header">
+                            <img src="img/profile icon.webp" alt="Profile" class="dropdown-profile-icon" id="dropdown-profile-icon">
+                            <div class="dropdown-profile-name">John Doe</div>
+                            <a href="profile.html" class="view-profile-btn">View Profile</a>
+                        </div>
+                        <div class="profile-dropdown-item">My Collection</div>
+                        <a href="/profile.html#uploads" class="profile-dropdown-item">Artworks</a>
+                        <div class="dropdown-divider"></div>
+                        <div class="profile-dropdown-item">Favorites</div>
+                        <a href="/profile.html#saved" class="profile-dropdown-item">Saves</a>
+                        <a href="/profile.html#followed" class="profile-dropdown-item">Follows</a>
+                        <div class="dropdown-divider"></div>
+                        <div class="profile-dropdown-item settings-header">Settings</div>
+                        <a href="settings.html" class="profile-dropdown-item edit-profile-btn">Edit Profile</a>
+                        <a href="#" class="profile-dropdown-item logout-item">Logout</a>
+                    </div>
+                </div>
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu">
+                    &#9776;
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main style="margin-top: 80px;">
+        <section class="categories">
+            <h2>Art Categories</h2>
+            <div class="category-list">
+                <a href="#all" class="category-link active">All</a>
+                <a href="#painting" class="category-link">Painting</a>
+                <a href="#photography" class="category-link">Photography</a>
+                <a href="#mural" class="category-link">Mural</a>
+                <a href="#digital" class="category-link">Digital</a>
+                <a href="#drawing" class="category-link">Drawing</a>
+            </div>
+        </section>
+
+        <section class="other-artworks">
+            <div class="section-header">
+                <h2>All Artworks</h2>
+                <div class="artwork-stats">
+                    <span id="artwork-count">Loading...</span> artworks available
+                </div>
+            </div>
+
+            <!-- Advanced Filters -->
+            <div class="filters-section">
+                <div class="filter-group">
+                    <label for="artist-filter">Filter by Artist:</label>
+                    <select id="artist-filter">
+                        <option value="">All Artists</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="medium-filter">Filter by Medium:</label>
+                    <select id="medium-filter">
+                        <option value="">All Mediums</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="year-filter">Filter by Year:</label>
+                    <select id="year-filter">
+                        <option value="">All Years</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="sort-filter">Sort by:</label>
+                    <select id="sort-filter">
+                        <option value="newest">Newest First</option>
+                        <option value="oldest">Oldest First</option>
+                        <option value="title">Title A-Z</option>
+                        <option value="artist">Artist A-Z</option>
+                    </select>
+                </div>
+                <button id="clear-filters" class="clear-filters-btn">Clear Filters</button>
+            </div>
+            <div class="loading-spinner" id="loading-spinner" style="display: none;">
+                <div class="spinner"></div>
+                <p>Loading artworks...</p>
+            </div>
+            <div class="error-message" id="error-message" style="display: none;">
+                <p>Failed to load artworks. Please try again.</p>
+                <button onclick="loadArtworks()">Retry</button>
+            </div>
+            <div class="artworks-grid" id="artworks-grid">
+                <!-- Artworks will be loaded dynamically -->
+            </div>
+            <div class="pagination" id="pagination" style="display: none;">
+                <button id="prev-page" disabled>Previous</button>
+                <span id="page-info">Page 1</span>
+                <button id="next-page">Next</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About BanArts</h3>
+                <p>BanArts is the official platform of the Bantayanon Artists Group, dedicated to showcasing the rich artistic heritage and contemporary creativity of Bantayan Island, Philippines. We connect local artists with art enthusiasts worldwide.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@banarts.com<br>Phone: +63 123 456 7890<br>Address: Bantayan Island, Cebu, Philippines</p>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-icons">
+                    <a href="#" class="social-icon-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon-link" aria-label="Gmail"><i class="fas fa-envelope"></i></a>
+                    <a href="#" class="social-icon-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 BanArts. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Login/Signup Modal -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-tabs">
+                <button class="tab-btn active" onclick="openTab('login')">Login</button>
+                <button class="tab-btn" onclick="openTab('signup')">Signup</button>
+            </div>
+            <div id="login-tab" class="tab-content active">
+                <img src="img/bantayanon artists logo.jpg" alt="BanArts Logo" class="modal-logo">
+                <h2>Login</h2>
+                <form id="login-form">
+                    <input type="email" id="login-email" placeholder="Email" required>
+                    <input type="password" id="login-password" placeholder="Password" required>
+                    <button type="submit">Login</button>
+                    <div id="login-error" style="color: red; margin-top: 1rem; display: none;"></div>
+                </form>
+                <div class="divider">or</div>
+                <div class="social-login">
+                    <a href="/auth/facebook" class="social-link facebook"><img src="img/facebook-logo.avif" alt="Facebook"></a>
+                    <a href="/auth/google" class="social-link google"><img src="img/google-icon-logo-png-transparent.png" alt="Google"></a>
+                    <a href="/auth/twitter" class="social-link apple"><img src="img/twitter-x.webp" alt="Twitter"></a>
+                </div>
+                <p class="legal-text">By clicking Sign Up or Continue with Email, Twitter, Google, or Facebook, you agree to BanArts Terms and Conditions and Privacy Policy. This site is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply.</p>
+            </div>
+            <div id="signup-tab" class="tab-content">
+                <img src="img/bantayanon artists logo.jpg" alt="BanArts Logo" class="modal-logo">
+                <h2>Signup</h2>
+                <form id="signup-form">
+                    <input type="text" id="signup-name" placeholder="Full Name" required>
+                    <input type="email" id="signup-email" placeholder="Email" required>
+                    <input type="password" id="signup-password" placeholder="Password" required>
+                    <input type="password" id="signup-confirm-password" placeholder="Confirm Password" required>
+                    <button type="submit">Signup</button>
+                    <div id="signup-error" style="color: red; margin-top: 1rem; display: none;"></div>
+                </form>
+                <div class="divider">or</div>
+                <div class="social-login">
+                    <a href="/auth/facebook" class="social-link facebook"><img src="img/facebook-logo.avif" alt="Facebook"></a>
+                    <a href="/auth/google" class="social-link google"><img src="img/google-icon-logo-png-transparent.png" alt="Google"></a>
+                    <a href="/auth/twitter" class="social-link apple"><img src="img/twitter-x.webp" alt="Twitter"></a>
+                </div>
+                <p class="legal-text">By clicking Sign Up or Continue with Email, Twitter, Google, or Facebook, you agree to BanArts Terms and Conditions and Privacy Policy. This site is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        let currentPage = 1;
+        const itemsPerPage = 12;
+        let allArtworks = [];
+        let filteredArtworks = [];
+
+        // Load artworks dynamically with pagination
+        async function loadArtworks(page = 1) {
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const errorMessage = document.getElementById('error-message');
+            const artworksGrid = document.getElementById('artworks-grid');
+
+            loadingSpinner.style.display = 'block';
+            errorMessage.style.display = 'none';
+            artworksGrid.innerHTML = '';
+
+            try {
+                const response = await fetch(`/artworks?_limit=${itemsPerPage * 2}`); // Load more for filtering
+                if (response.ok) {
+                    allArtworks = await response.json();
+                    filteredArtworks = [...allArtworks];
+                    populateFilters(allArtworks);
+                    renderArtworksPage(page);
+                    updateArtworkCount();
+                    loadingSpinner.style.display = 'none';
+                } else {
+                    throw new Error('Failed to load artworks');
+                }
+            } catch (error) {
+                console.error('Error loading artworks:', error);
+                loadingSpinner.style.display = 'none';
+                errorMessage.style.display = 'block';
+            }
+        }
+
+        function renderArtworksPage(page) {
+            const container = document.getElementById('artworks-grid');
+            const startIndex = (page - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const artworksToShow = filteredArtworks.slice(startIndex, endIndex);
+
+            container.innerHTML = '';
+
+            if (artworksToShow.length === 0) {
+                container.innerHTML = '<p>No artworks found matching your criteria.</p>';
+                return;
+            }
+
+            artworksToShow.forEach(artwork => {
+                const card = document.createElement('div');
+                card.className = 'artwork-card';
+                const categories = getCategoriesFromArtwork(artwork);
+                card.setAttribute('data-categories', categories.join(' '));
+                card.setAttribute('data-artwork-id', artwork.artwork_id);
+
+                card.innerHTML = `
+                    <div class="artwork-image-container">
+                        <img src="${artwork.image_url || 'img/art1.jpg'}" alt="${artwork.title}" loading="lazy">
+                        <button class="save-btn" data-artwork-id="${artwork.artwork_id}" aria-label="Save artwork">♥</button>
+                    </div>
+                    <div class="artwork-info">
+                        <h3>${artwork.title}</h3>
+                        <p class="artist-name">By ${artwork.artist_name || 'Unknown Artist'}</p>
+                        <p class="artwork-medium">${artwork.medium || 'Mixed Media'}</p>
+                        <div class="artwork-actions">
+                            <button class="view-details-btn" onclick="openAuthModalForArtworkDetail(event, ${artwork.artwork_id})">View Details</button>
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+
+            updatePagination(page);
+            attachSaveButtonListeners();
+            attachCardClickListeners();
+        }
+
+        function updateArtworkCount() {
+            const countElement = document.getElementById('artwork-count');
+            countElement.textContent = filteredArtworks.length;
+        }
+
+        function updatePagination(currentPage) {
+            const pagination = document.getElementById('pagination');
+            const prevBtn = document.getElementById('prev-page');
+            const nextBtn = document.getElementById('next-page');
+            const pageInfo = document.getElementById('page-info');
+
+            const totalPages = Math.ceil(filteredArtworks.length / itemsPerPage);
+
+            if (totalPages <= 1) {
+                pagination.style.display = 'none';
+                return;
+            }
+
+            pagination.style.display = 'flex';
+            pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+
+            prevBtn.onclick = () => loadArtworks(currentPage - 1);
+            nextBtn.onclick = () => loadArtworks(currentPage + 1);
+        }
+
+        function getCategoriesFromArtwork(artwork) {
+            if (artwork.categories) {
+                return artwork.categories.split(',').map(cat => cat.trim().toLowerCase());
+            }
+            const categoryMap = {
+                'Painting': 'painting',
+                'Photography': 'photography',
+                'Mural': 'mural',
+                'Digital Art': 'digital',
+                'Drawing': 'drawing'
+            };
+            return [categoryMap[artwork.category_name] || 'painting'];
+        }
+
+        function attachSaveButtonListeners() {
+            const userId = localStorage.getItem('userId');
+            const userEmail = localStorage.getItem('userEmail');
+
+            document.querySelectorAll('.save-btn').forEach(btn => {
+                const artworkId = btn.getAttribute('data-artwork-id');
+
+                if (userId && artworkId) {
+                    fetch(`/saved-artworks/${userId}`)
+                        .then(response => response.json())
+                        .then(savedArtworks => {
+                            const isSaved = savedArtworks.some(artwork => artwork.artwork_id == artworkId);
+                            btn.classList.toggle('saved', isSaved);
+                        })
+                        .catch(err => console.error('Error checking save status:', err));
+                }
+
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Prevent card click
+
+                    if (!userEmail) {
+                        openModal();
+                        openTab('signup');
+                        return;
+                    }
+
+                    const artworkId = this.getAttribute('data-artwork-id');
+                    const userId = localStorage.getItem('userId');
+
+                    if (!artworkId || !userId) {
+                        alert('Artwork ID or User ID not found. Please try again.');
+                        return;
+                    }
+
+                    fetch('/save-artwork', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'user-id': userId
+                        },
+                        body: JSON.stringify({ artwork_id: artworkId })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        this.classList.toggle('saved', data.saved);
+                        console.log(data.message);
+                    })
+                    .catch(err => {
+                        console.error('Save error:', err);
+                        alert('Error updating save status. Please try again.');
+                    });
+                });
+            });
+        }
+
+        function attachCardClickListeners() {
+            document.querySelectorAll('.artwork-card').forEach(card => {
+                card.addEventListener('click', function(event) {
+                    // Don't navigate if clicking on a button
+                    if (event.target.tagName === 'BUTTON' || event.target.closest('button')) {
+                        return;
+                    }
+                    const artworkId = this.getAttribute('data-artwork-id');
+                    if (artworkId) {
+                        window.location.href = `/artwork/${artworkId}`;
+                    }
+                });
+            });
+        }
+
+        // Filter artworks by category
+        function filterArtworks(category) {
+            if (category === 'all') {
+                filteredArtworks = [...allArtworks];
+            } else {
+                filteredArtworks = allArtworks.filter(artwork => {
+                    const categories = getCategoriesFromArtwork(artwork);
+                    return categories.includes(category);
+                });
+            }
+            currentPage = 1;
+            renderArtworksPage(currentPage);
+            updateArtworkCount();
+        }
+
+        // Populate filter options
+        function populateFilters(artworks) {
+            const artistFilter = document.getElementById('artist-filter');
+            const mediumFilter = document.getElementById('medium-filter');
+            const yearFilter = document.getElementById('year-filter');
+
+            // Get unique artists
+            const artists = [...new Set(artworks.map(artwork => artwork.artist_name).filter(name => name))];
+            artists.sort().forEach(artist => {
+                const option = document.createElement('option');
+                option.value = artist;
+                option.textContent = artist;
+                artistFilter.appendChild(option);
+            });
+
+            // Get unique mediums
+            const mediums = [...new Set(artworks.map(artwork => artwork.medium).filter(medium => medium))];
+            mediums.sort().forEach(medium => {
+                const option = document.createElement('option');
+                option.value = medium;
+                option.textContent = medium;
+                mediumFilter.appendChild(option);
+            });
+
+            // Get unique years
+            const years = [...new Set(artworks.map(artwork => artwork.year).filter(year => year))];
+            years.sort((a, b) => b - a).forEach(year => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearFilter.appendChild(option);
+            });
+        }
+
+        // Apply filters
+        function applyFilters() {
+            const artistFilter = document.getElementById('artist-filter').value;
+            const mediumFilter = document.getElementById('medium-filter').value;
+            const yearFilter = document.getElementById('year-filter').value;
+            const sortFilter = document.getElementById('sort-filter').value;
+
+            let filtered = [...allArtworks];
+
+            // Apply filters
+            if (artistFilter) {
+                filtered = filtered.filter(artwork => artwork.artist_name === artistFilter);
+            }
+            if (mediumFilter) {
+                filtered = filtered.filter(artwork => artwork.medium === mediumFilter);
+            }
+            if (yearFilter) {
+                filtered = filtered.filter(artwork => artwork.year == yearFilter);
+            }
+
+            // Apply sorting
+            switch (sortFilter) {
+                case 'oldest':
+                    filtered.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                    break;
+                case 'title':
+                    filtered.sort((a, b) => a.title.localeCompare(b.title));
+                    break;
+                case 'artist':
+                    filtered.sort((a, b) => (a.artist_name || '').localeCompare(b.artist_name || ''));
+                    break;
+                case 'newest':
+                default:
+                    filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                    break;
+            }
+
+            filteredArtworks = filtered;
+            currentPage = 1;
+            renderArtworksPage(currentPage);
+            updateArtworkCount();
+        }
+
+        // Clear all filters
+        function clearFilters() {
+            document.getElementById('artist-filter').value = '';
+            document.getElementById('medium-filter').value = '';
+            document.getElementById('year-filter').value = '';
+            document.getElementById('sort-filter').value = 'newest';
+            applyFilters();
+        }
+
+        // Open auth modal for artwork detail access or redirect if logged in
+        function openAuthModalForArtworkDetail(event, artworkId) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            const userId = localStorage.getItem('userId');
+            if (userId) {
+                window.location.href = `/artwork/${artworkId}`;
+            } else {
+                openModal();
+                openTab('signup');
+            }
+        }
+
+        // Load artworks on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadArtworks();
+
+            // Add filter event listeners
+            document.getElementById('artist-filter').addEventListener('change', applyFilters);
+            document.getElementById('medium-filter').addEventListener('change', applyFilters);
+            document.getElementById('year-filter').addEventListener('change', applyFilters);
+            document.getElementById('sort-filter').addEventListener('change', applyFilters);
+            document.getElementById('clear-filters').addEventListener('click', clearFilters);
+
+            // Mobile menu toggle
+            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+
+            if (mobileMenuToggle && navMenu) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    navMenu.classList.toggle('show');
+                    const isOpen = navMenu.classList.contains('show');
+                    this.setAttribute('aria-expanded', isOpen);
+                    this.innerHTML = isOpen ? '&#10006;' : '&#9776;';
+                });
+
+                // Close mobile menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!navMenu.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+                        navMenu.classList.remove('show');
+                        mobileMenuToggle.setAttribute('aria-expanded', 'false');
+                        mobileMenuToggle.innerHTML = '&#9776;';
+                    }
+                });
+
+                // Close mobile menu when clicking on a link
+                navMenu.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', function() {
+                        navMenu.classList.remove('show');
+                        mobileMenuToggle.setAttribute('aria-expanded', 'false');
+                        mobileMenuToggle.innerHTML = '&#9776;';
+                    });
+                });
+            }
+        });
+    </script>
+    <script src="/socket.io/socket.io.js"></script>
+    
+</body>
+</html>

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artist Details - BanArts</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .artist-details-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .artist-header {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 40px;
+            align-items: flex-start;
+        }
+
+        .artist-photo {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid #007bff;
+        }
+
+        .artist-info {
+            flex: 1;
+        }
+
+        .artist-name {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .artist-category {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .artist-location {
+            font-size: 1.1rem;
+            color: #777;
+            margin-bottom: 20px;
+        }
+
+        .artist-bio {
+            font-size: 1.05rem;
+            line-height: 1.7;
+            margin-bottom: 30px;
+            font-weight: 500;
+            color: #444;
+            letter-spacing: 0.2px;
+        }
+
+        .artist-details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .details-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 8px;
+        }
+
+        .details-section h3 {
+            margin-bottom: 15px;
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 5px;
+        }
+
+        .details-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .details-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .details-list li:last-child {
+            border-bottom: none;
+        }
+
+        .details-list strong {
+            color: #333;
+        }
+
+        .contact-section {
+            background: #e9ecef;
+            padding: 25px;
+            border-radius: 8px;
+        }
+
+        .artist-artworks {
+            margin-top: 50px;
+        }
+
+        .artist-artworks h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .artworks-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .artwork-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+
+        .artwork-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .artwork-card img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .artwork-card-content {
+            padding: 15px;
+        }
+
+        .artwork-card h3 {
+            margin: 0 0 8px 0;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .artwork-card p {
+            margin: 0;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        .back-btn:hover {
+            background: #0056b3;
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .error {
+            text-align: center;
+            padding: 50px;
+            color: #dc3545;
+        }
+
+        @media (max-width: 768px) {
+            .artist-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .artist-name {
+                font-size: 2rem;
+            }
+
+            .artist-details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+  <header>
+        <nav role="navigation" aria-label="Main navigation">
+            <div class="logo">
+                <img src="img/bantayanon artists logo.jpg" alt="BanArts Logo" class="logo-img">
+                BanArts
+            </div>
+            <div class="nav-menu">
+                <div class="search-bar">
+                    <label for="search-input" class="sr-only">Search artworks, artists, galleries...</label>
+                    <input type="text" id="search-input" placeholder="Search artworks, artists..." aria-describedby="search-help">
+                    <button type="submit" aria-label="Submit search">Search</button>
+                    <div id="search-help" class="sr-only">Type to search for artworks, artists, or galleries</div>
+                </div>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="artists.html">Artists</a></li>
+                    <li><a href="artworks.html">Artworks</a></li>
+                    <li><a href="galleries.html">Galleries</a></li>
+                    <li><a href="museums.html">Museums</a></li>
+                    <li><a href="events.html">Events</a></li>
+                    <li><a href="videos.html">Videos</a></li>
+                    <li><a href="collections.html">Collections</a></li>
+                </ul>
+                <div class="auth-buttons">
+                    <button type="button" class="login-link">Login</button>
+                    <button type="button" class="signup-btn">Signup</button>
+                </div>
+            </div>
+            <div class="mobile-header-icons">
+                <div class="notification-container"></div>
+                <div class="profile-dropdown-container mobile-icon">
+                    <a href="profile.html" class="profile-icon" id="profile-icon-link">
+                        <div class="nav-profile-avatar" id="nav-profile-avatar"></div>
+                    </a>
+                    <div class="profile-dropdown">
+                        <div class="profile-dropdown-header">
+                            <img src="img/profile icon.webp" alt="Profile" class="dropdown-profile-icon" id="dropdown-profile-icon">
+                            <div class="dropdown-profile-name">John Doe</div>
+                            <a href="profile.html" class="view-profile-btn">View Profile</a>
+                        </div>
+                        <div class="profile-dropdown-item">My Collection</div>
+                        <a href="/profile.html#uploads" class="profile-dropdown-item">Artworks</a>
+                        <div class="dropdown-divider"></div>
+                        <div class="profile-dropdown-item">Favorites</div>
+                        <a href="/profile.html#saved" class="profile-dropdown-item">Saves</a>
+                        <a href="/profile.html#followed" class="profile-dropdown-item">Follows</a>
+                        <div class="dropdown-divider"></div>
+                        <div class="profile-dropdown-item settings-header">Settings</div>
+                        <a href="settings.html" class="profile-dropdown-item edit-profile-btn">Edit Profile</a>
+                        <a href="#" class="profile-dropdown-item logout-item">Logout</a>
+                    </div>
+                </div>
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu">
+                    &#9776;
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main style="margin-top: 90px;">
+        <div class="artist-details-container">
+            <div id="artist-content">
+                <div class="loading">Loading artist details...</div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About BanArts</h3>
+                <p>BanArts is the official platform of the Bantayanon Artists Group, dedicated to showcasing the rich artistic heritage and contemporary creativity of Bantayan Island, Philippines. We connect local artists with art enthusiasts worldwide.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@banarts.com<br>Phone: +63 123 456 7890<br>Address: Bantayan Island, Cebu, Philippines</p>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-icons">
+                    <a href="#" class="social-icon-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon-link" aria-label="Gmail"><i class="fas fa-envelope"></i></a>
+                    <a href="#" class="social-icon-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 BanArts. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Login/Signup Modal -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-tabs">
+                <button class="tab-btn active" onclick="openTab('login')">Login</button>
+                <button class="tab-btn" onclick="openTab('signup')">Signup</button>
+            </div>
+            <div id="login-tab" class="tab-content active">
+                <img src="img/bantayanon artists logo.jpg" alt="BanArts Logo" class="modal-logo">
+                <h2>Login</h2>
+                <form id="login-form">
+                    <input type="email" id="login-email" placeholder="Email" required>
+                    <input type="password" id="login-password" placeholder="Password" required>
+                    <button type="submit">Login</button>
+                    <div id="login-error" style="color: red; margin-top: 1rem; display: none;"></div>
+                </form>
+                <div class="divider">or</div>
+                <div class="social-login">
+                    <a href="/auth/facebook" class="social-link facebook"><img src="img/facebook-logo.avif" alt="Facebook"></a>
+                    <a href="/auth/google" class="social-link google"><img src="img/google-icon-logo-png-transparent.png" alt="Google"></a>
+                    <a href="/auth/twitter" class="social-link apple"><img src="img/twitter-x.webp" alt="Twitter"></a>
+                </div>
+                <p class="legal-text">By clicking Sign Up or Continue with Email, Twitter, Google, or Facebook, you agree to BanArts Terms and Conditions and Privacy Policy. This site is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply.</p>
+            </div>
+            <div id="signup-tab" class="tab-content">
+                <img src="img/bantayanon artists logo.jpg" alt="BanArts Logo" class="modal-logo">
+                <h2>Signup</h2>
+                <form id="signup-form">
+                    <input type="text" id="signup-name" placeholder="Full Name" required>
+                    <input type="email" id="signup-email" placeholder="Email" required>
+                    <input type="password" id="signup-password" placeholder="Password" required>
+                    <input type="password" id="signup-confirm-password" placeholder="Confirm Password" required>
+                    <button type="submit">Signup</button>
+                    <div id="signup-error" style="color: red; margin-top: 1rem; display: none;"></div>
+                </form>
+                <div class="divider">or</div>
+                <div class="social-login">
+                    <a href="/auth/facebook" class="social-link facebook"><img src="img/facebook-logo.avif" alt="Facebook"></a>
+                    <a href="/auth/google" class="social-link google"><img src="img/google-icon-logo-png-transparent.png" alt="Google"></a>
+                    <a href="/auth/twitter" class="social-link apple"><img src="img/twitter-x.webp" alt="Twitter"></a>
+                </div>
+                <p class="legal-text">By clicking Sign Up or Continue with Email, Twitter, Google, or Facebook, you agree to BanArts Terms and Conditions and Privacy Policy. This site is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Get artist ID from URL parameters
+        const urlParams = new URLSearchParams(window.location.search);
+        const artistId = urlParams.get('id');
+
+        if (!artistId) {
+            document.getElementById('artist-content').innerHTML = '<div class="error">No artist ID provided</div>';
+        } else {
+            loadArtistDetails(artistId);
+        }
+
+        function loadArtistDetails(id) {
+            fetch(`/artists/${id}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Artist not found');
+                    }
+                    return response.json();
+                })
+                .then(artist => {
+                    // Load artist's artworks
+                    fetch(`/artworks?artist_id=${id}`)
+                        .then(response => response.json())
+                        .then(artworks => {
+                            displayArtistDetails(artist, artworks);
+                        })
+                        .catch(error => {
+                            console.error('Error loading artworks:', error);
+                            displayArtistDetails(artist, []);
+                        });
+                })
+                .catch(error => {
+                    console.error('Error loading artist:', error);
+                    document.getElementById('artist-content').innerHTML = '<div class="error">Artist not found or error loading details</div>';
+                });
+        }
+
+        function displayArtistDetails(artist, artworks) {
+            const container = document.getElementById('artist-content');
+
+            // Prepare specialties and exhibitions lists
+            const specialtiesList = artist.specialties ? artist.specialties.split(',').map(s => `<li>${s.trim()}</li>`).join('') : '';
+            const exhibitionsList = artist.exhibitions ? artist.exhibitions.split(',').map(e => `<li>${e.trim()}</li>`).join('') : '';
+
+            const html = `
+                <div class="artist-header">
+                    <img src="${artist.photo_url || 'img/profile icon.webp'}" alt="${artist.name}" class="artist-photo">
+                    <div class="artist-info">
+                        <h1 class="artist-name">${artist.name}</h1>
+                        <p class="artist-category">${artist.category || 'Artist'}</p>
+                        <p class="artist-location">Based in ${artist.location || 'Bantayan Island'}</p>
+                        ${artist.born_year ? `<p class="artist-born">Born: ${artist.born_year}</p>` : ''}
+                        <p class="artist-bio">${artist.about || 'Artist from Bantayan Island.'}</p>
+
+                        <div class="artist-details-grid">
+                            ${specialtiesList ? `
+                            <div class="details-section">
+                                <h3>Specialties</h3>
+                                <ul class="details-list">
+                                    ${specialtiesList}
+                                </ul>
+                            </div>
+                            ` : ''}
+
+                            ${exhibitionsList ? `
+                            <div class="details-section">
+                                <h3>Exhibitions</h3>
+                                <ul class="details-list">
+                                    ${exhibitionsList}
+                                </ul>
+                            </div>
+                            ` : ''}
+
+                            <div class="contact-section">
+                                <h3>Contact Information</h3>
+                                <ul class="details-list">
+                                    ${artist.email ? `<li><strong>Email:</strong> ${artist.email}</li>` : ''}
+                                    ${artist.contact ? `<li><strong>Phone:</strong> ${artist.contact}</li>` : ''}
+                                    ${artist.social_links ? `<li><strong>Social Media:</strong> ${artist.social_links}</li>` : ''}
+                                </ul>
+                            </div>
+                        </div>
+
+                        <a href="artists.html" class="back-btn">Back to Artists</a>
+                    </div>
+                </div>
+
+                ${artworks.length > 0 ? `
+                <section class="artist-artworks">
+                    <h2>Artworks by ${artist.name}</h2>
+                    <div class="artworks-grid">
+                        ${artworks.map(artwork => `
+                            <div class="artwork-card" onclick="viewArtworkDetails(${artwork.artwork_id})">
+                                <img src="${artwork.image_url || 'img/art1.jpg'}" alt="${artwork.title}">
+                                <div class="artwork-card-content">
+                                    <h3>${artwork.title}</h3>
+                                    <p>${artwork.categories || 'Artwork'}</p>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </section>
+                ` : ''}
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function viewArtworkDetails(artworkId) {
+            window.location.href = `artwork-details.html?id=${artworkId}`;
+        }
+
+        // Modal functionality
+        function openModal() {
+            document.getElementById('auth-modal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('auth-modal').style.display = 'none';
+        }
+
+        function openTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-btn');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(btn => btn.classList.remove('active'));
+            document.getElementById(tabName + '-tab').classList.add('active');
+            const activeBtn = document.querySelector(`.tab-btn[onclick*="${tabName}"]`);
+            if (activeBtn) activeBtn.classList.add('active');
+        }
+
+        // Event listeners for modal
+        document.addEventListener('DOMContentLoaded', function() {
+            const loginBtn = document.querySelector('.login-link');
+            const signupBtn = document.querySelector('.signup-btn');
+            const closeBtn = document.querySelector('.close');
+
+            if (loginBtn) loginBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                openModal();
+                openTab('login');
+            });
+
+            if (signupBtn) signupBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                openModal();
+                openTab('signup');
+            });
+
+            if (closeBtn) closeBtn.addEventListener('click', closeModal);
+
+            // Close modal when clicking outside
+            window.addEventListener('click', function(e) {
+                const modal = document.getElementById('auth-modal');
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+        });
+
+        // Mobile menu toggle
+            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+
+            if (mobileMenuToggle && navMenu) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    navMenu.classList.toggle('show');
+                    const isOpen = navMenu.classList.contains('show');
+                    this.setAttribute('aria-expanded', isOpen);
+                    this.innerHTML = isOpen ? '&#10006;' : '&#9776;';
+                });
+
+                // Close mobile menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!navMenu.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+                        navMenu.classList.remove('show');
+                        mobileMenuToggle.setAttribute('aria-expanded', 'false');
+                        mobileMenuToggle.innerHTML = '&#9776;';
+                    }
+                });
+
+                // Close mobile menu when clicking on a link
+                navMenu.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', function() {
+                        navMenu.classList.remove('show');
+                        mobileMenuToggle.setAttribute('aria-expanded', 'false');
+                        mobileMenuToggle.innerHTML = '&#9776;';
+                    });
+                });
+            }
+    </script>
+</body>
+</html>

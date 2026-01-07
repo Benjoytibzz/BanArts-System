@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BanArts - Modern Art Platform</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <header>
+        <nav role="navigation" aria-label="Main navigation">
+            <div class="logo">
+                <img src="img/bantayanon artists logo.jpg" alt="BanArts Logo" class="logo-img">
+                BanArts
+            </div>
+            <div class="nav-menu">
+                <div class="search-bar">
+                    <label for="search-input" class="sr-only">Search artworks, artists, galleries...</label>
+                    <input type="text" id="search-input" placeholder="Search artworks, artists..." aria-describedby="search-help">
+                    <button type="submit" aria-label="Submit search">Search</button>
+                    <div id="search-help" class="sr-only">Type to search for artworks, artists, or galleries</div>
+                </div>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="artists.html">Artists</a></li>
+                    <li><a href="artworks.html">Artworks</a></li>
+                    <li><a href="galleries.html">Galleries</a></li>
+                    <li><a href="museums.html">Museums</a></li>
+                    <li><a href="events.html">Events</a></li>
+                    <li><a href="videos.html">Videos</a></li>
+                    <li><a href="collections.html">Collections</a></li>
+                </ul>
+                <div class="auth-buttons">
+                    <button type="button" class="login-link">Login</button>
+                    <button type="button" class="signup-btn">Signup</button>
+                </div>
+            </div>
+            <div class="mobile-header-icons">
+                <div class="notification-container"></div>
+                <div class="profile-dropdown-container mobile-icon">
+                    <a href="profile.html" class="profile-icon" id="profile-icon-link">
+                        <div class="nav-profile-avatar" id="nav-profile-avatar"></div>
+                    </a>
+                    <div class="profile-dropdown">
+                        <div class="profile-dropdown-header">
+                            <img src="img/profile icon.webp" alt="Profile" class="dropdown-profile-icon" id="dropdown-profile-icon">
+                            <div class="dropdown-profile-name">John Doe</div>
+                            <a href="profile.html" class="view-profile-btn">View Profile</a>
+                        </div>
+                        <div class="profile-dropdown-item">My Collection</div>
+                        <a href="/profile.html#uploads" class="profile-dropdown-item">Artworks</a>
+                        <div class="dropdown-divider"></div>
+                        <div class="profile-dropdown-item">Favorites</div>
+                        <a href="/profile.html#saved" class="profile-dropdown-item">Saves</a>
+                        <a href="/profile.html#followed" class="profile-dropdown-item">Follows</a>
+                        <div class="dropdown-divider"></div>
+                        <div class="profile-dropdown-item settings-header">Settings</div>
+                        <a href="settings.html" class="profile-dropdown-item edit-profile-btn">Edit Profile</a>
+                        <a href="#" class="profile-dropdown-item logout-item">Logout</a>
+                    </div>
+                </div>
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu">
+                    &#9776;
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main id="main-content" role="main">
+        <section id="home" class="hero">
+            <div class="hero-content">
+                <h1>Welcome to BanArts</h1>
+                <p>Welcome to BanArts, the creative home of Bantayan Island’s vibrant artistic community. We are honored to share with you a space where imagination, culture, and local talent come together. As you explore our website, you will discover the works of gifted Bantayanon artists painters, photographers, digital artists and more. Each artist brings a unique perspective to their craft, creating pieces that resonate with the soul of our island. We are proud to showcase the stories and creators whose pieces reflect the island’s rich heritage, natural beauty, and unique stories.<br>
+
+BanArts was built with one purpose: to give our artists a platform where their voices can be seen, celebrated, and supported. Whether you are an art lover, a collector, a fellow creator, or simply someone curious about the island’s artistic spirit, we welcome you with open arms. Here, every artwork is a window into the soul of Bantayan, and every visit helps uplift the creative lives of our local talents.<br>
+
+Feel free to browse our galleries, learn about our artists, and immerse yourself in the colors, narratives, and inspirations that shape Bantayan’s artistic identity. We hope your experience here brings you joy, sparks curiosity, and connects you to the heart of our island community.<br>
+
+Thank you for being part of BanArts where Bantayanon creativity lives, grows, and inspires.</p>
+                <a href="artworks.html" class="cta-button">Explore Artworks</a>
+            </div>
+            <div class="hero-image">
+                <img src="img/bantayanon artists logo.jpg" alt="Featured Artwork">
+            </div>
+        </section>
+
+        <section class="featured-artworks">
+            <div class="section-header">
+                <h2>Featured Artworks</h2>
+                <a href="artworks.html" class="view-all-link">View All Artworks</a>
+            </div>
+            <div class="artworks-grid" id="featuredArtworksGrid">
+                <!-- Featured artworks will be loaded dynamically -->
+            </div>
+        </section>
+
+
+        <section class="featured-artists" style="padding: 2rem 2rem;">
+            <div class="section-header">
+                <h2>Featured Artists</h2>
+                <a href="artists.html" class="view-all-link">View All Artists</a>
+            </div>
+            <div class="artists-grid" id="featuredArtistsGrid">
+                <!-- Featured artists will be loaded dynamically -->
+            </div>
+        </section>
+
+        <section class="featured-galleries" style="padding: 2rem 2rem;">
+            <div class="section-header">
+                <h2>Featured Galleries</h2>
+                <a href="galleries.html" class="view-all-link">View All Galleries</a>
+            </div>
+            <div class="galleries-grid" id="featuredGalleriesGrid">
+                <!-- Featured galleries will be loaded dynamically -->
+            </div>
+        </section>
+
+        <section class="featured-museums" style="padding: 2rem 2rem;">
+            <div class="section-header">
+                <h2>Featured Museums</h2>
+                <a href="museums.html" class="view-all-link">View All Museums</a>
+            </div>
+            <div class="museums-grid" id="featuredMuseumsGrid">
+                <!-- Featured museums will be loaded dynamically -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About BanArts</h3>
+                <p>BanArts is the official platform of the Bantayanon Artists Group, dedicated to showcasing the rich artistic heritage and contemporary creativity of Bantayan Island, Philippines. We connect local artists with art enthusiasts worldwide.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@banarts.com<br>Phone: +63 123 456 7890<br>Address: Bantayan Island, Cebu, Philippines</p>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-icons">
+                    <a href="#" class="social-icon-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon-link" aria-label="Gmail"><i class="fas fa-envelope"></i></a>
+                    <a href="#" class="social-icon-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 BanArts. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Login/Signup Modal -->
+    <div id="auth-modal" class="modal" role="dialog" aria-labelledby="modal-title" aria-modal="true" aria-hidden="true">
+        <div class="modal-content">
+            <span class="close" aria-label="Close modal">&times;</span>
+            <div class="modal-tabs" role="tablist">
+                <button class="tab-btn active" onclick="openTab('login')" role="tab" aria-selected="true" aria-controls="login-tab" id="login-tab-btn">Login</button>
+                <button class="tab-btn" onclick="openTab('signup')" role="tab" aria-selected="false" aria-controls="signup-tab" id="signup-tab-btn">Signup</button>
+            </div>
+            <div id="login-tab" class="tab-content active" role="tabpanel" aria-labelledby="login-tab-btn">
+                <img src="img/bantayanon artists logo.jpg" alt="BanArts Logo" class="modal-logo">
+                <h2 id="modal-title">Login</h2>
+                <form id="login-form">
+                    <input type="email" id="login-email" placeholder="Email" required>
+                    <input type="password" id="login-password" placeholder="Password" required>
+                    <button type="submit">Login</button>
+                    <div id="login-error" style="color: red; margin-top: 1rem; display: none;"></div>
+                </form>
+                <div class="divider">or</div>
+                <div class="social-login">
+                    <a href="/auth/facebook" class="social-link facebook"><img src="img/facebook-logo.avif" alt="Facebook"></a>
+                    <a href="/auth/google" class="social-link google"><img src="img/google-icon-logo-png-transparent.png" alt="Google"></a>
+                    <a href="/auth/twitter" class="social-link apple"><img src="img/twitter-x.webp" alt="Twitter"></a>
+                </div>
+                <p class="legal-text">By clicking Sign Up or Continue with Email, Twitter, Google, or Facebook, you agree to BanArts Terms and Conditions and Privacy Policy. This site is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply.</p>
+            </div>
+            <div id="signup-tab" class="tab-content" role="tabpanel" aria-labelledby="signup-tab-btn">
+                <img src="img/bantayanon artists logo.jpg" alt="BanArts Logo" class="modal-logo">
+                <h2>Signup</h2>
+                <form id="signup-form">
+                    <input type="text" id="signup-name" placeholder="Full Name" required>
+                    <input type="email" id="signup-email" placeholder="Email" required>
+                    <input type="password" id="signup-password" placeholder="Password" required>
+                    <input type="password" id="signup-confirm-password" placeholder="Confirm Password" required>
+                    <button type="submit">Signup</button>
+                    <div id="signup-error" style="color: red; margin-top: 1rem; display: none;"></div>
+                </form>
+                <div class="divider">or</div>
+                <div class="social-login">
+                    <a href="/auth/facebook" class="social-link facebook"><img src="img/facebook-logo.avif" alt="Facebook"></a>
+                    <a href="/auth/google" class="social-link google"><img src="img/google-icon-logo-png-transparent.png" alt="Google"></a>
+                    <a href="/auth/twitter" class="social-link apple"><img src="img/twitter-x.webp" alt="Twitter"></a>
+                </div>
+                <p class="legal-text">By clicking Sign Up or Continue with Email, Twitter, Google, or Facebook, you agree to BanArts Terms and Conditions and Privacy Policy. This site is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Artwork Details Modal -->
+    <div id="artwork-modal" class="modal" role="dialog" aria-labelledby="artwork-modal-title" aria-modal="true" aria-hidden="true">
+        <div class="modal-content artwork-modal-content">
+            <span class="close" aria-label="Close artwork modal">&times;</span>
+            <div class="artwork-modal-body">
+                <div class="artwork-modal-image">
+                    <img id="artwork-modal-img" src="" alt="">
+                </div>
+                <div class="artwork-modal-info">
+                    <h2 id="artwork-modal-title"></h2>
+                    <p class="artwork-modal-artist" id="artwork-modal-artist"></p>
+                    <div class="artwork-modal-description" id="artwork-modal-description"></div>
+                    <div class="artwork-modal-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Medium:</span>
+                            <span id="artwork-modal-medium">N/A</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Year:</span>
+                            <span id="artwork-modal-year">N/A</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Size:</span>
+                            <span id="artwork-modal-size">N/A</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Location:</span>
+                            <span id="artwork-modal-location">N/A</span>
+                        </div>
+                    </div>
+                    <div class="artwork-modal-actions">
+                        <button class="save-btn" id="artwork-modal-save-btn">
+                            <i class="fas fa-heart"></i> Save
+                        </button>
+                        <a href="#" class="view-full-details-btn" id="artwork-modal-view-full">View Full Details</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Load featured items dynamically
+        async function loadFeaturedItems() {
+            loadFeaturedArtworks();
+            loadFeaturedArtists();
+            loadFeaturedGalleries();
+            loadFeaturedMuseums();
+        }
+
+        async function loadFeaturedArtworks() {
+            const grid = document.getElementById('featuredArtworksGrid');
+            grid.innerHTML = '<div class="loading-container"><div class="loading-spinner"></div><span class="loading-text">Loading featured artworks...</span></div>';
+
+            try {
+                const response = await fetch('/artworks/featured');
+                if (response.ok) {
+                    const artworks = await response.json();
+                    if (artworks.length === 0) {
+                        grid.innerHTML = '<p>No featured artworks available.</p>';
+                        return;
+                    }
+                    renderFeaturedArtworks(artworks);
+                } else {
+                    throw new Error('Server returned an error');
+                }
+            } catch (error) {
+                console.error('Error loading featured artworks:', error);
+                grid.innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Failed to load featured artworks. Please try again.
+                        <br>
+                        <button class="retry-btn" onclick="loadFeaturedArtworks()">Retry</button>
+                    </div>
+                `;
+            }
+        }
+
+        function renderFeaturedArtworks(artworks) {
+            const grid = document.getElementById('featuredArtworksGrid');
+            grid.innerHTML = '';
+            artworks.forEach(artwork => {
+                const card = document.createElement('div');
+                card.className = 'artwork-card';
+                card.setAttribute('data-artwork-id', artwork.artwork_id);
+                card.innerHTML = `
+                    <img src="${artwork.image_url || 'img/art1.jpg'}" alt="${artwork.title}">
+                    <h3>${artwork.title}</h3>
+                    <p>By ${artwork.artist_name || 'Unknown Artist'}</p>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        async function loadFeaturedArtists() {
+            const grid = document.getElementById('featuredArtistsGrid');
+            grid.innerHTML = '<div class="loading-container"><div class="loading-spinner"></div><span class="loading-text">Loading featured artists...</span></div>';
+
+            try {
+                const response = await fetch('/artists/featured');
+                if (response.ok) {
+                    const artists = await response.json();
+                    if (artists.length === 0) {
+                        grid.innerHTML = '<p>No featured artists available.</p>';
+                        return;
+                    }
+                    renderFeaturedArtists(artists);
+                } else {
+                    throw new Error('Server returned an error');
+                }
+            } catch (error) {
+                console.error('Error loading featured artists:', error);
+                grid.innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Failed to load featured artists. Please try again.
+                        <br>
+                        <button class="retry-btn" onclick="loadFeaturedArtists()">Retry</button>
+                    </div>
+                `;
+            }
+        }
+
+        function renderFeaturedArtists(artists) {
+            const grid = document.getElementById('featuredArtistsGrid');
+            grid.innerHTML = '';
+            artists.forEach(artist => {
+                const card = document.createElement('div');
+                card.className = 'artist-card';
+                card.innerHTML = `
+                    <img src="${artist.photo_url || 'img/profile icon.webp'}" alt="${artist.name}">
+                    <h3>${artist.name}</h3>
+                    <p>${artist.about ? artist.about.substring(0, 100) + '...' : 'Artist from Bantayan Island'}</p>
+                    <button class="artist-link" onclick="openAuthModalForArtist(${artist.artist_id})">View Profile</button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+
+        async function loadFeaturedGalleries() {
+            const grid = document.getElementById('featuredGalleriesGrid');
+
+            grid.innerHTML = '<div class="loading-container"><div class="loading-spinner"></div><span class="loading-text">Loading galleries...</span></div>';
+
+            try {
+                const response = await fetch('/galleries');
+                if (response.ok) {
+                    const galleries = await response.json();
+                    const featuredGalleries = galleries.filter(gallery => gallery.is_featured == 1);
+                    renderFeaturedGalleries(featuredGalleries);
+                } else {
+                    throw new Error('Server returned an error');
+                }
+            } catch (error) {
+                console.error('Error loading featured galleries:', error);
+                grid.innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Failed to load featured galleries. Please try again.
+                        <br>
+                        <button class="retry-btn" onclick="loadFeaturedGalleries()">Retry</button>
+                    </div>
+                `;
+            }
+        }
+
+        function renderFeaturedGalleries(galleries) {
+            const grid = document.getElementById('featuredGalleriesGrid');
+            grid.innerHTML = '';
+            galleries.forEach(gallery => {
+                const card = document.createElement('div');
+                card.className = 'gallery-card';
+                card.innerHTML = `
+                    <img src="${gallery.image_url || 'img/art1.jpg'}" alt="${gallery.name}">
+                    <h3>${gallery.name}</h3>
+                    <p>${gallery.about || 'Featured gallery.'}</p>
+                    <button class="gallery-link" onclick="openAuthModalForGallery()">Visit Gallery</button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        async function loadFeaturedMuseums() {
+            const grid = document.getElementById('featuredMuseumsGrid');
+            const selectedIds = JSON.parse(localStorage.getItem('featuredMuseums') || '[]');
+            if (selectedIds.length === 0) {
+                grid.innerHTML = '<p>No featured museums selected.</p>';
+                return;
+            }
+
+            grid.innerHTML = '<div class="loading-container"><div class="loading-spinner"></div><span class="loading-text">Loading museums...</span></div>';
+
+            try {
+                const response = await fetch('/museums');
+                if (response.ok) {
+                    const museums = await response.json();
+                    const selectedMuseums = museums.filter(museum => selectedIds.includes(museum.museum_id));
+                    renderFeaturedMuseums(selectedMuseums);
+                } else {
+                    throw new Error('Server returned an error');
+                }
+            } catch (error) {
+                console.error('Error loading featured museums:', error);
+                grid.innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Failed to load featured museums. Please try again.
+                        <br>
+                        <button class="retry-btn" onclick="loadFeaturedMuseums()">Retry</button>
+                    </div>
+                `;
+            }
+        }
+
+        function renderFeaturedMuseums(museums) {
+            const grid = document.getElementById('featuredMuseumsGrid');
+            grid.innerHTML = '';
+            museums.forEach(museum => {
+                const card = document.createElement('div');
+                card.className = 'museum-card';
+                card.innerHTML = `
+                    <img src="${museum.image_url || 'img/art1.jpg'}" alt="${museum.name}">
+                    <h3>${museum.name}</h3>
+                    <p>${museum.about || 'Featured museum.'}</p>
+                    <button class="museum-link" onclick="openAuthModalForMuseum()">Learn More</button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Artwork Modal Functions
+        function openArtworkModal(artwork) {
+            const modal = document.getElementById('artwork-modal');
+            const img = document.getElementById('artwork-modal-img');
+            const title = document.getElementById('artwork-modal-title');
+            const artist = document.getElementById('artwork-modal-artist');
+            const description = document.getElementById('artwork-modal-description');
+            const medium = document.getElementById('artwork-modal-medium');
+            const year = document.getElementById('artwork-modal-year');
+            const size = document.getElementById('artwork-modal-size');
+            const location = document.getElementById('artwork-modal-location');
+            const saveBtn = document.getElementById('artwork-modal-save-btn');
+            const viewFullBtn = document.getElementById('artwork-modal-view-full');
+
+            // Populate modal with artwork data
+            img.src = artwork.image_url || 'img/art1.jpg';
+            img.alt = artwork.title;
+            title.textContent = artwork.title;
+            artist.textContent = `By ${artwork.artist_name || 'Unknown Artist'}`;
+            description.innerHTML = artwork.description || 'No description available.';
+            medium.textContent = artwork.medium || 'N/A';
+            year.textContent = artwork.year || 'N/A';
+            size.textContent = artwork.size || 'N/A';
+            location.textContent = artwork.location || 'N/A';
+
+            // Set up save button
+            saveBtn.setAttribute('data-artwork-id', artwork.artwork_id);
+            updateArtworkSaveButton(saveBtn, artwork.artwork_id);
+
+            // Set up view full details button
+            viewFullBtn.href = `/artwork/${artwork.artwork_id}`;
+
+            // Show modal
+            modal.style.display = 'block';
+            modal.setAttribute('aria-hidden', 'false');
+            setTimeout(() => modal.classList.add('show'), 10);
+
+            // Focus management
+            const closeBtn = modal.querySelector('.close');
+            if (closeBtn) closeBtn.focus();
+
+            // Prevent background scrolling
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeArtworkModal() {
+            const modal = document.getElementById('artwork-modal');
+            modal.classList.remove('show');
+            modal.setAttribute('aria-hidden', 'true');
+            setTimeout(() => {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }, 300);
+        }
+
+        function updateArtworkSaveButton(btn, artworkId) {
+            const userId = localStorage.getItem('userId');
+            const userEmail = localStorage.getItem('userEmail');
+
+            if (userId && artworkId) {
+                // Check if user saved this artwork
+                fetch(`/saved-artworks/${userId}`)
+                    .then(response => response.json())
+                    .then(savedArtworks => {
+                        const isSaved = savedArtworks.some(artwork => artwork.artwork_id == artworkId);
+                        updateSaveButtonState(btn, isSaved);
+                    })
+                    .catch(err => {
+                        console.error('Error checking save status:', err);
+                        updateSaveButtonState(btn, false);
+                    });
+            } else {
+                updateSaveButtonState(btn, false);
+            }
+
+            btn.addEventListener('click', function() {
+                if (!userEmail) {
+                    closeArtworkModal();
+                    openModal();
+                    openTab('signup');
+                    return;
+                }
+
+                const wasSaved = this.classList.contains('saved');
+                const newSavedState = !wasSaved;
+
+                // Call save/unsave API
+                fetch('/save-artwork', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'user-id': userId
+                    },
+                    body: JSON.stringify({ artwork_id: artworkId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    updateSaveButtonState(this, data.saved);
+                })
+                .catch(err => {
+                    console.error('Save error:', err);
+                    // Revert on error
+                    updateSaveButtonState(this, wasSaved);
+                });
+            });
+        }
+
+        function updateSaveButtonState(btn, isSaved) {
+            const icon = btn.querySelector('i');
+            if (isSaved) {
+                btn.classList.add('saved');
+                btn.innerHTML = '<i class="fas fa-heart"></i> Saved';
+            } else {
+                btn.classList.remove('saved');
+                btn.innerHTML = '<i class="far fa-heart"></i> Save';
+            }
+        }
+
+        // Open auth modal for artist profile access or redirect if logged in
+        function openAuthModalForArtist(artistId) {
+            const userId = localStorage.getItem('userId');
+            if (userId) {
+                window.location.href = `/artist/${artistId}`;
+            } else {
+                openModal();
+                openTab('signup');
+            }
+        }
+
+        // Open auth modal for gallery access or redirect if logged in
+        function openAuthModalForGallery() {
+            const userId = localStorage.getItem('userId');
+            if (userId) {
+                window.location.href = 'galleries.html';
+            } else {
+                openModal();
+                openTab('signup');
+            }
+        }
+
+        // Open auth modal for museum access or redirect if logged in
+        function openAuthModalForMuseum() {
+            const userId = localStorage.getItem('userId');
+            if (userId) {
+                window.location.href = 'museums.html';
+            } else {
+                openModal();
+                openTab('signup');
+            }
+        }
+
+        // Load featured items on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFeaturedItems();
+
+
+            // Mobile menu toggle
+            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+
+            if (mobileMenuToggle && navMenu) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    navMenu.classList.toggle('show');
+                    const isOpen = navMenu.classList.contains('show');
+                    this.setAttribute('aria-expanded', isOpen);
+                    this.innerHTML = isOpen ? '&#10006;' : '&#9776;';
+                });
+
+                // Close mobile menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!navMenu.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+                        navMenu.classList.remove('show');
+                        mobileMenuToggle.setAttribute('aria-expanded', 'false');
+                        mobileMenuToggle.innerHTML = '&#9776;';
+                    }
+                });
+
+                // Close mobile menu when clicking on a link
+                navMenu.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', function() {
+                        navMenu.classList.remove('show');
+                        mobileMenuToggle.setAttribute('aria-expanded', 'false');
+                        mobileMenuToggle.innerHTML = '&#9776;';
+                    });
+                });
+            }
+
+            // Artwork modal event listeners
+            const artworkModal = document.getElementById('artwork-modal');
+            const artworkModalClose = artworkModal.querySelector('.close');
+
+            if (artworkModalClose) {
+                artworkModalClose.addEventListener('click', closeArtworkModal);
+            }
+
+            // Close artwork modal when clicking outside
+            window.addEventListener('click', function(e) {
+                if (e.target === artworkModal) {
+                    closeArtworkModal();
+                }
+            });
+
+            // Close artwork modal with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && artworkModal.style.display === 'block') {
+                    closeArtworkModal();
+                }
+            });
+        });
+    </script>
+    <script src="/socket.io/socket.io.js"></script>
+    
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BanArts - Browse Museums</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">
+                <img src="img/bantayanon artists logo.jpg" alt="BanArts Logo" class="logo-img">
+                BanArts
+            </div>
+            <div class="search-bar">
+                <input type="text" placeholder="Search artworks, artists...">
+                <button type="submit">Search</button>
+            </div>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="artists.html">Artists</a></li>
+                <li><a href="artworks.html">Artworks</a></li>
+                <li><a href="galleries.html">Galleries</a></li>
+                <li><a href="museums.html">Museums</a></li>
+                <li><a href="events.html">Events</a></li>
+                <li><a href="videos.html">Videos</a></li>
+                <li><a href="collections.html">Collections</a></li>
+            </ul>
+            <div class="auth-buttons">
+                <button class="login-link">Login</button>
+                <button class="signup-btn">Signup</button>
+            </div>
+        </nav>
+    </header>
+
+    <main style="margin-top: 80px;">
+        <section class="browse-museums-section">
+            <h2>Browse All Museums</h2>
+            <div id="browse-museums-grid" class="museums-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; margin: 2rem;">
+                <!-- Museums will be loaded dynamically -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About BanArts</h3>
+                <p>BanArts is the official platform of the Bantayanon Artists Group, dedicated to showcasing the rich artistic heritage and contemporary creativity of Bantayan Island, Philippines. We connect local artists with art enthusiasts worldwide.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@banarts.com<br>Phone: +63 123 456 7890<br>Address: Bantayan Island, Cebu, Philippines</p>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-icons">
+                    <a href="#" class="social-icon-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon-link" aria-label="Gmail"><i class="fas fa-envelope"></i></a>
+                    <a href="#" class="social-icon-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 BanArts. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Login/Signup Modal -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-tabs">
+                <button class="tab-btn active" onclick="openTab('login')">Login</button>
+                <button class="tab-btn" onclick="openTab('signup')">Signup</button>
+            </div>
+            <div id="login-tab" class="tab-content active">
+                <img src="img/bantayanon artists logo.jpg" alt="BanArts Logo" class="modal-logo">
+                <h2>Login</h2>
+                <form>
+                    <input type="email" placeholder="Email" required>
+                    <input type="password" placeholder="Password" required>
+                    <button type="submit">Login</button>
+                </form>
+                <div class="divider">or</div>
+                <div class="social-login">
+                    <a href="/auth/facebook" class="social-link facebook"><img src="img/facebook-logo.avif" alt="Facebook"></a>
+                    <a href="/auth/google" class="social-link google"><img src="img/google-icon-logo-png-transparent.png" alt="Google"></a>
+                    <a href="/auth/twitter" class="social-link apple"><img src="img/twitter-x.webp" alt="Twitter"></a>
+                </div>
+                <p class="legal-text">By clicking Sign Up or Continue with Email, Twitter, Google, or Facebook, you agree to BanArts Terms and Conditions and Privacy Policy. This site is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply.</p>
+            </div>
+            <div id="signup-tab" class="tab-content">
+                <img src="img/bantayanon artists logo.jpg" alt="BanArts Logo" class="modal-logo">
+                <h2>Signup</h2>
+                <form>
+                    <input type="text" placeholder="Full Name" required>
+                    <input type="email" placeholder="Email" required>
+                    <input type="password" placeholder="Password" required>
+                    <input type="password" placeholder="Confirm Password" required>
+                    <button type="submit">Signup</button>
+                </form>
+                <div class="divider">or</div>
+                <div class="social-login">
+                    <a href="/auth/facebook" class="social-link facebook"><img src="img/facebook-logo.avif" alt="Facebook"></a>
+                    <a href="/auth/google" class="social-link google"><img src="img/google-icon-logo-png-transparent.png" alt="Google"></a>
+                    <a href="/auth/twitter" class="social-link apple"><img src="img/twitter-x.webp" alt="Twitter"></a>
+                </div>
+                <p class="legal-text">By clicking Sign Up or Continue with Email, Twitter, Google, or Facebook, you agree to BanArts Terms and Conditions and Privacy Policy. This site is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Load browse museums dynamically
+        async function loadBrowseMuseums() {
+            try {
+                const response = await fetch('/browse-museums');
+                if (response.ok) {
+                    const museums = await response.json();
+                    renderBrowseMuseums(museums);
+                } else {
+                    console.error('Failed to load browse museums');
+                    // Fallback to static museums if API fails
+                    loadStaticBrowseMuseums();
+                }
+            } catch (error) {
+                console.error('Error loading browse museums:', error);
+                loadStaticBrowseMuseums();
+            }
+        }
+
+        function renderBrowseMuseums(museums) {
+            const grid = document.getElementById('browse-museums-grid');
+            grid.innerHTML = '';
+
+            if (museums.length === 0) {
+                grid.innerHTML = '<p>No museums available.</p>';
+                return;
+            }
+
+            museums.forEach(museum => {
+                const card = document.createElement('div');
+                card.className = 'museum-card';
+
+                card.innerHTML = `
+                    <img src="${museum.image_url || 'img/bantayan parish.jpg'}" alt="${museum.name}">
+                    <h3>${museum.name}</h3>
+                    <p>${museum.location || 'Bantayan Island'}</p>
+                    <a href="museums.html" class="museum-link">Visit Museum</a>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        function loadStaticBrowseMuseums() {
+            const grid = document.getElementById('browse-museums-grid');
+            grid.innerHTML = `
+                <div class="museum-card">
+                    <img src="img/bantayan parish.jpg" alt="Bantayan Parish Church Museum">
+                    <h3>Bantayan Parish Church Museum</h3>
+                    <p>Bantayan Island</p>
+                    <a href="museums.html" class="museum-link">Visit Museum</a>
+                </div>
+                <div class="museum-card">
+                    <img src="img/casa.jpg" alt="Casa de Antiquedades">
+                    <h3>Casa de Antiquedades</h3>
+                    <p>Bantayan Island</p>
+                    <a href="museums.html" class="museum-link">Visit Museum</a>
+                </div>
+            `;
+        }
+
+        // Load museums on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadBrowseMuseums();
+        });
+    </script>
+</body>
+</html>

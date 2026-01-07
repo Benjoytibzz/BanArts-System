@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BanArts - Modern Art Platform</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Collections Page Specific Styles */
+        .collections-hero {
+            background: url('img/bantayanon artists logo.jpg') center/cover no-repeat;
+            background-color: rgba(59, 59, 59, 0.7);
+            background-blend-mode: overlay;
+            color: white;
+            padding: 200px 20px;
+            text-align: center;
+            margin-bottom: 40px;
+            margin-top: -80px;
+            position: relative;
+        }
+
+        .collections-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .collections-hero h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+            color: rgb(209, 203, 203) !important;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: white !important;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: white !important;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7);
+        }
+
+        .collections-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .collections-header h2 {
+            margin: 0;
+            color: #333;
+            font-size: 2rem;
+        }
+
+        .collections-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .collection-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .collection-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .collection-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .collection-card:hover .collection-image {
+            transform: scale(1.05);
+        }
+
+        .collection-content {
+            padding: 20px;
+        }
+
+        .collection-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .collector-name {
+            color: #007bff;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .collection-description {
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .collection-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            color: #888;
+        }
+
+        .collection-date {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .collection-date::before {
+            content: "📅";
+        }
+
+        .loading-message {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .buying-guide {
+            background: #f8f9fa;
+            padding: 60px 20px;
+            margin-top: 60px;
+        }
+
+        .guide-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .buying-guide h2 {
+            text-align: center;
+            margin-bottom: 50px;
+            color: #333;
+            font-size: 2.5rem;
+        }
+
+        .guide-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .guide-step {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .guide-step:hover {
+            transform: translateY(-3px);
+        }
+
+        .step-number {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #2f51e9 0%, #2c1ee6 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 0 auto 20px;
+        }
+
+        .guide-step h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .guide-step p {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .collections-hero h1 {
+                font-size: 2rem;
+            }
+
+            .collections-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .collections-stats {
+                width: 100%;
+                justify-content: space-around;
+            }
+
+            .collections-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .guide-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-container {
+                flex-direction: column;
+            }
+
+            .search-input, .search-btn {
+                width: 100%;
+            }
+        }
+    </style>
+    </head>
+<body>
+     <header>
+        <nav role="navigation" aria-label="Main navigation">
+            <div class="logo">
+                <img src="img/bantayanon artists logo.jpg" alt="BanArts Logo" class="logo-img">
+                BanArts
+            </div>
+            <div class="nav-menu">
+                <div class="search-bar">
+                    <label for="search-input" class="sr-only">Search artworks, artists, galleries...</label>
+                    <input type="text" id="search-input" placeholder="Search artworks, artists..." aria-describedby="search-help">
+                    <button type="submit" aria-label="Submit search">Search</button>
+                    <div id="search-help" class="sr-only">Type to search for artworks, artists, or galleries</div>
+                </div>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="artists.html">Artists</a></li>
+                    <li><a href="artworks.html">Artworks</a></li>
+                    <li><a href="galleries.html">Galleries</a></li>
+                    <li><a href="museums.html">Museums</a></li>
+                    <li><a href="events.html">Events</a></li>
+                    <li><a href="videos.html">Videos</a></li>
+                    <li><a href="collections.html">Collections</a></li>
+                </ul>
+                <div class="auth-buttons">
+                    <button type="button" class="login-link">Login</button>
+                    <button type="button" class="signup-btn">Signup</button>
+                </div>
+            </div>
+            <div class="mobile-header-icons">
+                <div class="notification-container"></div>
+                <div class="profile-dropdown-container mobile-icon">
+                    <a href="profile.html" class="profile-icon" id="profile-icon-link">
+                        <div class="nav-profile-avatar" id="nav-profile-avatar"></div>
+                    </a>
+                    <div class="profile-dropdown">
+                        <div class="profile-dropdown-header">
+                            <img src="img/profile icon.webp" alt="Profile" class="dropdown-profile-icon" id="dropdown-profile-icon">
+                            <div class="dropdown-profile-name">John Doe</div>
+                            <a href="profile.html" class="view-profile-btn">View Profile</a>
+                        </div>
+                        <div class="profile-dropdown-item">My Collection</div>
+                        <a href="/profile.html#uploads" class="profile-dropdown-item">Artworks</a>
+                        <div class="dropdown-divider"></div>
+                        <div class="profile-dropdown-item">Favorites</div>
+                        <a href="/profile.html#saved" class="profile-dropdown-item">Saves</a>
+                        <a href="/profile.html#followed" class="profile-dropdown-item">Follows</a>
+                        <div class="dropdown-divider"></div>
+                        <div class="profile-dropdown-item settings-header">Settings</div>
+                        <a href="settings.html" class="profile-dropdown-item edit-profile-btn">Edit Profile</a>
+                        <a href="#" class="profile-dropdown-item logout-item">Logout</a>
+                    </div>
+                </div>
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu">
+                    &#9776;
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main style="margin-top: 80px;">
+        <!-- Hero Section -->
+        <section class="collections-hero">
+            <div class="hero-content">
+                <h1>Art Collections</h1>
+                <p class="hero-subtitle">Discover Passionate Art Collectors & Their Treasures</p>
+                <p class="hero-description">At BanArts, we honor and celebrate the essential role that art collectors play in sustaining the creative heartbeat of Bantayan Island. Collecting art is more than acquiring a piece it is an act of cultural preservation, a commitment to supporting local talent, and a meaningful way of keeping our shared stories alive. Every stroke, color, and concept presented by Bantayanon artists reflects our island’s identity, traditions, and evolving artistic expressions. When you choose to bring these works into your collection, you become a guardian of these narratives.
+
+We recognize that art collectors are visionaries in their own right. You see the value in emerging voices, the potential in evolving styles, and the timeless essence present in every artwork. Your dedication encourages artists to push boundaries, experiment bravely, and continue creating with passion and purpose. Through your interest and support, our local artists gain the confidence and opportunity to share their work with a broader audience both within and beyond the island.
+
+By welcoming Bantayanon artworks into your personal or professional collection, you help cultivate a thriving creative community. You contribute to the livelihood of artists, inspire future generations, and strengthen the cultural landscape of Bantayan Island. Your involvement transforms each artwork into a living part of our heritage, ensuring that the stories, emotions, and visions captured by our artists endure for years to come.
+
+We extend our heartfelt gratitude to every collector who believes in the beauty and significance of Bantayanon art. Your commitment fuels our mission, uplifts our artists, and keeps the spirit of creativity flourishing.</p>
+            </div>
+        </section>
+
+        <!-- Collections Section -->
+        <section class="collections">
+            <div class="collections-header">
+                <h2>Featured Collections</h2>
+            </div>
+
+            <div class="collections-grid">
+                <!-- Collections will be loaded dynamically -->
+            </div>
+
+            <div class="loading-message" id="loading-collections">
+                <div class="loading-spinner"></div>
+                <p>Loading collections...</p>
+            </div>
+
+            <div class="no-collections" id="no-collections" style="display: none;">
+                <div class="empty-state">
+                    <h3>No Collections Found</h3>
+                    <p>Collections will be displayed here once they are added to the system.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Buying Guide Section -->
+        <section class="buying-guide">
+            <div class="guide-container">
+                <h2>How to Buy Art in BanArts – Beginner's Guide</h2>
+                <div class="guide-grid">
+                    <div class="guide-step">
+                        <div class="step-number">1</div>
+                        <h3>Explore the Collection</h3>
+                        <p>Browse paintings, sculptures, photography, and crafts, with artist details and descriptions.</p>
+                    </div>
+                    <div class="guide-step">
+                        <div class="step-number">2</div>
+                        <h3>Learn About the Artist</h3>
+                        <p>Read their profile to understand their style and story.</p>
+                    </div>
+                    <div class="guide-step">
+                        <div class="step-number">3</div>
+                        <h3>Check Artwork Details</h3>
+                        <p>Review size, materials, framing, price, and availability.</p>
+                    </div>
+                    <div class="guide-step">
+                        <div class="step-number">4</div>
+                        <h3>Contact & Inquire</h3>
+                        <p>Use "Message Artist" to ask questions or reserve a piece.</p>
+                    </div>
+                    <div class="guide-step">
+                        <div class="step-number">5</div>
+                        <h3>Secure Payment</h3>
+                        <p>Pay via GCash, bank transfer, or cash on pickup.</p>
+                    </div>
+                    <div class="guide-step">
+                        <div class="step-number">6</div>
+                        <h3>Delivery or Pickup</h3>
+                        <p>Choose local pickup, delivery, or shipping.</p>
+                    </div>
+                    <div class="guide-step">
+                        <div class="step-number">7</div>
+                        <h3>Receive Certificate</h3>
+                        <p>Get a signed Certificate of Authenticity with your artwork.</p>
+                    </div>
+                    <div class="guide-step">
+                        <div class="step-number">8</div>
+                        <h3>Enjoy & Display</h3>
+                        <p>Showcase your art and support local Bantayanon artists!</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About BanArts</h3>
+                <p>BanArts is the official platform of the Bantayanon Artists Group, dedicated to showcasing the rich artistic heritage and contemporary creativity of Bantayan Island, Philippines. We connect local artists with art enthusiasts worldwide.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@banarts.com<br>Phone: +63 123 456 7890<br>Address: Bantayan Island, Cebu, Philippines</p>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-icons">
+                    <a href="#" class="social-icon-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon-link" aria-label="Gmail"><i class="fas fa-envelope"></i></a>
+                    <a href="#" class="social-icon-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2023 BanArts. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Login/Signup Modal -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-tabs">
+                <button class="tab-btn active" onclick="openTab('login')">Login</button>
+                <button class="tab-btn" onclick="openTab('signup')">Signup</button>
+            </div>
+            <div id="login-tab" class="tab-content active">
+                <img src="img/bantayanon artists logo.jpg" alt="BanArts Logo" class="modal-logo">
+                <h2>Login</h2>
+                <form id="login-form">
+                    <input type="email" id="login-email" placeholder="Email" required>
+                    <input type="password" id="login-password" placeholder="Password" required>
+                    <button type="submit">Login</button>
+                    <div id="login-error" style="color: red; margin-top: 1rem; display: none;"></div>
+                </form>
+                <div class="divider">or</div>
+                <div class="social-login">
+                    <a href="/auth/facebook" class="social-link facebook"><img src="img/facebook-logo.avif" alt="Facebook"></a>
+                    <a href="/auth/google" class="social-link google"><img src="img/google-icon-logo-png-transparent.png" alt="Google"></a>
+                    <a href="/auth/twitter" class="social-link apple"><img src="img/twitter-x.webp" alt="Twitter"></a>
+                </div>
+                <p class="legal-text">By clicking Sign Up or Continue with Email, Twitter, Google, or Facebook, you agree to BanArts Terms and Conditions and Privacy Policy. This site is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply.</p>
+            </div>
+            <div id="signup-tab" class="tab-content">
+                <img src="img/bantayanon artists logo.jpg" alt="BanArts Logo" class="modal-logo">
+                <h2>Signup</h2>
+                <form id="signup-form">
+                    <input type="text" id="signup-name" placeholder="Full Name" required>
+                    <input type="email" id="signup-email" placeholder="Email" required>
+                    <input type="password" id="signup-password" placeholder="Password" required>
+                    <input type="password" id="signup-confirm-password" placeholder="Confirm Password" required>
+                    <button type="submit">Signup</button>
+                    <div id="signup-error" style="color: red; margin-top: 1rem; display: none;"></div>
+                </form>
+                <div class="divider">or</div>
+                <div class="social-login">
+                    <a href="/auth/facebook" class="social-link facebook"><img src="img/facebook-logo.avif" alt="Facebook"></a>
+                    <a href="/auth/google" class="social-link google"><img src="img/google-icon-logo-png-transparent.png" alt="Google"></a>
+                    <a href="/auth/twitter" class="social-link apple"><img src="img/twitter-x.webp" alt="Twitter"></a>
+                </div>
+                <p class="legal-text">By clicking Sign Up or Continue with Email, Twitter, Google, or Facebook, you agree to BanArts Terms and Conditions and Privacy Policy. This site is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCollections();
+
+            // Mobile menu toggle
+            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+            const navMenu = document.querySelector('.nav-menu');
+
+            if (mobileMenuToggle && navMenu) {
+                mobileMenuToggle.addEventListener('click', function() {
+                    navMenu.classList.toggle('show');
+                    const isOpen = navMenu.classList.contains('show');
+                    this.setAttribute('aria-expanded', isOpen);
+                    this.innerHTML = isOpen ? '&#10006;' : '&#9776;';
+                });
+
+                // Close mobile menu when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!navMenu.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+                        navMenu.classList.remove('show');
+                        mobileMenuToggle.setAttribute('aria-expanded', 'false');
+                        mobileMenuToggle.innerHTML = '&#9776;';
+                    }
+                });
+
+                // Close mobile menu when clicking on a link
+                navMenu.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', function() {
+                        navMenu.classList.remove('show');
+                        mobileMenuToggle.setAttribute('aria-expanded', 'false');
+                        mobileMenuToggle.innerHTML = '&#9776;';
+                    });
+                });
+            }
+        });
+
+        function loadCollections() {
+            const loadingElement = document.getElementById('loading-collections');
+            const noCollectionsElement = document.getElementById('no-collections');
+            const container = document.querySelector('.collections-grid');
+
+            loadingElement.style.display = 'block';
+            noCollectionsElement.style.display = 'none';
+            container.innerHTML = '';
+
+            fetch('/collections')
+                .then(response => response.json())
+                .then(collections => {
+                    loadingElement.style.display = 'none';
+
+                    if (collections.length > 0) {
+                        displayCollections(collections);
+                    } else {
+                        noCollectionsElement.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading collections:', error);
+                    loadingElement.style.display = 'none';
+                    container.innerHTML = '<div class="error-message"><p>Error loading collections. Please try again later.</p></div>';
+                });
+        }
+
+        function displayCollections(collections) {
+            const container = document.querySelector('.collections-grid');
+
+            container.innerHTML = collections.map(collection => `
+                <div class="collection-card">
+                    <img src="${collection.image_url || 'img/art1.jpg'}" alt="${collection.name}" class="collection-image">
+                    <div class="collection-content">
+                        <h3 class="collection-name">${collection.name}</h3>
+                        <p class="collector-name">${collection.collector_name || 'Anonymous Collector'}</p>
+                        <p class="collection-description">${collection.about || 'No description available.'}</p>
+                        <div class="collection-meta">
+                            <span class="collection-date">${formatDate(collection.created_at)}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'Recently added';
+
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 1) return 'Added today';
+            if (diffDays < 7) return `Added ${diffDays} days ago`;
+            if (diffDays < 30) return `Added ${Math.floor(diffDays / 7)} weeks ago`;
+
+            return date.toLocaleDateString();
+        }
+    </script>
+</body>
+</html>
