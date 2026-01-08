@@ -4081,26 +4081,43 @@ app.get('/artwork/:id', (req, res) => {
         });
 
         function openArtworkModal(artworkId) {
+            console.log('Opening artwork modal for ID:', artworkId);
             fetch('/gallery-featured-artworks/' + artworkId)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to fetch artwork');
+                    return response.json();
+                })
                 .then(artwork => {
+                    console.log('Loaded artwork:', artwork);
                     document.getElementById('artwork-modal-img').src = artwork.image_url || '/img/art1.jpg';
                     document.getElementById('artwork-modal-title').textContent = artwork.title;
                     document.getElementById('artwork-modal-description').textContent = artwork.description || 'No description available.';
                     document.getElementById('artwork-modal-price').textContent = artwork.price || 'N/A';
+                    
                     const modal = document.getElementById('artwork-modal');
-                    if (modal) modal.classList.add('show');
-                    document.body.style.overflow = 'hidden';
-                    document.documentElement.style.overflow = 'hidden';
+                    if (modal) {
+                        modal.style.display = 'flex';
+                        setTimeout(() => modal.classList.add('show'), 10);
+                        document.body.style.overflow = 'hidden';
+                        document.documentElement.style.overflow = 'hidden';
+                    }
                 })
-                .catch(error => console.error('Error loading artwork:', error));
+                .catch(error => {
+                    console.error('Error loading artwork:', error);
+                    alert('Error loading artwork details. Please try again.');
+                });
         }
 
         function closeArtworkModal() {
             const modal = document.getElementById('artwork-modal');
-            if (modal) modal.classList.remove('show');
-            document.body.style.overflow = '';
-            document.documentElement.style.overflow = '';
+            if (modal) {
+                modal.classList.remove('show');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                    document.body.style.overflow = '';
+                    document.documentElement.style.overflow = '';
+                }, 300);
+            }
         }
 
         window.addEventListener('click', function(e) {

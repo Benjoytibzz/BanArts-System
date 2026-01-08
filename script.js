@@ -1529,8 +1529,8 @@ function openArtifactModal(artifactId) {
             document.getElementById('artifact-modal-details').textContent = artifact.details || 'No description available.';
 
             modal.style.display = 'flex';
-            modal.style.justifyContent = 'center';
-            modal.style.alignItems = 'center';
+            setTimeout(() => modal.classList.add('show'), 10);
+            document.body.style.overflow = 'hidden';
             modal.setAttribute('aria-hidden', 'false');
             console.log('Modal displayed');
         })
@@ -1543,7 +1543,11 @@ function openArtifactModal(artifactId) {
 function closeArtifactModal() {
     const modal = document.getElementById('artifact-modal');
     if (modal) {
-        modal.style.display = 'none';
+        modal.classList.remove('show');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }, 300);
         modal.setAttribute('aria-hidden', 'true');
     }
 }
