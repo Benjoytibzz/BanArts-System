@@ -1552,8 +1552,8 @@ function closeArtifactModal() {
     if (modal) {
         modal.style.display = 'none';
         modal.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
-        document.documentElement.style.overflow = '';
+        document.body.style.overflow = 'auto';
+        document.documentElement.style.overflow = 'auto';
         document.body.style.position = '';
         document.body.style.width = '';
         window.scrollTo(0, window.scrollY);

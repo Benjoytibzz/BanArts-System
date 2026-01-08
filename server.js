@@ -3997,10 +3997,12 @@ app.get('/artwork/:id', (req, res) => {
         // Modal functionality for dynamic gallery profile pages
         function openModal() {
             document.getElementById('auth-modal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
         }
 
         function closeModal() {
             document.getElementById('auth-modal').style.display = 'none';
+            document.body.style.overflow = 'auto';
         }
 
         function openTab(tabName) {
@@ -4075,7 +4077,7 @@ app.get('/artwork/:id', (req, res) => {
         });
 
         function openArtworkModal(artworkId) {
-            fetch(\`/gallery-featured-artworks/\${artworkId}\`)
+            fetch(`/gallery-featured-artworks/${artworkId}`)
                 .then(response => response.json())
                 .then(artwork => {
                     document.getElementById('artwork-modal-img').src = artwork.image_url || '/img/art1.jpg';
@@ -4083,12 +4085,14 @@ app.get('/artwork/:id', (req, res) => {
                     document.getElementById('artwork-modal-description').textContent = artwork.description || 'No description available.';
                     document.getElementById('artwork-modal-price').textContent = artwork.price || 'N/A';
                     document.getElementById('artwork-modal').style.display = 'block';
+                    document.body.style.overflow = 'hidden';
                 })
                 .catch(error => console.error('Error loading artwork:', error));
         }
 
         function closeArtworkModal() {
             document.getElementById('artwork-modal').style.display = 'none';
+            document.body.style.overflow = 'auto';
         }
 
         window.addEventListener('click', function(e) {
