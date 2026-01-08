@@ -1175,7 +1175,8 @@ function openModal(type, id = null) {
         form.enctype = 'multipart/form-data';
     }
 
-    modal.style.display = 'block';
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
 
     // Load artists for artwork form, galleries for gallery-featured form, artworks and artists for events, and then load item data if editing
     if (type === 'artwork') {
@@ -1202,7 +1203,9 @@ function openModal(type, id = null) {
 }
 
 function closeModal() {
-    document.getElementById('admin-modal').style.display = 'none';
+    const modal = document.getElementById('admin-modal');
+    if (modal) modal.classList.remove('show');
+    document.body.style.overflow = '';
     const form = document.getElementById('admin-form');
     form.reset();
     // Remove any preview images
@@ -1775,7 +1778,11 @@ function editCollection(id) {
     // Show modal first
     document.getElementById('collection-modal-title').textContent = 'Edit Collection';
     document.getElementById('collection-submit-text').textContent = 'Update Collection';
-    document.getElementById('collection-modal').style.display = 'block';
+    const modal = document.getElementById('collection-modal');
+    if (modal) {
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
 
     // Reset form
     const form = document.getElementById('collection-form');
@@ -2180,25 +2187,36 @@ function openArtifactModal() {
 
     // Load museums for dropdown
     loadMuseumsForDropdown().then(() => {
-        modal.style.display = 'block';
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
     });
 }
 
 function closeArtifactModal() {
-    document.getElementById('artifact-modal').style.display = 'none';
-    document.getElementById('artifact-form').reset();
+    const modal = document.getElementById('artifact-modal');
+    if (modal) modal.classList.remove('show');
+    document.body.style.overflow = '';
+    const form = document.getElementById('artifact-form');
+    if (form) form.reset();
 }
 
 // Collection modal functions
 function openCollectionModal() {
     document.getElementById('collection-modal-title').textContent = 'Add New Collection';
     document.getElementById('collection-submit-text').textContent = 'Add Collection';
-    document.getElementById('collection-modal').style.display = 'block';
+    const modal = document.getElementById('collection-modal');
+    if (modal) {
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
 }
 
 function closeCollectionModal() {
-    document.getElementById('collection-modal').style.display = 'none';
-    document.getElementById('collection-form').reset();
+    const modal = document.getElementById('collection-modal');
+    if (modal) modal.classList.remove('show');
+    document.body.style.overflow = '';
+    const form = document.getElementById('collection-form');
+    if (form) form.reset();
     // Clear preview
     const preview = document.getElementById('collection-collector-preview');
     if (preview) preview.innerHTML = '';
@@ -2255,7 +2273,11 @@ function editArtifact(id) {
                     }
                 });
                 form.setAttribute('data-id', id);
-                document.getElementById('artifact-modal').style.display = 'block';
+                const modal = document.getElementById('artifact-modal');
+                if (modal) {
+                    modal.classList.add('show');
+                    document.body.style.overflow = 'hidden';
+                }
             });
         })
         .catch(error => console.error('Error loading artifact:', error));

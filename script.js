@@ -315,14 +315,10 @@ document.querySelectorAll('.artwork-card img').forEach(img => {
 // Modal functionality
 function openModal() {
     const modal = document.getElementById('auth-modal');
-    modal.style.display = 'flex';
-    setTimeout(() => {
-        modal.style.opacity = '1';
-        modal.style.pointerEvents = 'auto';
-    }, 10);
+    // We add 'show' immediately or with a small delay
+    modal.classList.add('show');
     modal.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden'; // Prevent background scrolling
-    document.documentElement.style.overflow = 'hidden';
+    document.body.style.overflow = 'hidden';
 
     // Focus management
     const firstFocusableElement = modal.querySelector('.close') || modal.querySelector('.tab-btn');
@@ -333,27 +329,17 @@ function openModal() {
 
 function closeModal() {
     const modal = document.getElementById('auth-modal');
-    modal.style.opacity = '0';
-    modal.style.pointerEvents = 'none';
+    modal.classList.remove('show');
     modal.setAttribute('aria-hidden', 'true');
-    setTimeout(() => {
-        modal.style.display = 'none';
-        document.body.style.overflow = ''; // Restore scrolling
-        document.documentElement.style.overflow = '';
-    }, 300); // Match animation duration
+    document.body.style.overflow = '';
 }
 
 function openForgotPasswordModal() {
     closeModal();
     const modal = document.getElementById('forgot-password-modal');
-    modal.style.display = 'flex';
-    setTimeout(() => {
-        modal.style.opacity = '1';
-        modal.style.pointerEvents = 'auto';
-    }, 10);
+    modal.classList.add('show');
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
-    document.documentElement.style.overflow = 'hidden';
     
     // Ensure the tab content is visible
     const forgotTab = document.getElementById('forgot-password-tab');
@@ -365,14 +351,9 @@ function openForgotPasswordModal() {
 
 function closeForgotPasswordModal() {
     const modal = document.getElementById('forgot-password-modal');
-    modal.style.opacity = '0';
-    modal.style.pointerEvents = 'none';
+    modal.classList.remove('show');
     modal.setAttribute('aria-hidden', 'true');
-    setTimeout(() => {
-        modal.style.display = 'none';
-        document.body.style.overflow = '';
-        document.documentElement.style.overflow = '';
-    }, 300);
+    document.body.style.overflow = '';
 }
 
 function openTab(tabName) {
@@ -513,18 +494,28 @@ if (forgotPasswordForm) forgotPasswordForm.addEventListener('submit', async func
 
 // Close modal when clicking outside
 window.addEventListener('click', function(e) {
-    const modal = document.getElementById('auth-modal');
-    if (e.target === modal) {
+    const authModal = document.getElementById('auth-modal');
+    const forgotPasswordModal = document.getElementById('forgot-password-modal');
+    
+    if (e.target === authModal) {
         closeModal();
+    }
+    if (e.target === forgotPasswordModal) {
+        closeForgotPasswordModal();
     }
 });
 
 // Close modal with Escape key
 document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape') {
-        const modal = document.getElementById('auth-modal');
-        if (modal.style.display === 'block') {
+        const authModal = document.getElementById('auth-modal');
+        const forgotPasswordModal = document.getElementById('forgot-password-modal');
+        
+        if (authModal && authModal.classList.contains('show')) {
             closeModal();
+        }
+        if (forgotPasswordModal && forgotPasswordModal.classList.contains('show')) {
+            closeForgotPasswordModal();
         }
     }
 });
@@ -1541,8 +1532,6 @@ function openArtifactModal(artifactId) {
             modal.style.justifyContent = 'center';
             modal.style.alignItems = 'center';
             modal.setAttribute('aria-hidden', 'false');
-            document.body.style.overflow = 'hidden';
-            document.documentElement.style.overflow = 'hidden';
             console.log('Modal displayed');
         })
         .catch(error => {
@@ -1556,11 +1545,6 @@ function closeArtifactModal() {
     if (modal) {
         modal.style.display = 'none';
         modal.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
-        document.documentElement.style.overflow = '';
-        document.body.style.position = '';
-        document.body.style.width = '';
-        window.scrollTo(0, window.scrollY);
     }
 }
 

@@ -3996,13 +3996,15 @@ app.get('/artwork/:id', (req, res) => {
     <script>
         // Modal functionality for dynamic gallery profile pages
         function openModal() {
-            document.getElementById('auth-modal').style.display = 'block';
+            const modal = document.getElementById('auth-modal');
+            if (modal) modal.classList.add('show');
             document.body.style.overflow = 'hidden';
             document.documentElement.style.overflow = 'hidden';
         }
 
         function closeModal() {
-            document.getElementById('auth-modal').style.display = 'none';
+            const modal = document.getElementById('auth-modal');
+            if (modal) modal.classList.remove('show');
             document.body.style.overflow = '';
             document.documentElement.style.overflow = '';
         }
@@ -4079,14 +4081,15 @@ app.get('/artwork/:id', (req, res) => {
         });
 
         function openArtworkModal(artworkId) {
-            fetch(`/gallery-featured-artworks/${artworkId}`)
+            fetch('/gallery-featured-artworks/' + artworkId)
                 .then(response => response.json())
                 .then(artwork => {
                     document.getElementById('artwork-modal-img').src = artwork.image_url || '/img/art1.jpg';
                     document.getElementById('artwork-modal-title').textContent = artwork.title;
                     document.getElementById('artwork-modal-description').textContent = artwork.description || 'No description available.';
                     document.getElementById('artwork-modal-price').textContent = artwork.price || 'N/A';
-                    document.getElementById('artwork-modal').style.display = 'block';
+                    const modal = document.getElementById('artwork-modal');
+                    if (modal) modal.classList.add('show');
                     document.body.style.overflow = 'hidden';
                     document.documentElement.style.overflow = 'hidden';
                 })
@@ -4094,7 +4097,8 @@ app.get('/artwork/:id', (req, res) => {
         }
 
         function closeArtworkModal() {
-            document.getElementById('artwork-modal').style.display = 'none';
+            const modal = document.getElementById('artwork-modal');
+            if (modal) modal.classList.remove('show');
             document.body.style.overflow = '';
             document.documentElement.style.overflow = '';
         }
