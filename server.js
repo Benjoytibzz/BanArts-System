@@ -18,11 +18,13 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
-console.log('Cloudinary Configured:', {
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY ? '***' + process.env.CLOUDINARY_API_KEY.slice(-4) : 'MISSING',
-  api_secret: process.env.CLOUDINARY_API_SECRET ? 'PRESENT' : 'MISSING'
-});
+console.log('--- ENVIRONMENT CHECK ---');
+console.log('PORT:', process.env.PORT);
+console.log('NODE_ENV:', process.env.NODE_ENV);
+console.log('Cloudinary:', process.env.CLOUDINARY_CLOUD_NAME ? 'Configured' : 'MISSING');
+console.log('Google Callback:', process.env.GOOGLE_CALLBACK_URL || 'NOT SET');
+console.log('Facebook Callback:', process.env.FACEBOOK_CALLBACK_URL || 'NOT SET');
+console.log('-------------------------');
 
 process.on('uncaughtException', (err) => {
   console.error('Uncaught Exception:', err);
@@ -1188,6 +1190,45 @@ app.post('/change-password', (req, res) => {
           return res.status(500).json({ success: false, message: 'Server error' });
         }
         res.json({ success: true, message: 'Password changed successfully' });
+      }
+    );
+  });
+});
+
+// Forgot password / Reset password
+app.post('/auth/forgot-password', (req, res) => {
+  const { email, newPassword } = req.body;
+
+  if (!email || !newPassword) {
+    return res.status(400).json({ success: false, message: 'Email and new password are required' });
+  }
+
+  db.get('SELECT * FROM Users WHERE email = ?', [email], (err, user) => {
+    if (err) {
+      console.error('Forgot password error:', err);
+      return res.status(500).json({ success: false, message: 'Server error' });
+    }
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
+    }
+
+    if (user.oauth_provider) {
+      return res.status(403).json({ 
+        success: false, 
+        message: `Cannot change password for accounts registered with ${user.oauth_provider}.` 
+      });
+    }
+
+    db.run(
+      'UPDATE Users SET password = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?',
+      [newPassword, user.user_id],
+      function(err) {
+        if (err) {
+          console.error('Reset password update error:', err);
+          return res.status(500).json({ success: false, message: 'Server error' });
+        }
+        res.json({ success: true, message: 'Password has been reset successfully' });
       }
     );
   });

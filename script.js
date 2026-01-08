@@ -341,6 +341,29 @@ function closeModal() {
     }, 300); // Match animation duration
 }
 
+function openForgotPasswordModal() {
+    closeModal();
+    const modal = document.getElementById('forgot-password-modal');
+    modal.style.display = 'flex';
+    setTimeout(() => {
+        modal.style.opacity = '1';
+        modal.style.pointerEvents = 'auto';
+    }, 10);
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeForgotPasswordModal() {
+    const modal = document.getElementById('forgot-password-modal');
+    modal.style.opacity = '0';
+    modal.style.pointerEvents = 'none';
+    modal.setAttribute('aria-hidden', 'true');
+    setTimeout(() => {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }, 300);
+}
+
 function openTab(tabName) {
     const tabs = document.querySelectorAll('.tab-content');
     const buttons = document.querySelectorAll('.tab-btn');
@@ -391,6 +414,10 @@ function togglePasswordVisibility(button) {
 const loginBtn = document.querySelector('.login-link');
 const signupBtn = document.querySelector('.signup-btn');
 const closeBtn = document.querySelector('.close');
+const forgotPasswordLink = document.getElementById('forgot-password-link');
+const backToLoginLink = document.getElementById('back-to-login-link');
+const closeForgotPasswordBtn = document.querySelector('.close-forgot-password');
+const forgotPasswordForm = document.getElementById('forgot-password-form');
 
 if (loginBtn) loginBtn.addEventListener('click', function(e) {
     e.preventDefault();
@@ -406,12 +433,67 @@ if (signupBtn) signupBtn.addEventListener('click', function(e) {
 
 if (closeBtn) closeBtn.addEventListener('click', closeModal);
 
-// Password visibility toggle
-document.addEventListener('click', function(e) {
-    if (e.target.closest('.password-toggle')) {
-        e.preventDefault();
-        const button = e.target.closest('.password-toggle');
-        togglePasswordVisibility(button);
+if (forgotPasswordLink) forgotPasswordLink.addEventListener('click', function(e) {
+    e.preventDefault();
+    openForgotPasswordModal();
+});
+
+if (backToLoginLink) backToLoginLink.addEventListener('click', function(e) {
+    e.preventDefault();
+    closeForgotPasswordModal();
+    openModal();
+    openTab('login');
+});
+
+if (closeForgotPasswordBtn) closeForgotPasswordBtn.addEventListener('click', closeForgotPasswordModal);
+
+if (forgotPasswordForm) forgotPasswordForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const email = document.getElementById('reset-email').value;
+    const newPassword = document.getElementById('reset-new-password').value;
+    const confirmPassword = document.getElementById('reset-confirm-password').value;
+    const errorDiv = document.getElementById('forgot-password-error');
+    const successDiv = document.getElementById('forgot-password-success');
+
+    errorDiv.style.display = 'none';
+    successDiv.style.display = 'none';
+
+    if (newPassword !== confirmPassword) {
+        errorDiv.textContent = 'Passwords do not match.';
+        errorDiv.style.display = 'block';
+        return;
+    }
+
+    if (newPassword.length < 4) {
+        errorDiv.textContent = 'Password must be at least 4 characters.';
+        errorDiv.style.display = 'block';
+        return;
+    }
+
+    try {
+        const response = await fetch('/auth/forgot-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, newPassword })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            successDiv.textContent = data.message || 'Password changed successfully!';
+            successDiv.style.display = 'block';
+            forgotPasswordForm.reset();
+            setTimeout(() => {
+                closeForgotPasswordModal();
+                openModal();
+                openTab('login');
+            }, 2000);
+        } else {
+            errorDiv.textContent = data.error || data.message || 'Something went wrong. Please try again.';
+            errorDiv.style.display = 'block';
+        }
+    } catch (error) {
+        errorDiv.textContent = 'Network error. Please try again.';
+        errorDiv.style.display = 'block';
     }
 });
 

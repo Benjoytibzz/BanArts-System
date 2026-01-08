@@ -1992,6 +1992,41 @@ footer {
     border-radius: 8px;
 }
 
+.forgot-password-container {
+    text-align: right;
+    margin-bottom: 1rem;
+    margin-top: -0.5rem;
+}
+
+#forgot-password-link {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s;
+}
+
+#forgot-password-link:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
+.back-to-login {
+    text-align: center;
+    margin-top: 1.5rem;
+}
+
+#back-to-login-link {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: color 0.3s;
+}
+
+#back-to-login-link:hover {
+    color: #0056b3;
+    text-decoration: underline;
+}
+
 .legal-text {
     font-size: 11px;
     color: #888;
@@ -2029,26 +2064,25 @@ input[type="password"] {
 }
 
 input[type="password"]::-webkit-credentials-auto-fill-button,
-input[type="password"]::-webkit-reveal {
+input[type="password"]::-webkit-reveal,
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
     display: none !important;
     visibility: hidden !important;
     pointer-events: none !important;
 }
 
-.password-field input[type="password"] {
-    -webkit-text-security: disc;
-}
-
 .password-field .password-toggle {
     position: absolute;
     right: 12px;
-    background: none;
-    border: none;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
     cursor: pointer;
     color: #666;
     font-size: 18px;
     padding: 5px;
-    transition: color 0.3s ease;
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2056,15 +2090,24 @@ input[type="password"]::-webkit-reveal {
     height: 32px;
     margin: 0;
     z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.password-field .password-input:not(:placeholder-shown) ~ .password-toggle {
+    opacity: 1;
+    pointer-events: auto;
 }
 
 .password-field .password-toggle:hover {
     color: #007bff;
+    background: transparent !important;
+    box-shadow: none !important;
+    transform: none !important;
 }
 
 .password-field .password-toggle:focus {
-    outline: 2px solid #007bff;
-    outline-offset: 2px;
+    outline: none !important;
 }
 
 .tab-content input {

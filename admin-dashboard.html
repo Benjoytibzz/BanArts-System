@@ -383,44 +383,29 @@
 
         /* Sidebar Toggle */
         .mobile-menu-toggle {
-            display: block;
-            background: none;
-            border: 1px solid #007bff;
-            color: #007bff;
-            font-size: 1.2rem;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 4px;
-            margin-left: auto;
-            transition: all 0.3s;
-        }
-        .mobile-menu-toggle:hover {
+            display: none; /* Hidden by default on desktop */
             background: #007bff;
+            border: none;
             color: white;
-        }
-
-        .admin-sidebar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 100vh;
-            z-index: 1000;
-        }
-
-        .admin-content {
-            margin-left: 250px;
-            transition: margin-left 0.3s ease;
-        }
-
-        .admin-content:not(.sidebar-open) {
-            margin-left: 0;
-        }
-
-        .admin-sidebar:not(.sidebar-open) {
-            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 4px;
+            z-index: 1100;
+            transition: all 0.3s;
         }
 
         @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block; /* Show on mobile */
+                position: fixed;
+                top: 15px;
+                right: 15px;
+                z-index: 2000; /* Higher z-index to ensure it is above everything */
+            }
+            .admin-header {
+                padding-right: 60px; /* Make room for the fixed toggle */
+            }
             .admin-sidebar {
                 transform: translateX(-100%);
                 transition: transform 0.3s ease;
@@ -432,7 +417,7 @@
                 margin-left: 0;
             }
             .admin-content.sidebar-open {
-                margin-left: 250px;
+                margin-left: 0;
             }
             .sidebar-overlay {
                 display: none;
