@@ -3695,7 +3695,7 @@ app.get('/artwork/:id', (req, res) => {
           </section>
 
       <!-- Artifact Detail Modal -->
-      <div id="artifact-modal" class="modal" style="display: none; z-index: 9999;" aria-labelledby="artifact-modal-name" aria-modal="true" aria-hidden="true">
+      <div id="artifact-modal" class="modal" aria-labelledby="artifact-modal-name" aria-modal="true" aria-hidden="true">
           <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto; margin-top: 75px;">
               <span class="close" onclick="closeArtifactModal()">&times;</span>
               <div id="artifact-modal-body" style="padding: 30px;">
@@ -4097,9 +4097,9 @@ app.get('/artwork/:id', (req, res) => {
                     const modal = document.getElementById('artwork-modal');
                     if (modal) {
                         modal.style.display = 'flex';
+                        modal.style.zIndex = '10000'; // Ensure it's above everything
                         setTimeout(() => modal.classList.add('show'), 10);
                         document.body.style.overflow = 'hidden';
-                        document.documentElement.style.overflow = 'hidden';
                     }
                 })
                 .catch(error => {
@@ -4112,10 +4112,9 @@ app.get('/artwork/:id', (req, res) => {
             const modal = document.getElementById('artwork-modal');
             if (modal) {
                 modal.classList.remove('show');
+                document.body.style.overflow = '';
                 setTimeout(() => {
                     modal.style.display = 'none';
-                    document.body.style.overflow = '';
-                    document.documentElement.style.overflow = '';
                 }, 300);
             }
         }

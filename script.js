@@ -315,45 +315,66 @@ document.querySelectorAll('.artwork-card img').forEach(img => {
 // Modal functionality
 function openModal() {
     const modal = document.getElementById('auth-modal');
-    // We add 'show' immediately or with a small delay
-    modal.classList.add('show');
-    modal.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
+    if (modal) {
+        modal.style.display = 'flex';
+        modal.style.zIndex = '10000';
+        setTimeout(() => {
+            modal.classList.add('show');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }, 10);
 
-    // Focus management
-    const firstFocusableElement = modal.querySelector('.close') || modal.querySelector('.tab-btn');
-    if (firstFocusableElement) {
-        firstFocusableElement.focus();
+        // Focus management
+        const firstFocusableElement = modal.querySelector('.close') || modal.querySelector('.tab-btn');
+        if (firstFocusableElement) {
+            firstFocusableElement.focus();
+        }
     }
 }
 
 function closeModal() {
     const modal = document.getElementById('auth-modal');
-    modal.classList.remove('show');
-    modal.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
+    if (modal) {
+        modal.classList.remove('show');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 300);
+    }
 }
 
 function openForgotPasswordModal() {
     closeModal();
     const modal = document.getElementById('forgot-password-modal');
-    modal.classList.add('show');
-    modal.setAttribute('aria-hidden', 'false');
-    document.body.style.overflow = 'hidden';
-    
-    // Ensure the tab content is visible
-    const forgotTab = document.getElementById('forgot-password-tab');
-    if (forgotTab) {
-        forgotTab.classList.add('active');
-        forgotTab.setAttribute('aria-hidden', 'false');
+    if (modal) {
+        modal.style.display = 'flex';
+        modal.style.zIndex = '10000';
+        setTimeout(() => {
+            modal.classList.add('show');
+            modal.setAttribute('aria-hidden', 'false');
+            document.body.style.overflow = 'hidden';
+        }, 10);
+        
+        // Ensure the tab content is visible
+        const forgotTab = document.getElementById('forgot-password-tab');
+        if (forgotTab) {
+            forgotTab.classList.add('active');
+            forgotTab.setAttribute('aria-hidden', 'false');
+        }
     }
 }
 
 function closeForgotPasswordModal() {
     const modal = document.getElementById('forgot-password-modal');
-    modal.classList.remove('show');
-    modal.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = '';
+    if (modal) {
+        modal.classList.remove('show');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        setTimeout(() => {
+            modal.style.display = 'none';
+        }, 300);
+    }
 }
 
 function openTab(tabName) {
@@ -1529,6 +1550,7 @@ function openArtifactModal(artifactId) {
             document.getElementById('artifact-modal-details').textContent = artifact.details || 'No description available.';
 
             modal.style.display = 'flex';
+            modal.style.zIndex = '10000';
             setTimeout(() => modal.classList.add('show'), 10);
             document.body.style.overflow = 'hidden';
             modal.setAttribute('aria-hidden', 'false');
@@ -1564,7 +1586,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.addEventListener('keydown', function(event) {
         const modal = document.getElementById('artifact-modal');
-        if (event.key === 'Escape' && modal && modal.style.display === 'flex') {
+        if (event.key === 'Escape' && modal && modal.classList.contains('show')) {
             closeArtifactModal();
         }
     });
