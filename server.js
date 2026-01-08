@@ -1663,7 +1663,7 @@ app.delete('/galleries/:id', requireAuth, (req, res) => {
    });
  });
  
- app.get('/gallery-featured-artworks/:id', requireAuth, (req, res) => {
+ app.get('/gallery-featured-artworks/:id', (req, res) => {
    db.get('SELECT * FROM GalleryFeaturedArtworks WHERE gallery_featured_id = ?', [req.params.id], (err, row) => {
      if (err) {
        console.error('Get gallery featured artwork error:', err);
@@ -3997,16 +3997,25 @@ app.get('/artwork/:id', (req, res) => {
         // Modal functionality for dynamic gallery profile pages
         function openModal() {
             const modal = document.getElementById('auth-modal');
-            if (modal) modal.classList.add('show');
-            document.body.style.overflow = 'hidden';
-            document.documentElement.style.overflow = 'hidden';
+            if (modal) {
+                modal.style.display = 'flex';
+                modal.style.zIndex = '10000';
+                setTimeout(() => {
+                    modal.classList.add('show');
+                    document.body.classList.add('no-scroll');
+                }, 10);
+            }
         }
 
         function closeModal() {
             const modal = document.getElementById('auth-modal');
-            if (modal) modal.classList.remove('show');
-            document.body.style.overflow = '';
-            document.documentElement.style.overflow = '';
+            if (modal) {
+                modal.classList.remove('show');
+                document.body.classList.remove('no-scroll');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+            }
         }
 
         function openTab(tabName) {
@@ -4098,8 +4107,10 @@ app.get('/artwork/:id', (req, res) => {
                     if (modal) {
                         modal.style.display = 'flex';
                         modal.style.zIndex = '10000'; // Ensure it's above everything
-                        setTimeout(() => modal.classList.add('show'), 10);
-                        document.body.style.overflow = 'hidden';
+                        setTimeout(() => {
+                            modal.classList.add('show');
+                            document.body.classList.add('no-scroll');
+                        }, 10);
                     }
                 })
                 .catch(error => {
@@ -4112,7 +4123,7 @@ app.get('/artwork/:id', (req, res) => {
             const modal = document.getElementById('artwork-modal');
             if (modal) {
                 modal.classList.remove('show');
-                document.body.style.overflow = '';
+                document.body.classList.remove('no-scroll');
                 setTimeout(() => {
                     modal.style.display = 'none';
                 }, 300);

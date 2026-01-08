@@ -24,6 +24,11 @@
     display: none !important;
 }
 
+.no-scroll {
+    overflow: hidden !important;
+    height: 100%;
+}
+
 /* Focus management */
 *:focus {
     outline: 2px solid #007bff;
@@ -1889,19 +1894,20 @@ footer {
 .modal {
     display: none;
     justify-content: center;
-    align-items: center; /* Align to top to move modal upward */
+    align-items: flex-start; /* Changed from center to allow scrolling to start at the top */
     position: fixed;
-    z-index: 9999; /* Extremely high z-index */
+    z-index: 9999;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.7); /* Slightly darker */
-    backdrop-filter: blur(4px); /* More blur */
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
-    padding: 40px 20px; /* Increased top padding to position it nicely from the top */
+    padding: 20px;
+    overflow-y: auto; /* Added to allow scrolling the modal overlay */
 }
 
 .modal.show {
@@ -1912,7 +1918,7 @@ footer {
 
 .modal-content {
     background-color: #fff;
-    margin: 0; /* Remove margin as parent uses flex centering */
+    margin: auto; /* Changed from 0 to allow flex centering with scroll support */
     padding: 0;
     border-radius: 12px;
     width: 100%;
@@ -2848,8 +2854,7 @@ body::before {
 .artwork-modal-content {
     max-width: 900px;
     width: 95%;
-    max-height: 90vh;
-    overflow-y: auto;
+    /* max-height and overflow-y removed to allow parent modal container to handle scrolling */
 }
 
 .artwork-modal-body {
@@ -2986,13 +2991,11 @@ body::before {
 .modal .artwork-modal-content {
     max-width: 800px !important;
     width: 95% !important;
-    max-height: 80vh;
-    overflow-y: auto;
     position: relative;
     background-color: white;
     border-radius: 12px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-    margin: 5% auto;
+    margin: 2rem auto;
 }
 
 .modal-header {
@@ -3794,8 +3797,6 @@ body {
 .artwork-modal-content {
     max-width: 800px;
     width: 90%;
-    max-height: 90vh;
-    overflow-y: auto;
 }
 
 .artwork-modal-body {

@@ -345,12 +345,16 @@ Thank you for being part of BanArts where Bantayanon creativity lives, grows, an
             artworks.forEach(artwork => {
                 const card = document.createElement('div');
                 card.className = 'artwork-card';
+                card.style.cursor = 'pointer';
                 card.setAttribute('data-artwork-id', artwork.artwork_id);
                 card.innerHTML = `
                     <img src="${artwork.image_url || 'img/art1.jpg'}" alt="${artwork.title}">
-                    <h3>${artwork.title}</h3>
-                    <p>By ${artwork.artist_name || 'Unknown Artist'}</p>
+                    <div class="artwork-card-content">
+                        <h3>${artwork.title}</h3>
+                        <p>By ${artwork.artist_name || 'Unknown Artist'}</p>
+                    </div>
                 `;
+                card.onclick = () => openArtworkModal(artwork);
                 grid.appendChild(card);
             });
         }
@@ -506,29 +510,40 @@ Thank you for being part of BanArts where Bantayanon creativity lives, grows, an
             const saveBtn = document.getElementById('artwork-modal-save-btn');
             const viewFullBtn = document.getElementById('artwork-modal-view-full');
 
+            if (!modal) return;
+
             // Populate modal with artwork data
-            img.src = artwork.image_url || 'img/art1.jpg';
-            img.alt = artwork.title;
-            title.textContent = artwork.title;
-            artist.textContent = `By ${artwork.artist_name || 'Unknown Artist'}`;
-            description.innerHTML = artwork.description || 'No description available.';
-            medium.textContent = artwork.medium || 'N/A';
-            year.textContent = artwork.year || 'N/A';
-            size.textContent = artwork.size || 'N/A';
-            location.textContent = artwork.location || 'N/A';
+            if (img) {
+                img.src = artwork.image_url || 'img/art1.jpg';
+                img.alt = artwork.title;
+            }
+            if (title) title.textContent = artwork.title;
+            if (artist) artist.textContent = `By ${artwork.artist_name || 'Unknown Artist'}`;
+            if (description) description.innerHTML = artwork.description || 'No description available.';
+            if (medium) medium.textContent = artwork.medium || 'N/A';
+            if (year) year.textContent = artwork.year || 'N/A';
+            if (size) size.textContent = artwork.size || 'N/A';
+            if (location) location.textContent = artwork.location || 'N/A';
 
             // Set up save button
-            saveBtn.setAttribute('data-artwork-id', artwork.artwork_id);
-            updateArtworkSaveButton(saveBtn, artwork.artwork_id);
+            if (saveBtn) {
+                saveBtn.setAttribute('data-artwork-id', artwork.artwork_id);
+                updateArtworkSaveButton(saveBtn, artwork.artwork_id);
+            }
 
             // Set up view full details button
-            viewFullBtn.href = `/artwork/${artwork.artwork_id}`;
+            if (viewFullBtn) {
+                viewFullBtn.href = `/artwork/${artwork.artwork_id}`;
+            }
 
             // Show modal
-            modal.style.display = 'block';
+            modal.style.display = 'flex';
+            modal.style.zIndex = '10000';
             modal.setAttribute('aria-hidden', 'false');
-            setTimeout(() => modal.classList.add('show'), 10);
-            document.body.style.overflow = 'hidden';
+            setTimeout(() => {
+                modal.classList.add('show');
+                document.body.classList.add('no-scroll');
+            }, 10);
 
             // Focus management
             const closeBtn = modal.querySelector('.close');
@@ -537,9 +552,11 @@ Thank you for being part of BanArts where Bantayanon creativity lives, grows, an
 
         function closeArtworkModal() {
             const modal = document.getElementById('artwork-modal');
+            if (!modal) return;
+
             modal.classList.remove('show');
             modal.setAttribute('aria-hidden', 'true');
-            document.body.style.overflow = '';
+            document.body.classList.remove('no-scroll');
             setTimeout(() => {
                 modal.style.display = 'none';
             }, 300);
@@ -694,7 +711,7 @@ Thank you for being part of BanArts where Bantayanon creativity lives, grows, an
 
             // Close artwork modal with Escape key
             document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && artworkModal.style.display === 'block') {
+                if (e.key === 'Escape' && (artworkModal.style.display === 'block' || artworkModal.style.display === 'flex')) {
                     closeArtworkModal();
                 }
             });

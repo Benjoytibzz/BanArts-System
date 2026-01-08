@@ -321,7 +321,7 @@ function openModal() {
         setTimeout(() => {
             modal.classList.add('show');
             modal.setAttribute('aria-hidden', 'false');
-            document.body.style.overflow = 'hidden';
+            document.body.classList.add('no-scroll');
         }, 10);
 
         // Focus management
@@ -337,7 +337,7 @@ function closeModal() {
     if (modal) {
         modal.classList.remove('show');
         modal.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
+        document.body.classList.remove('no-scroll');
         setTimeout(() => {
             modal.style.display = 'none';
         }, 300);
@@ -353,7 +353,7 @@ function openForgotPasswordModal() {
         setTimeout(() => {
             modal.classList.add('show');
             modal.setAttribute('aria-hidden', 'false');
-            document.body.style.overflow = 'hidden';
+            document.body.classList.add('no-scroll');
         }, 10);
         
         // Ensure the tab content is visible
@@ -370,7 +370,7 @@ function closeForgotPasswordModal() {
     if (modal) {
         modal.classList.remove('show');
         modal.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = '';
+        document.body.classList.remove('no-scroll');
         setTimeout(() => {
             modal.style.display = 'none';
         }, 300);
@@ -1552,7 +1552,7 @@ function openArtifactModal(artifactId) {
             modal.style.display = 'flex';
             modal.style.zIndex = '10000';
             setTimeout(() => modal.classList.add('show'), 10);
-            document.body.style.overflow = 'hidden';
+            document.body.classList.add('no-scroll');
             modal.setAttribute('aria-hidden', 'false');
             console.log('Modal displayed');
         })
@@ -1568,7 +1568,7 @@ function closeArtifactModal() {
         modal.classList.remove('show');
         setTimeout(() => {
             modal.style.display = 'none';
-            document.body.style.overflow = '';
+            document.body.classList.remove('no-scroll');
         }, 300);
         modal.setAttribute('aria-hidden', 'true');
     }
