@@ -271,29 +271,40 @@
     <div id="forgot-password-modal" class="modal" role="dialog" aria-labelledby="forgot-password-title" aria-modal="true" aria-hidden="true">
         <div class="modal-content">
             <span class="close-forgot-password close" aria-label="Close modal">&times;</span>
-            <img src="img/bantayanon artists logo.jpg" alt="BanArts Logo" class="modal-logo">
-            <h2 id="forgot-password-title">Change Password</h2>
-            <p>Enter your email and your new password below.</p>
-            <form id="forgot-password-form">
-                <input type="email" id="reset-email" placeholder="Email" required>
-                <div class="password-field">
-                    <input type="password" id="reset-new-password" class="password-input" placeholder="New Password" required>
-                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility(this)" aria-label="Show password">
-                        <i class="far fa-eye"></i>
-                    </button>
+            <div id="forgot-password-tab" class="tab-content active">
+                <img src="img/bantayanon artists logo.jpg" alt="BanArts Logo" class="modal-logo">
+                <h2 id="forgot-password-title">Change Password</h2>
+                <p class="modal-subtitle">Securely update your account credentials</p>
+                <form id="forgot-password-form">
+                    <div class="input-group">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input type="email" id="reset-email" placeholder="Email Address" required>
+                    </div>
+                    <div class="password-field">
+                        <div class="input-group">
+                            <i class="fas fa-lock input-icon"></i>
+                            <input type="password" id="reset-new-password" class="password-input" placeholder="New Password" required>
+                        </div>
+                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility(this)" aria-label="Show password">
+                            <i class="far fa-eye"></i>
+                        </button>
+                    </div>
+                    <div class="password-field">
+                        <div class="input-group">
+                            <i class="fas fa-shield-alt input-icon"></i>
+                            <input type="password" id="reset-confirm-password" class="password-input" placeholder="Confirm New Password" required>
+                        </div>
+                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility(this)" aria-label="Show password">
+                            <i class="far fa-eye"></i>
+                        </button>
+                    </div>
+                    <button type="submit" class="submit-btn">Update Password</button>
+                    <div id="forgot-password-error" class="error-message" style="display: none;"></div>
+                    <div id="forgot-password-success" class="success-message" style="display: none;"></div>
+                </form>
+                <div class="back-to-login">
+                    <a href="#" id="back-to-login-link"><i class="fas fa-arrow-left"></i> Back to Login</a>
                 </div>
-                <div class="password-field">
-                    <input type="password" id="reset-confirm-password" class="password-input" placeholder="Confirm New Password" required>
-                    <button type="button" class="password-toggle" onclick="togglePasswordVisibility(this)" aria-label="Show password">
-                        <i class="far fa-eye"></i>
-                    </button>
-                </div>
-                <button type="submit">Change Password</button>
-                <div id="forgot-password-error" style="color: red; margin-top: 1rem; display: none;"></div>
-                <div id="forgot-password-success" style="color: green; margin-top: 1rem; display: none;"></div>
-            </form>
-            <div class="back-to-login">
-                <a href="#" id="back-to-login-link">Back to Login</a>
             </div>
         </div>
     </div>

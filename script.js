@@ -351,6 +351,13 @@ function openForgotPasswordModal() {
     }, 10);
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
+    
+    // Ensure the tab content is visible
+    const forgotTab = document.getElementById('forgot-password-tab');
+    if (forgotTab) {
+        forgotTab.classList.add('active');
+        forgotTab.setAttribute('aria-hidden', 'false');
+    }
 }
 
 function closeForgotPasswordModal() {
@@ -375,8 +382,11 @@ function openTab(tabName) {
         btn.classList.remove('active');
         btn.setAttribute('aria-selected', 'false');
     });
-    document.getElementById(tabName + '-tab').classList.add('active');
-    document.getElementById(tabName + '-tab').setAttribute('aria-hidden', 'false');
+    const targetTab = document.getElementById(tabName + '-tab');
+    if (targetTab) {
+        targetTab.classList.add('active');
+        targetTab.setAttribute('aria-hidden', 'false');
+    }
 
     // Find the corresponding tab button and add active
     const activeBtn = document.querySelector(`.tab-btn[onclick*="${tabName}"]`);
