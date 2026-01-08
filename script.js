@@ -322,6 +322,7 @@ function openModal() {
     }, 10);
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    document.documentElement.style.overflow = 'hidden';
 
     // Focus management
     const firstFocusableElement = modal.querySelector('.close') || modal.querySelector('.tab-btn');
@@ -337,7 +338,8 @@ function closeModal() {
     modal.setAttribute('aria-hidden', 'true');
     setTimeout(() => {
         modal.style.display = 'none';
-        document.body.style.overflow = 'auto'; // Restore scrolling
+        document.body.style.overflow = ''; // Restore scrolling
+        document.documentElement.style.overflow = '';
     }, 300); // Match animation duration
 }
 
@@ -351,6 +353,7 @@ function openForgotPasswordModal() {
     }, 10);
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
     
     // Ensure the tab content is visible
     const forgotTab = document.getElementById('forgot-password-tab');
@@ -367,7 +370,8 @@ function closeForgotPasswordModal() {
     modal.setAttribute('aria-hidden', 'true');
     setTimeout(() => {
         modal.style.display = 'none';
-        document.body.style.overflow = 'auto';
+        document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
     }, 300);
 }
 
@@ -1552,8 +1556,8 @@ function closeArtifactModal() {
     if (modal) {
         modal.style.display = 'none';
         modal.setAttribute('aria-hidden', 'true');
-        document.body.style.overflow = 'auto';
-        document.documentElement.style.overflow = 'auto';
+        document.body.style.overflow = '';
+        document.documentElement.style.overflow = '';
         document.body.style.position = '';
         document.body.style.width = '';
         window.scrollTo(0, window.scrollY);

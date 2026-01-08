@@ -408,6 +408,7 @@
             }, 10);
             modal.setAttribute('aria-hidden', 'false');
             document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            document.documentElement.style.overflow = 'hidden';
 
             // Focus management
             const firstFocusableElement = modal.querySelector('.close') || modal.querySelector('.tab-btn');
@@ -423,7 +424,8 @@
             modal.setAttribute('aria-hidden', 'true');
             setTimeout(() => {
                 modal.style.display = 'none';
-                document.body.style.overflow = 'auto'; // Restore scrolling
+                document.body.style.overflow = ''; // Restore scrolling
+                document.documentElement.style.overflow = '';
             }, 300); // Match animation duration
         }
 

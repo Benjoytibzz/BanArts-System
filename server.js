@@ -3998,11 +3998,13 @@ app.get('/artwork/:id', (req, res) => {
         function openModal() {
             document.getElementById('auth-modal').style.display = 'block';
             document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'hidden';
         }
 
         function closeModal() {
             document.getElementById('auth-modal').style.display = 'none';
-            document.body.style.overflow = 'auto';
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
         }
 
         function openTab(tabName) {
@@ -4086,13 +4088,15 @@ app.get('/artwork/:id', (req, res) => {
                     document.getElementById('artwork-modal-price').textContent = artwork.price || 'N/A';
                     document.getElementById('artwork-modal').style.display = 'block';
                     document.body.style.overflow = 'hidden';
+                    document.documentElement.style.overflow = 'hidden';
                 })
                 .catch(error => console.error('Error loading artwork:', error));
         }
 
         function closeArtworkModal() {
             document.getElementById('artwork-modal').style.display = 'none';
-            document.body.style.overflow = 'auto';
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
         }
 
         window.addEventListener('click', function(e) {

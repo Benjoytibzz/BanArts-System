@@ -512,10 +512,14 @@
         // Modal functionality
         function openModal() {
             document.getElementById('auth-modal').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'hidden';
         }
 
         function closeModal() {
             document.getElementById('auth-modal').style.display = 'none';
+            document.body.style.overflow = '';
+            document.documentElement.style.overflow = '';
         }
 
         function openTab(tabName) {
