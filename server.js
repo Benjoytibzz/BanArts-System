@@ -4113,4 +4113,13 @@ app.get('/artwork/:id', (req, res) => {
     res.redirect(`/artist-details.html?id=${req.params.id}`);
   });
 
+  // Facebook Compliance Routes
+  app.get('/privacy-policy', (req, res) => {
+    res.send('<h1>Privacy Policy</h1><p>We respect your privacy. Your data is only used for authentication and to improve your experience on BanArts.</p>');
+  });
+
+  app.get('/deletion', (req, res) => {
+    res.send('<h1>Data Deletion Instructions</h1><p>To request data deletion, please contact us at tibalanbenjo123@gmail.com with your account email address. Your data will be removed within 30 days.</p>');
+  });
+
   // Server startup is handled after DB initialization by `startServer()`.
