@@ -18,6 +18,9 @@
             position: fixed;
             height: 100vh;
             overflow-y: auto;
+            left: 0;
+            top: 0;
+            z-index: 1000;
         }
         .admin-sidebar h2 {
             text-align: center;
@@ -47,6 +50,7 @@
             margin-left: 250px;
             padding: 20px;
             background: #f8f9fa;
+            min-height: 100vh;
         }
         .admin-header {
             background: white;
@@ -384,9 +388,9 @@
         /* Sidebar Toggle */
         .mobile-menu-toggle {
             display: none; /* Hidden by default on desktop */
-            background: #007bff;
+            background: #007bff !important;
             border: none;
-            color: white;
+            color: white !important;
             font-size: 1.5rem;
             cursor: pointer;
             padding: 5px 10px;
@@ -397,14 +401,15 @@
 
         @media (max-width: 768px) {
             .mobile-menu-toggle {
-                display: block; /* Show on mobile */
-                position: fixed;
-                top: 15px;
-                right: 15px;
-                z-index: 2000; /* Higher z-index to ensure it is above everything */
+                display: block !important; /* Show on mobile */
+                position: fixed !important;
+                top: 20px;
+                right: 20px;
+                z-index: 9999;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
             }
             .admin-header {
-                padding-right: 60px; /* Make room for the fixed toggle */
+                padding-right: 70px; /* Make room for the fixed toggle */
             }
             .admin-sidebar {
                 transform: translateX(-100%);
@@ -457,11 +462,12 @@
         </aside>
 
         <main class="admin-content">
+            <button class="mobile-menu-toggle" id="global-mobile-toggle" aria-label="Toggle sidebar menu">&#9776;</button>
             <!-- Dashboard Section -->
             <section id="dashboard" class="section active">
                 <div class="admin-header">
                     <h1>Dashboard Overview</h1>
-                    <button class="mobile-menu-toggle" aria-label="Toggle sidebar menu">&#9776;</button>
+                    
                     <p>Welcome to the BanArts Admin Dashboard</p>
                 </div>
 
@@ -547,7 +553,7 @@
             <section id="artists" class="section">
                 <div class="admin-header">
                     <h1>Artists Management</h1>
-                    <button class="mobile-menu-toggle" aria-label="Toggle sidebar menu">&#9776;</button>
+                    
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <button class="btn btn-primary" onclick="openModal('artist')">Add New Artist</button>
                         <div class="search-container">
@@ -581,7 +587,7 @@
             <section id="artworks" class="section">
                 <div class="admin-header">
                     <h1>Artworks Management</h1>
-                    <button class="mobile-menu-toggle" aria-label="Toggle sidebar menu">&#9776;</button>
+                    
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <button class="btn btn-primary" onclick="openModal('artwork')">Add New Artwork</button>
                         <div class="search-container">
@@ -616,7 +622,7 @@
             <section id="galleries" class="section">
                 <div class="admin-header">
                     <h1>Galleries Management</h1>
-                    <button class="mobile-menu-toggle" aria-label="Toggle sidebar menu">&#9776;</button>
+                    
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <button class="btn btn-primary" onclick="openModal('gallery')">Add New Gallery</button>
                         <div class="search-container">
@@ -650,7 +656,7 @@
             <section id="gallery-featured" class="section">
                 <div class="admin-header">
                     <h1>Gallery Featured Artworks</h1>
-                    <button class="mobile-menu-toggle" aria-label="Toggle sidebar menu">&#9776;</button>
+                    
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <button class="btn btn-primary" onclick="openModal('gallery-featured')">Add Featured Artwork</button>
                         <div class="search-container">
@@ -684,7 +690,7 @@
             <section id="museums" class="section">
                 <div class="admin-header">
                     <h1>Museums Management</h1>
-                    <button class="mobile-menu-toggle" aria-label="Toggle sidebar menu">&#9776;</button>
+                    
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <button class="btn btn-primary" onclick="openModal('museum')">Add New Museum</button>
                         <div class="search-container">
@@ -717,7 +723,7 @@
             <section id="events" class="section">
                 <div class="admin-header">
                     <h1>Events Management</h1>
-                    <button class="mobile-menu-toggle" aria-label="Toggle sidebar menu">&#9776;</button>
+                    
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <button class="btn btn-primary" onclick="openModal('event')">Add Event</button>
                         <div class="search-container">
@@ -750,7 +756,7 @@
             <section id="videos" class="section">
                 <div class="admin-header">
                     <h1>Videos Management</h1>
-                    <button class="mobile-menu-toggle" aria-label="Toggle sidebar menu">&#9776;</button>
+                    
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <button class="btn btn-primary" onclick="openModal('video')">Add New Video</button>
                         <div class="search-container">
@@ -781,7 +787,7 @@
             <section id="artifacts-collections" class="section">
                 <div class="admin-header">
                     <h1>Artifacts Management</h1>
-                    <button class="mobile-menu-toggle" aria-label="Toggle sidebar menu">&#9776;</button>
+                    
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <button class="btn btn-primary" onclick="openArtifactModal()">Add New Artifact</button>
                         <div class="search-container">
@@ -824,7 +830,7 @@
             <section id="collections" class="section">
                 <div class="admin-header">
                     <h1>Collections Management</h1>
-                    <button class="mobile-menu-toggle" aria-label="Toggle sidebar menu">&#9776;</button>
+                    
                     <div style="display: flex; gap: 10px; align-items: center;">
                     <button class="btn btn-primary" onclick="openCollectionModal()">Add New Collection</button>
                         <div class="search-container">
@@ -875,7 +881,7 @@
             <section id="users" class="section">
                 <div class="admin-header">
                     <h1>Users Management</h1>
-                    <button class="mobile-menu-toggle" aria-label="Toggle sidebar menu">&#9776;</button>
+                    
                     <div style="display: flex; gap: 10px; align-items: center;">
                         <button class="btn btn-primary" onclick="openModal('user')">Add New User</button>
                         <div class="search-container">
