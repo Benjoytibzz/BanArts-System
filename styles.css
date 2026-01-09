@@ -2624,6 +2624,8 @@ input[type="password"]::-ms-clear {
     .artist-header, .artwork-header {
         flex-direction: column;
         text-align: center;
+        align-items: center;
+        padding-left: 0;
     }
 
     .artist-photo, .artwork-image {

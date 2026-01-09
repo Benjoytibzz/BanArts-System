@@ -192,6 +192,24 @@
         @media (max-width: 768px) {
             .artwork-header {
                 flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .artwork-image {
+                max-width: 100%;
+                width: 100%;
+                display: flex;
+                justify-content: center;
+            }
+
+            .artwork-image img {
+                max-width: 100%;
+                height: auto;
+            }
+
+            .artwork-info {
+                width: 100%;
             }
 
             .artwork-title {
@@ -200,6 +218,37 @@
 
             .artwork-details-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .details-section h3,
+            .contact-section h3 {
+                text-align: center;
+            }
+
+            .details-list li {
+                text-align: center;
+            }
+
+            .contact-section {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .contact-section > div {
+                flex-direction: column !important;
+                text-align: center;
+            }
+
+            .contact-section img {
+                margin-right: 0 !important;
+                margin-bottom: 15px;
+            }
+
+            .back-btn {
+                display: block;
+                width: fit-content;
+                margin: 20px auto 0;
             }
         }
     </style>
