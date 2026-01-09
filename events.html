@@ -23,7 +23,7 @@
                     <div id="search-help" class="sr-only">Type to search for artworks, artists, or galleries</div>
                 </div>
                 <ul>
-                    <li><a href="index.html">Home</a></li>
+                    <li><a href="/">Home</a></li>
                     <li><a href="artists.html">Artists</a></li>
                     <li><a href="artworks.html">Artworks</a></li>
                     <li><a href="galleries.html">Galleries</a></li>
@@ -241,37 +241,6 @@
             loadCurrentEvents();
             loadPastEvents();
             loadUpcomingEvents();
-
-            // Mobile menu toggle
-            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-            const navMenu = document.querySelector('.nav-menu');
-
-            if (mobileMenuToggle && navMenu) {
-                mobileMenuToggle.addEventListener('click', function() {
-                    navMenu.classList.toggle('show');
-                    const isOpen = navMenu.classList.contains('show');
-                    this.setAttribute('aria-expanded', isOpen);
-                    this.innerHTML = isOpen ? '&#10006;' : '&#9776;';
-                });
-
-                // Close mobile menu when clicking outside
-                document.addEventListener('click', function(e) {
-                    if (!navMenu.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
-                        navMenu.classList.remove('show');
-                        mobileMenuToggle.setAttribute('aria-expanded', 'false');
-                        mobileMenuToggle.innerHTML = '&#9776;';
-                    }
-                });
-
-                // Close mobile menu when clicking on a link
-                navMenu.querySelectorAll('a').forEach(link => {
-                    link.addEventListener('click', function() {
-                        navMenu.classList.remove('show');
-                        mobileMenuToggle.setAttribute('aria-expanded', 'false');
-                        mobileMenuToggle.innerHTML = '&#9776;';
-                    });
-                });
-            }
         });
 
         function loadCurrentEvents() {

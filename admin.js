@@ -83,10 +83,6 @@ function loadDashboardGalleries() {
                         <h3>${gallery.name}</h3>
                         <p>${gallery.location || 'Location not specified'}</p>
                     </div>
-                    <div class="dashboard-card-actions">
-                        <button class="btn btn-secondary" onclick="editGallery(${gallery.gallery_id})">Edit</button>
-                        <button class="btn btn-danger" onclick="deleteGallery(${gallery.gallery_id})">Delete</button>
-                    </div>
                 </div>
             `).join('');
         })
@@ -109,10 +105,6 @@ function loadDashboardArtists() {
                         <h3>${artist.name}</h3>
                         <p>${artist.category || 'Artist'}</p>
                     </div>
-                    <div class="dashboard-card-actions">
-                        <button class="btn btn-secondary" onclick="editArtist(${artist.artist_id})">Edit</button>
-                        <button class="btn btn-danger" onclick="deleteArtist(${artist.artist_id})">Delete</button>
-                    </div>
                 </div>
             `).join('');
         })
@@ -134,10 +126,6 @@ function loadDashboardArtworks() {
                     <div class="dashboard-card-content">
                         <h3 onclick="viewArtworkDetails(${artwork.artwork_id})" style="cursor: pointer;">${artwork.title}</h3>
                         <p>By ${artwork.artist_name || 'Unknown Artist'}</p>
-                    </div>
-                    <div class="dashboard-card-actions">
-                        <button class="btn btn-secondary" onclick="editArtwork(${artwork.artwork_id})">Edit</button>
-                        <button class="btn btn-danger" onclick="deleteArtwork(${artwork.artwork_id})">Delete</button>
                     </div>
                 </div>
             `).join('');
@@ -854,10 +842,6 @@ function loadDashboardMuseums() {
                     <div class="dashboard-card-content">
                         <h3>${museum.name}</h3>
                         <p>${museum.location || 'Location not specified'}</p>
-                    </div>
-                    <div class="dashboard-card-actions">
-                        <button class="btn btn-secondary" onclick="editMuseum(${museum.museum_id})">Edit</button>
-                        <button class="btn btn-danger" onclick="deleteMuseum(${museum.museum_id})">Delete</button>
                     </div>
                 </div>
             `).join('');

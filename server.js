@@ -39,18 +39,37 @@ process.on('unhandledRejection', (reason, promise) => {
 const app = express();
 const PORT = process.env.PORT || 3002;
 
-// Configure Cloudinary storage for multer
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'banarts',
-    allowed_formats: ['jpg', 'png', 'jpeg', 'gif', 'webp'],
-    public_id: (req, file) => {
+// Configure Cloudinary or Local storage for multer
+let storage;
+if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
+  console.log('Using Cloudinary storage');
+  storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+      folder: 'banarts',
+      allowed_formats: ['jpg', 'png', 'jpeg', 'gif', 'webp'],
+      public_id: (req, file) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        return uniqueSuffix;
+      }
+    },
+  });
+} else {
+  console.log('Cloudinary credentials missing, using local disk storage');
+  storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      const dir = 'img';
+      if (!fs.existsSync(dir)) {
+        fs.mkdirSync(dir, { recursive: true });
+      }
+      cb(null, dir);
+    },
+    filename: (req, file, cb) => {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-      return uniqueSuffix;
+      cb(null, uniqueSuffix + path.extname(file.originalname));
     }
-  },
-});
+  });
+}
 const upload = multer({ storage: storage });
 
 // Use same storage for collections as other uploads
@@ -1411,26 +1430,32 @@ app.delete('/artists/:id', requireAuth, (req, res) => {
 
 // Artworks CRUD
 app.get('/artworks', (req, res) => {
-   const limit = req.query._limit ? parseInt(req.query._limit) : null;
-   const artistId = req.query.artist_id ? parseInt(req.query.artist_id) : null;
+  const limit = req.query._limit ? parseInt(req.query._limit) : null;
+  const artistId = req.query.artist_id ? parseInt(req.query.artist_id) : null;
+  const category = req.query.category || req.query.categories;
 
-   let sql = `
-     SELECT a.*, art.name as artist_name
-     FROM Artworks a
-     LEFT JOIN Artists art ON a.artist_id = art.artist_id
-   `;
+  let sql = `
+    SELECT a.*, art.name as artist_name
+    FROM Artworks a
+    LEFT JOIN Artists art ON a.artist_id = art.artist_id
+  `;
 
-   const params = [];
-   const conditions = [];
+  const params = [];
+  const conditions = [];
 
-   if (artistId) {
-     conditions.push('a.artist_id = ?');
-     params.push(artistId);
-   }
+  if (artistId) {
+    conditions.push('a.artist_id = ?');
+    params.push(artistId);
+  }
 
-   if (conditions.length > 0) {
-     sql += ' WHERE ' + conditions.join(' AND ');
-   }
+  if (category) {
+    conditions.push('a.categories LIKE ?');
+    params.push(`%${category}%`);
+  }
+
+  if (conditions.length > 0) {
+    sql += ' WHERE ' + conditions.join(' AND ');
+  }
 
    sql += ' ORDER BY a.created_at DESC';
 
@@ -1467,66 +1492,84 @@ app.get('/artworks/:id', (req, res) => {
 });
 
 app.post('/artworks', upload.single('image'), (req, res) => {
-  const { title, description, location, medium, year, size, signature, certificate, social_media, phone, email, artist_id, categories, is_featured } = req.body;
-  const image_url = req.file ? req.file.path : null;
+  try {
+    const { title, description, location, medium, year, size, signature, certificate, social_media, phone, email, artist_id, categories, is_featured, price } = req.body;
+    const image_url = req.file ? req.file.path.replace(/\\/g, '/') : null;
 
-  db.run(
-    'INSERT INTO Artworks (title, description, location, medium, year, size, signature, certificate, social_media, phone, email, image_url, artist_id, categories, is_featured) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-    [title, description, location, medium, year, size, signature, certificate, social_media, phone, email, image_url, artist_id, categories, is_featured == 1 ? 1 : 0],
-    function(err) {
-      if (err) {
-        console.error('Create artwork error:', err);
-        return res.status(500).json({ message: 'Server error' });
-      }
-      // Get the inserted record with artist name
-      db.get(`
-        SELECT a.*, art.name as artist_name
-        FROM Artworks a
-        LEFT JOIN Artists art ON a.artist_id = art.artist_id
-        WHERE a.artwork_id = ?
-      `, [this.lastID], (err, row) => {
+    db.run(
+      'INSERT INTO Artworks (title, description, location, medium, year, size, signature, certificate, social_media, phone, email, image_url, artist_id, categories, is_featured, price) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [title, description, location, medium, year, size, signature, certificate, social_media, phone, email, image_url, artist_id, categories, is_featured == 1 ? 1 : 0, price],
+      function(err) {
         if (err) {
-          console.error('Get inserted artwork error:', err);
-          return res.status(500).json({ message: 'Server error' });
+          console.error('Create artwork error:', err);
+          return res.status(500).json({ message: 'Server error: ' + err.message });
         }
-        createNotification('artwork_added', `System added new Artwork: ${title}`, row.artwork_id, 'Artwork');
-        res.json(processImageFields(row));
-      });
-    }
-  );
+        
+        const lastID = this.lastID;
+        // Get the inserted record with artist name
+        db.get(`
+          SELECT a.*, art.name as artist_name
+          FROM Artworks a
+          LEFT JOIN Artists art ON a.artist_id = art.artist_id
+          WHERE a.artwork_id = ?
+        `, [lastID], (err, row) => {
+          if (err) {
+            console.error('Get inserted artwork error:', err);
+            return res.status(500).json({ message: 'Server error' });
+          }
+          if (!row) {
+            return res.status(500).json({ message: 'Error retrieving created artwork' });
+          }
+          createNotification('artwork_added', `System added new Artwork: ${title}`, row.artwork_id, 'Artwork');
+          res.json(processImageFields(row));
+        });
+      }
+    );
+  } catch (error) {
+    console.error('Artwork POST crash:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 app.put('/artworks/:id', upload.single('image'), (req, res) => {
-  const { title, description, location, medium, year, size, signature, certificate, social_media, phone, email, artist_id, categories, is_featured } = req.body;
-  const image_url = req.file ? req.file.path : req.body.image_url;
+  try {
+    const { title, description, location, medium, year, size, signature, certificate, social_media, phone, email, artist_id, categories, is_featured, price } = req.body;
+    const image_url = req.file ? req.file.path : req.body.image_url;
 
-  db.run(
-    'UPDATE Artworks SET title = ?, description = ?, location = ?, medium = ?, year = ?, size = ?, signature = ?, certificate = ?, social_media = ?, phone = ?, email = ?, image_url = ?, artist_id = ?, categories = ?, is_featured = ?, updated_at = CURRENT_TIMESTAMP WHERE artwork_id = ?',
-    [title, description, location, medium, year, size, signature, certificate, social_media, phone, email, image_url, artist_id, categories, is_featured == 1 ? 1 : 0, req.params.id],
-    function(err) {
-      if (err) {
-        console.error('Update artwork error:', err);
-        return res.status(500).json({ message: 'Server error' });
-      }
-      if (this.changes === 0) {
-        return res.status(404).json({ message: 'Artwork not found' });
-      }
-      // Get the updated record
-      db.get(`
-        SELECT a.*, art.name as artist_name
-        FROM Artworks a
-        LEFT JOIN Artists art ON a.artist_id = art.artist_id
-        WHERE a.artwork_id = ?
-      `, [req.params.id], (err, row) => {
+    db.run(
+      'UPDATE Artworks SET title = ?, description = ?, location = ?, medium = ?, year = ?, size = ?, signature = ?, certificate = ?, social_media = ?, phone = ?, email = ?, image_url = ?, artist_id = ?, categories = ?, is_featured = ?, price = ?, updated_at = CURRENT_TIMESTAMP WHERE artwork_id = ?',
+      [title, description, location, medium, year, size, signature, certificate, social_media, phone, email, image_url, artist_id, categories, is_featured == 1 ? 1 : 0, price, req.params.id],
+      function(err) {
         if (err) {
-          console.error('Get updated artwork error:', err);
-          return res.status(500).json({ message: 'Server error' });
+          console.error('Update artwork error:', err);
+          return res.status(500).json({ message: 'Server error: ' + err.message });
         }
-        createNotification('artwork_updated', `System updated Artwork: ${title}`, row.artwork_id, 'Artwork');
-        res.json(processImageFields(row));
-      });
-    }
-  );
+        if (this.changes === 0) {
+          return res.status(404).json({ message: 'Artwork not found' });
+        }
+        // Get the updated record
+        db.get(`
+          SELECT a.*, art.name as artist_name
+          FROM Artworks a
+          LEFT JOIN Artists art ON a.artist_id = art.artist_id
+          WHERE a.artwork_id = ?
+        `, [req.params.id], (err, row) => {
+          if (err) {
+            console.error('Get updated artwork error:', err);
+            return res.status(500).json({ message: 'Server error' });
+          }
+          if (!row) {
+            return res.status(500).json({ message: 'Error retrieving updated artwork' });
+          }
+          createNotification('artwork_updated', `System updated Artwork: ${title}`, row.artwork_id, 'Artwork');
+          res.json(processImageFields(row));
+        });
+      }
+    );
+  } catch (error) {
+    console.error('Artwork PUT crash:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
 });
 
 app.delete('/artworks/:id', requireAuth, (req, res) => {
@@ -3280,7 +3323,7 @@ app.get('/artist/:id', (req, res) => {
     <header>
         <nav role="navigation" aria-label="Main navigation">
             <div class="logo">
-                <img src="/img/bantayanon%20artists%20logo.jpg" alt="BanArts Logo" class="logo-img">
+                <img src="/img/bantayanon artists logo.jpg" alt="BanArts Logo" class="logo-img">
                 BanArts
             </div>
             <div class="nav-menu">
@@ -3412,32 +3455,64 @@ app.get('/artwork/:id', (req, res) => {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${artwork.title} - BanArts</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
     <header>
-        <nav>
+        <nav role="navigation" aria-label="Main navigation">
             <div class="logo">
-                <img src="/img/bantayanon%20artists%20logo.jpg" alt="BanArts Logo" class="logo-img">
+                <img src="/img/bantayanon artists logo.jpg" alt="BanArts Logo" class="logo-img">
                 BanArts
             </div>
-            <div class="search-bar">
-                <input type="text" placeholder="Search artworks, artists...">
-                <button type="submit">Search</button>
+            <div class="nav-menu">
+                <div class="search-bar">
+                    <label for="search-input" class="sr-only">Search artworks, artists...</label>
+                    <input type="text" id="search-input" placeholder="Search artworks, artists...">
+                    <button type="submit">Search</button>
+                </div>
+                <ul>
+                    <li><a href="/index.html">Home</a></li>
+                    <li><a href="/artists.html">Artists</a></li>
+                    <li><a href="/artworks.html">Artworks</a></li>
+                    <li><a href="/galleries.html">Galleries</a></li>
+                    <li><a href="/museums.html">Museums</a></li>
+                    <li><a href="/events.html">Events</a></li>
+                    <li><a href="/videos.html">Videos</a></li>
+                    <li><a href="/collections.html">Collections</a></li>
+                </ul>
+                <div class="auth-buttons">
+                    <button type="button" class="login-link">Login</button>
+                    <button type="button" class="signup-btn">Signup</button>
+                </div>
             </div>
-            <ul>
-                <li><a href="/index.html">Home</a></li>
-                <li><a href="/artists.html">Artists</a></li>
-                <li><a href="/artworks.html">Artworks</a></li>
-                <li><a href="/galleries.html">Galleries</a></li>
-                <li><a href="/museums.html">Museums</a></li>
-                <li><a href="/events.html">Events</a></li>
-                <li><a href="/videos.html">Videos</a></li>
-                <li><a href="/collections.html">Collections</a></li>
-            </ul>
-            <div class="auth-buttons">
-                <button class="login-link">Login</button>
-                <button class="signup-btn">Signup</button>
+            <div class="mobile-header-icons">
+                <div class="notification-container"></div>
+                <div class="profile-dropdown-container mobile-icon">
+                    <a href="/profile.html" class="profile-icon" id="profile-icon-link">
+                        <div class="nav-profile-avatar" id="nav-profile-avatar"></div>
+                    </a>
+                    <div class="profile-dropdown">
+                        <div class="profile-dropdown-header">
+                            <img src="/img/profile icon.webp" alt="Profile" class="dropdown-profile-icon" id="dropdown-profile-icon">
+                            <div class="dropdown-profile-name">John Doe</div>
+                            <a href="/profile.html" class="view-profile-btn">View Profile</a>
+                        </div>
+                        <div class="profile-dropdown-item">My Collection</div>
+                        <a href="/profile.html#uploads" class="profile-dropdown-item">Artworks</a>
+                        <div class="dropdown-divider"></div>
+                        <div class="profile-dropdown-item">Favorites</div>
+                        <a href="/profile.html#saved" class="profile-dropdown-item">Saves</a>
+                        <a href="/profile.html#followed" class="profile-dropdown-item">Follows</a>
+                        <div class="dropdown-divider"></div>
+                        <div class="profile-dropdown-item settings-header">Settings</div>
+                        <a href="/settings.html" class="profile-dropdown-item edit-profile-btn">Edit Profile</a>
+                        <a href="#" class="profile-dropdown-item logout-item" id="logout-btn">Logout</a>
+                    </div>
+                </div>
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu">
+                    &#9776;
+                </button>
             </div>
         </nav>
     </header>
@@ -3610,14 +3685,15 @@ app.get('/artwork/:id', (req, res) => {
   </head>
   <body>
       <header>
-          <nav>
+          <nav role="navigation" aria-label="Main navigation">
               <div class="logo">
                   <img src="/img/bantayanon artists logo.jpg" alt="BanArts Logo" class="logo-img">
                   BanArts
               </div>
               <div class="nav-menu">
                   <div class="search-bar">
-                      <input type="text" placeholder="Search artworks, artists...">
+                      <label for="search-input" class="sr-only">Search artworks, artists...</label>
+                      <input type="text" id="search-input" placeholder="Search artworks, artists...">
                       <button type="submit">Search</button>
                   </div>
                   <ul>
@@ -3631,8 +3707,8 @@ app.get('/artwork/:id', (req, res) => {
                       <li><a href="/collections.html">Collections</a></li>
                   </ul>
                   <div class="auth-buttons">
-                      <button class="login-link">Login</button>
-                      <button class="signup-btn">Signup</button>
+                      <button type="button" class="login-link">Login</button>
+                      <button type="button" class="signup-btn">Signup</button>
                   </div>
               </div>
               <div class="mobile-header-icons">
@@ -3648,11 +3724,11 @@ app.get('/artwork/:id', (req, res) => {
                               <a href="/profile.html" class="view-profile-btn">View Profile</a>
                           </div>
                           <div class="profile-dropdown-item">My Collection</div>
-                          <a href="#uploads" class="profile-dropdown-item">Artworks</a>
+                          <a href="/profile.html#uploads" class="profile-dropdown-item">Artworks</a>
                           <div class="dropdown-divider"></div>
                           <div class="profile-dropdown-item">Favorites</div>
-                          <a href="#saved" class="profile-dropdown-item">Saves</a>
-                          <a href="#followed" class="profile-dropdown-item">Follows</a>
+                          <a href="/profile.html#saved" class="profile-dropdown-item">Saves</a>
+                          <a href="/profile.html#followed" class="profile-dropdown-item">Follows</a>
                           <div class="dropdown-divider"></div>
                           <div class="profile-dropdown-item settings-header">Settings</div>
                           <a href="/settings.html" class="profile-dropdown-item edit-profile-btn">Edit Profile</a>
@@ -3696,29 +3772,29 @@ app.get('/artwork/:id', (req, res) => {
 
       <!-- Artifact Detail Modal -->
       <div id="artifact-modal" class="modal" aria-labelledby="artifact-modal-name" aria-modal="true" aria-hidden="true">
-          <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto; margin-top: 75px;">
+          <div class="modal-content" style="max-width: 900px; width: 95%; max-height: 90vh; overflow-y: auto; margin: 75px auto;">
               <span class="close" onclick="closeArtifactModal()">&times;</span>
               <div id="artifact-modal-body" style="padding: 30px;">
-                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-                      <div>
-                          <img id="artifact-modal-image" src="" alt="" style="width: 100%; border-radius: 8px; object-fit: cover; max-height: 500px;">
+                  <div class="artifact-modal-grid" style="display: flex; flex-wrap: wrap; gap: 30px;">
+                      <div style="flex: 1; min-width: 300px;">
+                          <img id="artifact-modal-image" src="" alt="" style="width: 100%; border-radius: 8px; object-fit: contain; max-height: 500px; background-color: #f8f9fa;">
                       </div>
-                      <div>
-                          <h2 id="artifact-modal-name" style="margin: 0 0 20px 0;"></h2>
-                          <div style="margin-top: 20px;">
-                              <p style="margin: 8px 0;"><strong>Artist:</strong> <span id="artifact-modal-artist">N/A</span></p>
-                              <p style="margin: 8px 0;"><strong>Type:</strong> <span id="artifact-modal-type">N/A</span></p>
-                              <p style="margin: 8px 0;"><strong>Medium:</strong> <span id="artifact-modal-medium">N/A</span></p>
-                              <p style="margin: 8px 0;"><strong>Year:</strong> <span id="artifact-modal-year">N/A</span></p>
-                              <p style="margin: 8px 0;"><strong>Dimensions:</strong> <span id="artifact-modal-dimensions">N/A</span></p>
-                              <p style="margin: 8px 0;"><strong>Weight:</strong> <span id="artifact-modal-weight">N/A</span></p>
-                              <p style="margin: 8px 0;"><strong>Location in Museum:</strong> <span id="artifact-modal-location">N/A</span></p>
-                              <p style="margin: 8px 0;"><strong>Condition:</strong> <span id="artifact-modal-condition">N/A</span></p>
-                              <p style="margin: 8px 0;"><strong>Status:</strong> <span id="artifact-modal-status">N/A</span></p>
+                      <div style="flex: 1.2; min-width: 300px;">
+                          <h2 id="artifact-modal-name" style="margin: 0 0 20px 0; color: #333; font-size: 2rem;"></h2>
+                          <div class="artifact-meta" style="margin-top: 20px;">
+                              <p style="margin: 10px 0; font-size: 1.1rem;"><strong>Artist:</strong> <span id="artifact-modal-artist">N/A</span></p>
+                              <p style="margin: 10px 0; font-size: 1.1rem;"><strong>Type:</strong> <span id="artifact-modal-type">N/A</span></p>
+                              <p style="margin: 10px 0; font-size: 1.1rem;"><strong>Medium:</strong> <span id="artifact-modal-medium">N/A</span></p>
+                              <p style="margin: 10px 0; font-size: 1.1rem;"><strong>Year:</strong> <span id="artifact-modal-year">N/A</span></p>
+                              <p style="margin: 10px 0; font-size: 1.1rem;"><strong>Dimensions:</strong> <span id="artifact-modal-dimensions">N/A</span></p>
+                              <p style="margin: 10px 0; font-size: 1.1rem;"><strong>Weight:</strong> <span id="artifact-modal-weight">N/A</span></p>
+                              <p style="margin: 10px 0; font-size: 1.1rem;"><strong>Location in Museum:</strong> <span id="artifact-modal-location">N/A</span></p>
+                              <p style="margin: 10px 0; font-size: 1.1rem;"><strong>Condition:</strong> <span id="artifact-modal-condition">N/A</span></p>
+                              <p style="margin: 10px 0; font-size: 1.1rem;"><strong>Status:</strong> <span id="artifact-modal-status">N/A</span></p>
                           </div>
-                          <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
-                              <h3 style="margin: 0 0 10px 0;">Description</h3>
-                              <p id="artifact-modal-details" style="margin: 0; line-height: 1.6;">No description available.</p>
+                          <div style="margin-top: 25px; padding-top: 20px; border-top: 1px solid #eee;">
+                              <h3 style="margin: 0 0 12px 0; color: #333;">Description</h3>
+                              <p id="artifact-modal-details" style="margin: 0; line-height: 1.7; color: #555; word-wrap: break-word; overflow-wrap: break-word;"></p>
                           </div>
                       </div>
                   </div>
@@ -3727,38 +3803,6 @@ app.get('/artwork/:id', (req, res) => {
       </div>
 
       <script src="/script.js"></script>
-      <script>
-        document.addEventListener('DOMContentLoaded', function() {
-          const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-          const navMenu = document.querySelector('.nav-menu');
-
-          if (mobileMenuToggle && navMenu) {
-            mobileMenuToggle.addEventListener('click', function(e) {
-              e.stopPropagation();
-              navMenu.classList.toggle('show');
-              const isOpen = navMenu.classList.contains('show');
-              this.setAttribute('aria-expanded', isOpen);
-              this.innerHTML = isOpen ? '&#10006;' : '&#9776;';
-            });
-
-            document.addEventListener('click', function(e) {
-              if (navMenu.classList.contains('show') && !navMenu.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
-                navMenu.classList.remove('show');
-                mobileMenuToggle.setAttribute('aria-expanded', 'false');
-                mobileMenuToggle.innerHTML = '&#9776;';
-              }
-            });
-
-            navMenu.querySelectorAll('a').forEach(link => {
-              link.addEventListener('click', function() {
-                navMenu.classList.remove('show');
-                mobileMenuToggle.setAttribute('aria-expanded', 'false');
-                mobileMenuToggle.innerHTML = '&#9776;';
-              });
-            });
-          }
-        });
-      </script>
   </body>
   </html>
         `;
@@ -3818,7 +3862,7 @@ app.get('/artwork/:id', (req, res) => {
     <header>
         <nav role="navigation" aria-label="Main navigation">
             <div class="logo">
-                <img src="/img/bantayanon%20artists%20logo.jpg" alt="BanArts Logo" class="logo-img">
+                <img src="/img/bantayanon artists logo.jpg" alt="BanArts Logo" class="logo-img">
                 BanArts
             </div>
             <div class="nav-menu">
@@ -3864,7 +3908,7 @@ app.get('/artwork/:id', (req, res) => {
                         <div class="dropdown-divider"></div>
                         <div class="profile-dropdown-item settings-header">Settings</div>
                         <a href="/settings.html" class="profile-dropdown-item edit-profile-btn">Edit Profile</a>
-                        <a href="#" class="profile-dropdown-item logout-item">Logout</a>
+                        <a href="#" class="profile-dropdown-item logout-item" id="logout-btn">Logout</a>
                     </div>
                 </div>
                 <button class="mobile-menu-toggle" aria-label="Toggle navigation menu">
@@ -4056,37 +4100,6 @@ app.get('/artwork/:id', (req, res) => {
                     closeModal();
                 }
             });
-
-            // Mobile menu toggle
-            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-            const navMenu = document.querySelector('.nav-menu');
-
-            if (mobileMenuToggle && navMenu) {
-                mobileMenuToggle.addEventListener('click', function() {
-                    navMenu.classList.toggle('show');
-                    const isOpen = navMenu.classList.contains('show');
-                    this.setAttribute('aria-expanded', isOpen);
-                    this.innerHTML = isOpen ? '&#10006;' : '&#9776;';
-                });
-
-                // Close mobile menu when clicking outside
-                document.addEventListener('click', function(e) {
-                    if (!navMenu.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
-                        navMenu.classList.remove('show');
-                        mobileMenuToggle.setAttribute('aria-expanded', 'false');
-                        mobileMenuToggle.innerHTML = '&#9776;';
-                    }
-                });
-
-                // Close mobile menu when clicking on a link
-                navMenu.querySelectorAll('a').forEach(link => {
-                    link.addEventListener('click', function() {
-                        navMenu.classList.remove('show');
-                        mobileMenuToggle.setAttribute('aria-expanded', 'false');
-                        mobileMenuToggle.innerHTML = '&#9776;';
-                    });
-                });
-            }
         });
 
         function openArtworkModal(artworkId) {

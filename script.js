@@ -53,7 +53,41 @@ function setActiveNavLink() {
 document.addEventListener('DOMContentLoaded', function() {
     updateNavbar();
     setActiveNavLink();
+    initializeMobileMenu();
 });
+
+function initializeMobileMenu() {
+    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+    const navMenu = document.querySelector('.nav-menu');
+
+    if (mobileMenuToggle && navMenu) {
+        mobileMenuToggle.addEventListener('click', function(e) {
+            e.stopPropagation();
+            navMenu.classList.toggle('show');
+            const isOpen = navMenu.classList.contains('show');
+            this.setAttribute('aria-expanded', isOpen);
+            this.innerHTML = isOpen ? '&#10006;' : '&#9776;';
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (navMenu.classList.contains('show') && !navMenu.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+                navMenu.classList.remove('show');
+                mobileMenuToggle.setAttribute('aria-expanded', 'false');
+                mobileMenuToggle.innerHTML = '&#9776;';
+            }
+        });
+
+        // Close mobile menu when clicking on a link
+        navMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', function() {
+                navMenu.classList.remove('show');
+                mobileMenuToggle.setAttribute('aria-expanded', 'false');
+                mobileMenuToggle.innerHTML = '&#9776;';
+            });
+        });
+    }
+}
 
 // Smooth scrolling for navigation links
 document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
@@ -1021,7 +1055,6 @@ function updateNavbar() {
             
             if (mobileProfileContainer) {
                 mobileProfileContainer.innerHTML = `
-                    ${adminLink}
                     <a href="/profile.html" class="profile-icon" id="mobile-profile-icon-link">
                         <div class="nav-profile-avatar" id="mobile-nav-profile-avatar">${profileIconHtml}</div>
                     </a>
@@ -1092,7 +1125,7 @@ function updateNavbar() {
                 localStorage.removeItem('userId');
                 localStorage.removeItem('userName');
                 localStorage.removeItem('userProfileImage');
-                window.location.href = 'index.html';
+                window.location.href = '/';
             });
         }
 
@@ -1108,7 +1141,7 @@ function updateNavbar() {
                 localStorage.removeItem('userId');
                 localStorage.removeItem('userName');
                 localStorage.removeItem('userProfileImage');
-                window.location.href = 'index.html';
+                window.location.href = '/';
             });
         }
 
@@ -1125,7 +1158,7 @@ function updateNavbar() {
                 localStorage.removeItem('userId');
                 localStorage.removeItem('userName');
                 localStorage.removeItem('userProfileImage');
-                window.location.href = 'index.html';
+                window.location.href = '/';
             });
         });
 
@@ -1191,14 +1224,14 @@ function updateNavbar() {
         if (savesLink) {
             savesLink.addEventListener('click', function(e) {
                 e.preventDefault();
-                window.location.href = 'profile.html#saved';
+                window.location.href = '/profile.html#saved';
             });
         }
 
         if (followsLink) {
             followsLink.addEventListener('click', function(e) {
                 e.preventDefault();
-                window.location.href = 'profile.html#followed';
+                window.location.href = '/profile.html#followed';
             });
         }
 
@@ -1535,7 +1568,12 @@ function openArtifactModal(artifactId) {
         })
         .then(artifact => {
             console.log('Loaded artifact:', artifact);
-            document.getElementById('artifact-modal-image').src = artifact.image_url || '/img/art1.jpg';
+            // Ensure image URL starts with / for absolute path
+            let imageUrl = artifact.image_url || '/img/art1.jpg';
+            if (imageUrl && !imageUrl.startsWith('/') && !imageUrl.startsWith('http')) {
+                imageUrl = '/' + imageUrl;
+            }
+            document.getElementById('artifact-modal-image').src = imageUrl;
             document.getElementById('artifact-modal-image').alt = artifact.name;
             document.getElementById('artifact-modal-name').textContent = artifact.name;
             document.getElementById('artifact-modal-artist').textContent = artifact.artist || 'N/A';
@@ -1625,7 +1663,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     closeModal();
                     
                     if (data.user.role === 'admin') {
-                        window.location.href = 'admin-dashboard.html';
+                        window.location.href = '/admin-dashboard.html';
                     } else {
                         location.reload();
                     }
@@ -1684,7 +1722,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     closeModal();
                     
                     if (data.user.role === 'admin') {
-                        window.location.href = 'admin-dashboard.html';
+                        window.location.href = '/admin-dashboard.html';
                     } else {
                         location.reload();
                     }

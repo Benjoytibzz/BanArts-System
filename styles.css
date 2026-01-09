@@ -522,7 +522,6 @@ main > section:nth-child(6) { animation-delay: 0.6s; }
     border-radius: 8px;
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    cursor: pointer;
     transform: translateY(0);
     will-change: transform, box-shadow;
 }
@@ -897,6 +896,16 @@ main > section:nth-child(6) { animation-delay: 0.6s; }
     color: #0056b3;
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 768px) {
+    .admin-button {
+        display: none;
+    }
+
+    .nav-menu.show .admin-button {
+        display: inline-flex;
+    }
 }
 
 
@@ -1932,6 +1941,13 @@ footer {
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     transform: scale(0.9);
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+#artifact-modal-details {
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .modal.show .modal-content {
@@ -2866,6 +2882,7 @@ body::before {
 .artwork-modal-image {
     flex: 1;
     text-align: center;
+    position: relative;
 }
 
 .artwork-modal-image img {
@@ -2875,6 +2892,61 @@ body::before {
     object-fit: contain;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.save-btn-overlay {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 10;
+    color: #666;
+    font-size: 18px;
+}
+
+.save-btn-overlay:hover {
+    background: white;
+    transform: scale(1.1);
+}
+
+.save-btn-overlay.saved {
+    color: #dc3545;
+    background: rgba(255, 255, 255, 0.95);
+}
+
+/* Artifact Modal Styles */
+#artifact-modal-body {
+    padding: 30px;
+}
+
+#artifact-modal-image {
+    width: 100%;
+    border-radius: 8px;
+    object-fit: cover;
+    max-height: 500px;
+    display: block;
+}
+
+/* Responsive artifact modal */
+@media (max-width: 768px) {
+    #artifact-modal-body > div {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 20px !important;
+    }
+    
+    #artifact-modal-image {
+        max-height: 300px;
+    }
 }
 
 .artwork-modal-info {
@@ -2933,39 +3005,6 @@ body::before {
     gap: 1rem;
     align-items: center;
     margin-top: 1rem;
-}
-
-.artwork-modal-actions .save-btn {
-    background: none;
-    border: 2px solid #007bff;
-    color: #007bff;
-    padding: 0.75rem 1.5rem;
-    border-radius: 25px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.artwork-modal-actions .save-btn:hover {
-    background-color: #007bff;
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
-}
-
-.artwork-modal-actions .save-btn.saved {
-    background-color: #dc3545;
-    border-color: #dc3545;
-    color: white;
-}
-
-.artwork-modal-actions .save-btn.saved:hover {
-    background-color: #c82333;
-    border-color: #c82333;
 }
 
 .view-full-details-btn {
@@ -3028,6 +3067,7 @@ body::before {
 .artwork-modal-image {
     flex: 1;
     text-align: center;
+    position: relative;
 }
 
 .artwork-modal-image img {

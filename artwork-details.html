@@ -201,47 +201,11 @@
             .artwork-details-grid {
                 grid-template-columns: 1fr;
             }
-
-            .nav-menu {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: white;
-                flex-direction: column;
-                padding: 20px;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-                z-index: 1000;
-            }
-
-            .nav-menu.show {
-                display: flex;
-            }
-
-            .nav-menu ul {
-                flex-direction: column;
-                gap: 15px;
-                margin-bottom: 20px;
-            }
-
-            .nav-menu ul li {
-                margin: 0;
-            }
-
-            .search-bar {
-                margin-bottom: 15px;
-            }
-
-            .auth-buttons {
-                flex-direction: column;
-                gap: 10px;
-            }
         }
     </style>
 </head>
 <body>
-   <header>
+    <header>
         <nav role="navigation" aria-label="Main navigation">
             <div class="logo">
                 <img src="img/bantayanon artists logo.jpg" alt="BanArts Logo" class="logo-img">
@@ -255,14 +219,14 @@
                     <div id="search-help" class="sr-only">Type to search for artworks, artists, or galleries</div>
                 </div>
                 <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="artists.html">Artists</a></li>
-                    <li><a href="artworks.html">Artworks</a></li>
-                    <li><a href="galleries.html">Galleries</a></li>
-                    <li><a href="museums.html">Museums</a></li>
-                    <li><a href="events.html">Events</a></li>
-                    <li><a href="videos.html">Videos</a></li>
-                    <li><a href="collections.html">Collections</a></li>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/artists.html">Artists</a></li>
+                    <li><a href="/artworks.html">Artworks</a></li>
+                    <li><a href="/galleries.html">Galleries</a></li>
+                    <li><a href="/museums.html">Museums</a></li>
+                    <li><a href="/events.html">Events</a></li>
+                    <li><a href="/videos.html">Videos</a></li>
+                    <li><a href="/collections.html">Collections</a></li>
                 </ul>
                 <div class="auth-buttons">
                     <button type="button" class="login-link">Login</button>
@@ -272,14 +236,14 @@
             <div class="mobile-header-icons">
                 <div class="notification-container"></div>
                 <div class="profile-dropdown-container mobile-icon">
-                    <a href="profile.html" class="profile-icon" id="profile-icon-link">
+                    <a href="/profile.html" class="profile-icon" id="profile-icon-link">
                         <div class="nav-profile-avatar" id="nav-profile-avatar"></div>
                     </a>
                     <div class="profile-dropdown">
                         <div class="profile-dropdown-header">
-                            <img src="img/profile icon.webp" alt="Profile" class="dropdown-profile-icon" id="dropdown-profile-icon">
+                            <img src="/img/profile icon.webp" alt="Profile" class="dropdown-profile-icon" id="dropdown-profile-icon">
                             <div class="dropdown-profile-name">John Doe</div>
-                            <a href="profile.html" class="view-profile-btn">View Profile</a>
+                            <a href="/profile.html" class="view-profile-btn">View Profile</a>
                         </div>
                         <div class="profile-dropdown-item">My Collection</div>
                         <a href="/profile.html#uploads" class="profile-dropdown-item">Artworks</a>
@@ -289,11 +253,11 @@
                         <a href="/profile.html#followed" class="profile-dropdown-item">Follows</a>
                         <div class="dropdown-divider"></div>
                         <div class="profile-dropdown-item settings-header">Settings</div>
-                        <a href="settings.html" class="profile-dropdown-item edit-profile-btn">Edit Profile</a>
+                        <a href="/settings.html" class="profile-dropdown-item edit-profile-btn">Edit Profile</a>
                         <a href="#" class="profile-dropdown-item logout-item">Logout</a>
                     </div>
                 </div>
-                <button class="mobile-menu-toggle" id="mobile-menu-toggle" aria-label="Toggle navigation menu">
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu">
                     &#9776;
                 </button>
             </div>
@@ -462,7 +426,8 @@
                 })
                 .then(artwork => {
                     // Load related artworks
-                    fetch(`/artworks?categories=${encodeURIComponent(artwork.categories || '')}&_limit=4`)
+                    const categoryFilter = artwork.categories ? artwork.categories.split(',')[0].trim() : '';
+                    fetch(`/artworks?categories=${encodeURIComponent(categoryFilter)}&_limit=4`)
                         .then(response => response.json())
                         .then(relatedArtworks => {
                             const filteredRelated = relatedArtworks.filter(art => art.artwork_id != id).slice(0, 4);
@@ -489,7 +454,7 @@
                     </div>
                     <div class="artwork-info">
                         <h1 class="artwork-title">${artwork.title}</h1>
-                        <p class="artwork-artist">By <a href="artist-details.html?id=${artwork.artist_id}">${artwork.artist_name || 'Unknown Artist'}</a></p>
+                        <p class="artwork-artist">By <a href="artist-details.html?id=${artwork.artist_id || ''}">${artwork.artist_name || 'Unknown Artist'}</a></p>
                         <p class="artwork-description">${artwork.description || 'No description available.'}</p>
 
                         <div class="artwork-details-grid">
@@ -513,13 +478,13 @@
                                 <div style="display: flex; align-items: center; margin-bottom: 15px;">
                                     <img src="${artwork.artist_photo || 'img/profile icon.webp'}" alt="${artwork.artist_name}" style="width: 60px; height: 60px; border-radius: 50%; margin-right: 15px; object-fit: cover; border: 2px solid #007bff;">
                                     <div>
-                                        <h4 style="margin: 0; color: #333;">${artwork.artist_name}</h4>
+                                        <h4 style="margin: 0; color: #333;">${artwork.artist_name || 'Unknown Artist'}</h4>
                                         <p style="margin: 5px 0; color: #666; font-size: 0.9rem;">${artwork.artist_category || 'Artist'}</p>
                                     </div>
                                 </div>
                                 ${artwork.artist_email ? `<p><strong>Email:</strong> ${artwork.artist_email}</p>` : ''}
                                 ${artwork.artist_contact ? `<p><strong>Phone:</strong> ${artwork.artist_contact}</p>` : ''}
-                                <p><strong>Artist Profile:</strong> <a href="artist-details.html?id=${artwork.artist_id}" target="_blank">View Full Profile</a></p>
+                                <p><strong>Artist Profile:</strong> <a href="artist-details.html?id=${artwork.artist_id || ''}" target="_blank">View Full Profile</a></p>
                             </div>
                         </div>
 
@@ -532,7 +497,7 @@
                     <h2>Related Artworks</h2>
                     <div class="artworks-grid">
                         ${relatedArtworks.map(art => `
-                            <div class="artwork-card">
+                            <div class="artwork-card" onclick="window.location.href='artwork-details.html?id=${art.artwork_id}'" style="cursor: pointer;">
                                 <img src="${art.image_url || 'img/art1.jpg'}" alt="${art.title}">
                                 <div class="artwork-card-content">
                                     <h3>${art.title}</h3>
@@ -546,94 +511,7 @@
             `;
 
             container.innerHTML = html;
-
-            // Add click handlers for related artworks
-            document.querySelectorAll('.artwork-card').forEach((card, index) => {
-                card.addEventListener('click', () => {
-                    const relatedArtwork = relatedArtworks[index];
-                    if (relatedArtwork) {
-                        window.location.href = `artwork-details.html?id=${relatedArtwork.artwork_id}`;
-                    }
-                });
-            });
-
         }
-
-        // Modal functionality
-        function openModal() {
-            document.getElementById('auth-modal').style.display = 'block';
-            document.body.classList.add('no-scroll');
-        }
-
-        function closeModal() {
-            document.getElementById('auth-modal').style.display = 'none';
-            document.body.classList.remove('no-scroll');
-        }
-
-        function openTab(tabName) {
-            const tabs = document.querySelectorAll('.tab-content');
-            const buttons = document.querySelectorAll('.tab-btn');
-            tabs.forEach(tab => tab.classList.remove('active'));
-            buttons.forEach(btn => btn.classList.remove('active'));
-            document.getElementById(tabName + '-tab').classList.add('active');
-            const activeBtn = document.querySelector(`.tab-btn[onclick*="${tabName}"]`);
-            if (activeBtn) activeBtn.classList.add('active');
-        }
-
-        // Mobile menu toggle functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-            const navMenu = document.querySelector('.nav-menu');
-
-            if (mobileMenuToggle && navMenu) {
-                mobileMenuToggle.addEventListener('click', function() {
-                    navMenu.classList.toggle('show');
-                });
-
-                // Close mobile menu when clicking outside
-                document.addEventListener('click', function(e) {
-                    if (!navMenu.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
-                        navMenu.classList.remove('show');
-                    }
-                });
-
-                // Close mobile menu when clicking on a link
-                navMenu.addEventListener('click', function(e) {
-                    if (e.target.tagName === 'A') {
-                        navMenu.classList.remove('show');
-                    }
-                });
-            }
-        });
-
-        // Event listeners for modal
-        document.addEventListener('DOMContentLoaded', function() {
-            const loginBtn = document.querySelector('.login-link');
-            const signupBtn = document.querySelector('.signup-btn');
-            const closeBtn = document.querySelector('.close');
-
-            if (loginBtn) loginBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                openModal();
-                openTab('login');
-            });
-
-            if (signupBtn) signupBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                openModal();
-                openTab('signup');
-            });
-
-            if (closeBtn) closeBtn.addEventListener('click', closeModal);
-
-            // Close modal when clicking outside
-            window.addEventListener('click', function(e) {
-                const modal = document.getElementById('auth-modal');
-                if (e.target === modal) {
-                    closeModal();
-                }
-            });
-        });
     </script>
 </body>
 </html>

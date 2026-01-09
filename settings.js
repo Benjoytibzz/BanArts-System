@@ -232,33 +232,4 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, 5000);
     }
-
-    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-    const navMenu = document.querySelector('.nav-menu');
-
-    if (mobileMenuToggle && navMenu) {
-        mobileMenuToggle.addEventListener('click', function() {
-            navMenu.classList.toggle('show');
-            const isOpen = navMenu.classList.contains('show');
-            this.setAttribute('aria-expanded', isOpen);
-            this.innerHTML = isOpen ? '&#10006;' : '&#9776;';
-        });
-
-        document.addEventListener('click', function(e) {
-            if (!navMenu.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
-                navMenu.classList.remove('show');
-                mobileMenuToggle.setAttribute('aria-expanded', 'false');
-                mobileMenuToggle.innerHTML = '&#9776;';
-            }
-        });
-
-        navMenu.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', function() {
-                navMenu.classList.remove('show');
-                mobileMenuToggle.setAttribute('aria-expanded', 'false');
-                mobileMenuToggle.innerHTML = '&#9776;';
-            });
-        });
-    }
-
 });

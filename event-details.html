@@ -7,13 +7,41 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
     <style>
+        .event-tabs {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            padding: 1rem 0;
+            display: flex;
+            gap: 2rem;
+            justify-content: flex-start;
+            border-bottom: 2px solid #2063f3;
+        }
         .event-tab-btn {
+            border: none;
+            background: none;
+            color: inherit;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2em;
             outline: none !important;
+            padding: 0.5rem 0;
+            transition: all 0.3s ease;
         }
         .event-tab-btn.active {
             color: #007bff !important;
             text-decoration: underline !important;
             text-underline-offset: 8px;
+        }
+        @media (max-width: 768px) {
+            .event-tabs {
+                gap: 1rem;
+                justify-content: flex-start;
+                padding: 1rem 0;
+            }
+            .event-tab-btn {
+                font-size: 1em;
+            }
         }
     </style>
 </head>
@@ -32,14 +60,14 @@
                     <div id="search-help" class="sr-only">Type to search for artworks, artists, or galleries</div>
                 </div>
                 <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="artists.html">Artists</a></li>
-                    <li><a href="artworks.html">Artworks</a></li>
-                    <li><a href="galleries.html">Galleries</a></li>
-                    <li><a href="museums.html">Museums</a></li>
-                    <li><a href="events.html">Events</a></li>
-                    <li><a href="videos.html">Videos</a></li>
-                    <li><a href="collections.html">Collections</a></li>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/artists.html">Artists</a></li>
+                    <li><a href="/artworks.html">Artworks</a></li>
+                    <li><a href="/galleries.html">Galleries</a></li>
+                    <li><a href="/museums.html">Museums</a></li>
+                    <li><a href="/events.html">Events</a></li>
+                    <li><a href="/videos.html">Videos</a></li>
+                    <li><a href="/collections.html">Collections</a></li>
                 </ul>
                 <div class="auth-buttons">
                     <button type="button" class="login-link">Login</button>
@@ -49,14 +77,14 @@
             <div class="mobile-header-icons">
                 <div class="notification-container"></div>
                 <div class="profile-dropdown-container mobile-icon">
-                    <a href="profile.html" class="profile-icon" id="profile-icon-link">
+                    <a href="/profile.html" class="profile-icon" id="profile-icon-link">
                         <div class="nav-profile-avatar" id="nav-profile-avatar"></div>
                     </a>
                     <div class="profile-dropdown">
                         <div class="profile-dropdown-header">
-                            <img src="img/profile icon.webp" alt="Profile" class="dropdown-profile-icon" id="dropdown-profile-icon">
+                            <img src="/img/profile icon.webp" alt="Profile" class="dropdown-profile-icon" id="dropdown-profile-icon">
                             <div class="dropdown-profile-name">John Doe</div>
-                            <a href="profile.html" class="view-profile-btn">View Profile</a>
+                            <a href="/profile.html" class="view-profile-btn">View Profile</a>
                         </div>
                         <div class="profile-dropdown-item">My Collection</div>
                         <a href="/profile.html#uploads" class="profile-dropdown-item">Artworks</a>
@@ -66,7 +94,7 @@
                         <a href="/profile.html#followed" class="profile-dropdown-item">Follows</a>
                         <div class="dropdown-divider"></div>
                         <div class="profile-dropdown-item settings-header">Settings</div>
-                        <a href="settings.html" class="profile-dropdown-item edit-profile-btn">Edit Profile</a>
+                        <a href="/settings.html" class="profile-dropdown-item edit-profile-btn">Edit Profile</a>
                         <a href="#" class="profile-dropdown-item logout-item">Logout</a>
                     </div>
                 </div>
@@ -77,17 +105,18 @@
         </nav>
     </header>
 
-    <main style="margin-top: 300px;">
+    <main style="margin-top: 100px;">
         <section class="event-details" style="padding: 2rem;">
-            <img id="event-image" src="img/bantayanon artists logo.jpg" alt="Event Logo" style="width: 130px; height: auto; float: left; margin-right: 1rem; margin-bottom: 1rem;">
+            <img id="event-image" src="img/bantayanon artists logo.jpg" alt="Event Logo" style="width: 100px; height: auto; float: left; margin-right: 1rem; margin-bottom: 1rem;">
             <h2 id="event-name">Event Name</h2>
             <p><strong>Date:</strong> <span id="event-date"></span></p>
             <p><strong>Location:</strong> <span id="event-location"></span></p><br>
-            <div class="event-tabs" style="position: sticky; top: 0; background: white; z-index: 10; padding: 1rem 0;">
-                <button class="event-tab-btn active" onclick="switchEventTab(event, 'overview')" style="border: none; background: none; color: inherit; cursor: pointer; margin-right: 21rem; font-weight: bold; font-size: 1.2em;">Overview</button>
-                <button class="event-tab-btn" onclick="switchEventTab(event, 'artworks')" style="border: none; background: none; color: inherit; cursor: pointer; margin-right: 21rem; font-weight: bold; font-size: 1.2em;">Artworks</button>
-                <button class="event-tab-btn" onclick="switchEventTab(event, 'exhibitors')" style="border: none; background: none; color: inherit; cursor: pointer; font-weight: bold; font-size: 1.2em;">Exhibitors</button>
+            <div class="event-tabs">
+                <button class="event-tab-btn active" onclick="switchEventTab(event, 'overview')">Overview</button>
+                <button class="event-tab-btn" onclick="switchEventTab(event, 'artworks')">Artworks</button>
+                <button class="event-tab-btn" onclick="switchEventTab(event, 'exhibitors')">Exhibitors</button>
             </div>
+            <br>
             <br>
             <div id="overview-content">
                 <h3>Overview</h3>
@@ -145,15 +174,7 @@
                 <h2>Login</h2>
                 <form>
                     <input type="email" placeholder="Email" required>
-                    <div class="password-field">
-                        <input type="password" class="password-input" placeholder="Password" required>
-                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility(this)" aria-label="Show password">
-                            <i class="far fa-eye"></i>
-                        </button>
-                    </div>
-                    <div class="forgot-password-container">
-                        <a href="#" id="forgot-password-link">Forgot Password?</a>
-                    </div>
+                    <input type="password" placeholder="Password" required>
                     <button type="submit">Login</button>
                 </form>
                 <div class="divider">or</div>
@@ -170,12 +191,7 @@
                 <form>
                     <input type="text" placeholder="Full Name" required>
                     <input type="email" placeholder="Email" required>
-                    <div class="password-field">
-                        <input type="password" class="password-input" placeholder="Password" required>
-                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility(this)" aria-label="Show password">
-                            <i class="far fa-eye"></i>
-                        </button>
-                    </div>
+                    <input type="password" placeholder="Password" required>
                     <input type="password" placeholder="Confirm Password" required>
                     <button type="submit">Signup</button>
                 </form>
@@ -186,50 +202,7 @@
                     <a href="/auth/twitter" class="social-link apple"><img src="img/twitter-x.webp" alt="Twitter"></a>
                 </div>
                 <p class="legal-text">By clicking Sign Up or Continue with Email, Twitter, Google, or Facebook, you agree to BanArts Terms and Conditions and Privacy Policy. This site is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply.</p>
-            
-    <!-- Forgot Password Modal -->
-    <div id="forgot-password-modal" class="modal" role="dialog" aria-labelledby="forgot-password-title" aria-modal="true" aria-hidden="true">
-        <div class="modal-content">
-            <span class="close-forgot-password close" aria-label="Close modal">&times;</span>
-            <div class="tab-content active">
-                <img src="img/bantayanon artists logo.jpg" alt="BanArts Logo" class="modal-logo">
-                <h2 id="forgot-password-title">Change Password</h2>
-                <p class="modal-subtitle">Securely update your account credentials</p>
-                <form id="forgot-password-form">
-                    <div class="input-group">
-                        <i class="fas fa-envelope input-icon"></i>
-                        <input type="email" id="reset-email" placeholder="Email Address" required>
-                    </div>
-                    <div class="password-field">
-                        <div class="input-group">
-                            <i class="fas fa-lock input-icon"></i>
-                            <input type="password" id="reset-new-password" class="password-input" placeholder="New Password" required>
-                        </div>
-                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility(this)" aria-label="Show password">
-                            <i class="far fa-eye"></i>
-                        </button>
-                    </div>
-                    <div class="password-field">
-                        <div class="input-group">
-                            <i class="fas fa-shield-alt input-icon"></i>
-                            <input type="password" id="reset-confirm-password" class="password-input" placeholder="Confirm New Password" required>
-                        </div>
-                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility(this)" aria-label="Show password">
-                            <i class="far fa-eye"></i>
-                        </button>
-                    </div>
-                    <button type="submit" class="submit-btn">Update Password</button>
-                    <div id="forgot-password-error" class="error-message" style="display: none;"></div>
-                    <div id="forgot-password-success" class="success-message" style="display: none;"></div>
-                </form>
-                <div class="back-to-login">
-                    <a href="#" id="back-to-login-link"><i class="fas fa-arrow-left"></i> Back to Login</a>
-                </div>
             </div>
-        </div>
-    </div>
-
-</div>
         </div>
     </div>
 

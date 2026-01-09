@@ -6,45 +6,6 @@
     <title>BanArts - Modern Art Platform</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
-    <style>
-        @media (max-width: 768px) {
-            .nav-menu {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: #007bff;
-                flex-direction: column;
-                padding: 20px;
-                box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-                z-index: 1000;
-            }
-
-            .nav-menu.show {
-                display: flex;
-            }
-
-            .nav-menu ul {
-                flex-direction: column;
-                gap: 15px;
-                margin-bottom: 20px;
-            }
-
-            .nav-menu ul li {
-                margin: 0;
-            }
-
-            .search-bar {
-                margin-bottom: 15px;
-            }
-
-            .auth-buttons {
-                flex-direction: column;
-                gap: 10px;
-            }
-        }
-    </style>
 </head>
 <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -62,7 +23,7 @@
                     <div id="search-help" class="sr-only">Type to search for artworks, artists, or galleries</div>
                 </div>
                 <ul>
-                    <li><a href="index.html">Home</a></li>
+                    <li><a href="/">Home</a></li>
                     <li><a href="artists.html">Artists</a></li>
                     <li><a href="artworks.html">Artworks</a></li>
                     <li><a href="galleries.html">Galleries</a></li>
@@ -385,7 +346,6 @@
 
             updatePagination(page);
             attachSaveButtonListeners();
-            attachCardClickListeners();
         }
 
         function updateArtworkCount() {
@@ -485,22 +445,6 @@
             });
         }
 
-        function attachCardClickListeners() {
-            document.querySelectorAll('.artwork-card').forEach(card => {
-                card.addEventListener('click', function(event) {
-                    // Don't navigate if clicking on a button
-                    if (event.target.tagName === 'BUTTON' || event.target.closest('button')) {
-                        return;
-                    }
-                    const artworkId = this.getAttribute('data-artwork-id');
-                    if (artworkId) {
-                        window.location.href = `/artwork/${artworkId}`;
-                    }
-                });
-            });
-        }
-
-        // Filter artworks by category
         function filterArtworks(category) {
             if (category === 'all') {
                 filteredArtworks = [...allArtworks];
@@ -625,37 +569,6 @@
             document.getElementById('year-filter').addEventListener('change', applyFilters);
             document.getElementById('sort-filter').addEventListener('change', applyFilters);
             document.getElementById('clear-filters').addEventListener('click', clearFilters);
-
-            // Mobile menu toggle
-            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-            const navMenu = document.querySelector('.nav-menu');
-
-            if (mobileMenuToggle && navMenu) {
-                mobileMenuToggle.addEventListener('click', function() {
-                    navMenu.classList.toggle('show');
-                    const isOpen = navMenu.classList.contains('show');
-                    this.setAttribute('aria-expanded', isOpen);
-                    this.innerHTML = isOpen ? '&#10006;' : '&#9776;';
-                });
-
-                // Close mobile menu when clicking outside
-                document.addEventListener('click', function(e) {
-                    if (!navMenu.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
-                        navMenu.classList.remove('show');
-                        mobileMenuToggle.setAttribute('aria-expanded', 'false');
-                        mobileMenuToggle.innerHTML = '&#9776;';
-                    }
-                });
-
-                // Close mobile menu when clicking on a link
-                navMenu.querySelectorAll('a').forEach(link => {
-                    link.addEventListener('click', function() {
-                        navMenu.classList.remove('show');
-                        mobileMenuToggle.setAttribute('aria-expanded', 'false');
-                        mobileMenuToggle.innerHTML = '&#9776;';
-                    });
-                });
-            }
         });
     </script>
     <script src="/socket.io/socket.io.js"></script>

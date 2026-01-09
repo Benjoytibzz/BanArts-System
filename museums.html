@@ -23,14 +23,14 @@
                     <div id="search-help" class="sr-only">Type to search for artworks, artists, or galleries</div>
                 </div>
                 <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="artists.html">Artists</a></li>
-                    <li><a href="artworks.html">Artworks</a></li>
-                    <li><a href="galleries.html">Galleries</a></li>
-                    <li><a href="museums.html">Museums</a></li>
-                    <li><a href="events.html">Events</a></li>
-                    <li><a href="videos.html">Videos</a></li>
-                    <li><a href="collections.html">Collections</a></li>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/artists.html">Artists</a></li>
+                    <li><a href="/artworks.html">Artworks</a></li>
+                    <li><a href="/galleries.html">Galleries</a></li>
+                    <li><a href="/museums.html">Museums</a></li>
+                    <li><a href="/events.html">Events</a></li>
+                    <li><a href="/videos.html">Videos</a></li>
+                    <li><a href="/collections.html">Collections</a></li>
                 </ul>
                 <div class="auth-buttons">
                     <button type="button" class="login-link">Login</button>
@@ -40,14 +40,14 @@
             <div class="mobile-header-icons">
                 <div class="notification-container"></div>
                 <div class="profile-dropdown-container mobile-icon">
-                    <a href="profile.html" class="profile-icon" id="profile-icon-link">
+                    <a href="/profile.html" class="profile-icon" id="profile-icon-link">
                         <div class="nav-profile-avatar" id="nav-profile-avatar"></div>
                     </a>
                     <div class="profile-dropdown">
                         <div class="profile-dropdown-header">
-                            <img src="img/profile icon.webp" alt="Profile" class="dropdown-profile-icon" id="dropdown-profile-icon">
+                            <img src="/img/profile icon.webp" alt="Profile" class="dropdown-profile-icon" id="dropdown-profile-icon">
                             <div class="dropdown-profile-name">John Doe</div>
-                            <a href="profile.html" class="view-profile-btn">View Profile</a>
+                            <a href="/profile.html" class="view-profile-btn">View Profile</a>
                         </div>
                         <div class="profile-dropdown-item">My Collection</div>
                         <a href="/profile.html#uploads" class="profile-dropdown-item">Artworks</a>
@@ -57,7 +57,7 @@
                         <a href="/profile.html#followed" class="profile-dropdown-item">Follows</a>
                         <div class="dropdown-divider"></div>
                         <div class="profile-dropdown-item settings-header">Settings</div>
-                        <a href="settings.html" class="profile-dropdown-item edit-profile-btn">Edit Profile</a>
+                        <a href="/settings.html" class="profile-dropdown-item edit-profile-btn">Edit Profile</a>
                         <a href="#" class="profile-dropdown-item logout-item">Logout</a>
                     </div>
                 </div>
@@ -264,37 +264,6 @@
         // Load museums on page load
         document.addEventListener('DOMContentLoaded', function() {
             loadMuseums();
-
-            // Mobile menu toggle
-            const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
-            const navMenu = document.querySelector('.nav-menu');
-
-            if (mobileMenuToggle && navMenu) {
-                mobileMenuToggle.addEventListener('click', function() {
-                    navMenu.classList.toggle('show');
-                    const isOpen = navMenu.classList.contains('show');
-                    this.setAttribute('aria-expanded', isOpen);
-                    this.innerHTML = isOpen ? '&#10006;' : '&#9776;';
-                });
-
-                // Close mobile menu when clicking outside
-                document.addEventListener('click', function(e) {
-                    if (!navMenu.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
-                        navMenu.classList.remove('show');
-                        mobileMenuToggle.setAttribute('aria-expanded', 'false');
-                        mobileMenuToggle.innerHTML = '&#9776;';
-                    }
-                });
-
-                // Close mobile menu when clicking on a link
-                navMenu.querySelectorAll('a').forEach(link => {
-                    link.addEventListener('click', function() {
-                        navMenu.classList.remove('show');
-                        mobileMenuToggle.setAttribute('aria-expanded', 'false');
-                        mobileMenuToggle.innerHTML = '&#9776;';
-                    });
-                });
-            }
         });
     </script>
     <script src="/socket.io/socket.io.js"></script>
