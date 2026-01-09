@@ -6,6 +6,32 @@ function getUserProfileImageKey() {
     return `userProfileImage_${userId || userEmail || 'default'}`;
 }
 
+function validatePassword(password) {
+    const minLength = 8;
+    const maxLength = 32;
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasLowercase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    if (password.length < minLength || password.length > maxLength) {
+        return { valid: false, message: `Password must be between ${minLength} and ${maxLength} characters long.` };
+    }
+    if (!hasUppercase) {
+        return { valid: false, message: 'Password must contain at least one uppercase letter.' };
+    }
+    if (!hasLowercase) {
+        return { valid: false, message: 'Password must contain at least one lowercase letter.' };
+    }
+    if (!hasNumbers) {
+        return { valid: false, message: 'Password must contain at least one number.' };
+    }
+    if (!hasSpecialChar) {
+        return { valid: false, message: 'Password must contain at least one special character (!@#$%^&*(),.?":{}|<>).' };
+    }
+    return { valid: true };
+}
+
 
 function setActiveNavLink() {
     const currentPath = window.location.pathname;
@@ -514,8 +540,9 @@ if (forgotPasswordForm) forgotPasswordForm.addEventListener('submit', async func
         return;
     }
 
-    if (newPassword.length < 4) {
-        errorDiv.textContent = 'Password must be at least 4 characters.';
+    const passwordCheck = validatePassword(newPassword);
+    if (!passwordCheck.valid) {
+        errorDiv.textContent = passwordCheck.message;
         errorDiv.style.display = 'block';
         return;
     }
@@ -1690,6 +1717,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
             if (password !== confirmPassword) {
                 errorDiv.textContent = 'Passwords do not match';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            const passwordCheck = validatePassword(password);
+            if (!passwordCheck.valid) {
+                errorDiv.textContent = passwordCheck.message;
                 errorDiv.style.display = 'block';
                 return;
             }

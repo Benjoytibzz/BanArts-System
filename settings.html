@@ -110,7 +110,17 @@
                         <label for="current-password">Current Password:</label>
                         <input type="password" id="current-password" placeholder="Enter your current password" required>
                         <label for="new-password">New Password:</label>
-                        <input type="password" id="new-password" placeholder="Enter new password (min 4 characters)" required>
+                        <div class="password-requirements">
+                            New password must contain:
+                            <ul>
+                                <li>8-32 characters</li>
+                                <li>At least one uppercase letter</li>
+                                <li>At least one lowercase letter</li>
+                                <li>At least one number</li>
+                                <li>At least one special character</li>
+                            </ul>
+                        </div>
+                        <input type="password" id="new-password" placeholder="Enter new password (min 8 characters)" required>
                         <label for="confirm-password">Confirm New Password:</label>
                         <input type="password" id="confirm-password" placeholder="Confirm your new password" required>
                         <button type="submit" id="change-password-btn">Change Password</button>

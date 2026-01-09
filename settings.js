@@ -6,6 +6,32 @@ function getUserProfileImageKey() {
     return `userProfileImage_${userId || userEmail || 'default'}`;
 }
 
+function validatePassword(password) {
+    const minLength = 8;
+    const maxLength = 32;
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasLowercase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    if (password.length < minLength || password.length > maxLength) {
+        return { valid: false, message: `Password must be between ${minLength} and ${maxLength} characters long.` };
+    }
+    if (!hasUppercase) {
+        return { valid: false, message: 'Password must contain at least one uppercase letter.' };
+    }
+    if (!hasLowercase) {
+        return { valid: false, message: 'Password must contain at least one lowercase letter.' };
+    }
+    if (!hasNumbers) {
+        return { valid: false, message: 'Password must contain at least one number.' };
+    }
+    if (!hasSpecialChar) {
+        return { valid: false, message: 'Password must contain at least one special character (!@#$%^&*(),.?":{}|<>).' };
+    }
+    return { valid: true };
+}
+
 async function checkAuthProviderStatus(email) {
     if (!email) return;
 
@@ -157,8 +183,9 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        if (newPassword.length < 4) {
-            showPasswordMessage('New password must be at least 4 characters long', 'error');
+        const passwordCheck = validatePassword(newPassword);
+        if (!passwordCheck.valid) {
+            showPasswordMessage(passwordCheck.message, 'error');
             return;
         }
 

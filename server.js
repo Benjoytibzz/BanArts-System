@@ -113,6 +113,32 @@ const getImagePath = (path) => {
     return path.startsWith('/') ? path : `/${path}`;
 };
 
+const validatePassword = (password) => {
+    const minLength = 8;
+    const maxLength = 32;
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasLowercase = /[a-z]/.test(password);
+    const hasNumbers = /\d/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+    if (password.length < minLength || password.length > maxLength) {
+        return { valid: false, message: `Password must be between ${minLength} and ${maxLength} characters long.` };
+    }
+    if (!hasUppercase) {
+        return { valid: false, message: 'Password must contain at least one uppercase letter.' };
+    }
+    if (!hasLowercase) {
+        return { valid: false, message: 'Password must contain at least one lowercase letter.' };
+    }
+    if (!hasNumbers) {
+        return { valid: false, message: 'Password must contain at least one number.' };
+    }
+    if (!hasSpecialChar) {
+        return { valid: false, message: 'Password must contain at least one special character (!@#$%^&*(),.?":{}|<>).' };
+    }
+    return { valid: true };
+};
+
 const processImageFields = (row) => {
     if (!row) return row;
     const fields = [
@@ -1115,6 +1141,11 @@ app.post('/signup', (req, res) => {
     return res.status(400).json({ success: false, message: 'Email and password required' });
   }
 
+  const passwordCheck = validatePassword(password);
+  if (!passwordCheck.valid) {
+    return res.status(400).json({ success: false, message: passwordCheck.message });
+  }
+
   db.run(
     'INSERT INTO Users (email, password, first_name, last_name, user_type, role) VALUES (?, ?, ?, ?, ?, ?)',
     [email, password, first_name || '', last_name || '', 'visitor', 'user'],
@@ -1196,8 +1227,9 @@ app.post('/change-password', (req, res) => {
       return res.status(401).json({ success: false, message: 'Current password is incorrect' });
     }
 
-    if (newPassword.length < 4) {
-      return res.status(400).json({ success: false, message: 'New password must be at least 4 characters' });
+    const passwordCheck = validatePassword(newPassword);
+    if (!passwordCheck.valid) {
+      return res.status(400).json({ success: false, message: passwordCheck.message });
     }
 
     db.run(
@@ -1237,6 +1269,11 @@ app.post('/auth/forgot-password', (req, res) => {
         success: false, 
         message: `Cannot change password for accounts registered with ${user.oauth_provider}.` 
       });
+    }
+
+    const passwordCheck = validatePassword(newPassword);
+    if (!passwordCheck.valid) {
+      return res.status(400).json({ success: false, message: passwordCheck.message });
     }
 
     db.run(
