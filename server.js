@@ -851,45 +851,82 @@ function checkArtworksColumns(done) {
 }
 
 function addGalleryColumns(done) {
-    // Check Galleries table columns
-    db.all("PRAGMA table_info(Galleries)", (err, rows) => {
-      if (err) {
-        console.error('Error getting Galleries schema:', err);
-        addGalleryThumbnailsColumns(done);
-        return;
-      }
+     // Check Galleries table columns
+     db.all("PRAGMA table_info(Galleries)", (err, rows) => {
+       if (err) {
+         console.error('Error getting Galleries schema:', err);
+         addMuseumColumns(done);
+         return;
+       }
 
-      const columns = rows.map(row => row.name);
-      const missingColumns = [];
+       const columns = rows.map(row => row.name);
+       const missingColumns = [];
 
-      if (!columns.includes('type')) missingColumns.push('type');
-      if (!columns.includes('collections')) missingColumns.push('collections');
-      if (!columns.includes('email')) missingColumns.push('email');
-      if (!columns.includes('phone')) missingColumns.push('phone');
-      if (!columns.includes('is_featured')) missingColumns.push('is_featured INTEGER DEFAULT 0');
+       if (!columns.includes('type')) missingColumns.push('type');
+       if (!columns.includes('collections')) missingColumns.push('collections');
+       if (!columns.includes('email')) missingColumns.push('email');
+       if (!columns.includes('phone')) missingColumns.push('phone');
+       if (!columns.includes('is_featured')) missingColumns.push('is_featured INTEGER DEFAULT 0');
 
-      if (missingColumns.length > 0) {
-        console.log('Adding missing columns to Galleries:', missingColumns);
-        let added = 0;
-        missingColumns.forEach(col => {
-          const colDef = col.includes(' ') ? col : `${col} TEXT`;
-          db.run(`ALTER TABLE Galleries ADD COLUMN ${colDef}`, (alterErr) => {
-            if (alterErr) {
-              console.error(`Error adding ${col}:`, alterErr);
-            } else {
-              console.log(`✅ Added ${col} column`);
-            }
-            added++;
-            if (added === missingColumns.length) {
-              addGalleryThumbnailsColumns(done);
-            }
-          });
-        });
-      } else {
-        addGalleryThumbnailsColumns(done);
-      }
-    });
-  }
+       if (missingColumns.length > 0) {
+         console.log('Adding missing columns to Galleries:', missingColumns);
+         let added = 0;
+         missingColumns.forEach(col => {
+           const colDef = col.includes(' ') ? col : `${col} TEXT`;
+           db.run(`ALTER TABLE Galleries ADD COLUMN ${colDef}`, (alterErr) => {
+             if (alterErr) {
+               console.error(`Error adding ${col}:`, alterErr);
+             } else {
+               console.log(`✅ Added ${col} column`);
+             }
+             added++;
+             if (added === missingColumns.length) {
+               addMuseumColumns(done);
+             }
+           });
+         });
+       } else {
+         addMuseumColumns(done);
+       }
+     });
+   }
+
+function addMuseumColumns(done) {
+     // Check Museums table columns
+     db.all("PRAGMA table_info(Museums)", (err, rows) => {
+       if (err) {
+         console.error('Error getting Museums schema:', err);
+         addGalleryThumbnailsColumns(done);
+         return;
+       }
+
+       const columns = rows.map(row => row.name);
+       const missingColumns = [];
+
+       if (!columns.includes('is_featured')) missingColumns.push('is_featured INTEGER DEFAULT 0');
+
+       if (missingColumns.length > 0) {
+         console.log('Adding missing columns to Museums:', missingColumns);
+         let added = 0;
+         missingColumns.forEach(col => {
+           const colDef = col.includes(' ') ? col : `${col} TEXT`;
+           db.run(`ALTER TABLE Museums ADD COLUMN ${colDef}`, (alterErr) => {
+             if (alterErr) {
+               console.error(`Error adding ${col}:`, alterErr);
+             } else {
+               console.log(`✅ Added ${col} column`);
+             }
+             added++;
+             if (added === missingColumns.length) {
+               addGalleryThumbnailsColumns(done);
+             }
+           });
+         });
+       } else {
+         addGalleryThumbnailsColumns(done);
+       }
+     });
+   }
 
 
 function addGalleryThumbnailsColumns(done) {
