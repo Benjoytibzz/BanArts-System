@@ -154,6 +154,14 @@
             margin-bottom: 40px;
         }
 
+        .contact-section p {
+            text-align: left;
+        }
+
+        .contact-section h3 {
+            text-align: center;
+        }
+
         .related-artworks {
             margin-top: 50px;
         }
@@ -293,6 +301,14 @@
                 text-align: left;
             }
 
+            .painting-text {
+                text-align: left;
+            }
+
+            .contact-section h4 {
+                text-align: left;
+            }
+
             .contact-section img {
                 margin-right: 15px !important;
                 margin-bottom: 0 !important;
@@ -321,7 +337,7 @@
                     <div id="search-help" class="sr-only">Type to search for artworks, artists, or galleries</div>
                 </div>
                 <ul>
-                    <li><a href="/">Home</a></li>
+                    <li><a href="/index.html">Home</a></li>
                     <li><a href="/artists.html">Artists</a></li>
                     <li><a href="/artworks.html">Artworks</a></li>
                     <li><a href="/galleries.html">Galleries</a></li>
@@ -585,9 +601,9 @@
                                 <h3>Contact the Artist</h3>
                                 <div style="display: flex; flex-direction: column; align-items: center; margin-bottom: 15px;">
                                     <img src="${artwork.artist_photo || 'img/profile icon.webp'}" alt="${artwork.artist_name}" style="width: 60px; height: 60px; border-radius: 50%; margin-bottom: 10px; object-fit: cover; border: 2px solid #007bff;">
-                                    <div style="text-align: center;">
+                                    <div style="text-align: left;">
                                         <h4 style="margin: 0; color: #333;">${artwork.artist_name || 'Unknown Artist'}</h4>
-                                        <p style="margin: 5px 0; color: #666; font-size: 0.9rem;">${artwork.artist_category || 'Artist'}</p>
+                                        <p class="painting-text" style="margin: 5px 0; color: #666; font-size: 0.9rem;">Painting</p>
                                         ${artwork.artist_email ? `<p style="margin: 5px 0;"><strong>Email:</strong> ${artwork.artist_email}</p>` : ''}
                                         ${artwork.artist_contact ? `<p style="margin: 5px 0;"><strong>Phone:</strong> ${artwork.artist_contact}</p>` : ''}
                                         <p style="margin: 5px 0;"><strong>Artist Profile:</strong> <a href="artist-details.html?id=${artwork.artist_id || ''}" target="_blank">View Full Profile</a></p>
