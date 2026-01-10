@@ -113,9 +113,11 @@
         }
 
         .artworks-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            display: flex;
+            overflow-x: auto;
             gap: 20px;
+            padding: 10px 0;
+            scrollbar-width: thin;
         }
 
         .artwork-card {
@@ -490,7 +492,7 @@
                     <h2>Artworks by ${artist.name}</h2>
                     <div class="artworks-grid">
                         ${artworks.map(artwork => `
-                            <div class="artwork-card" onclick="viewArtworkDetails(${artwork.artwork_id})">
+                            <div class="artwork-card" style="flex-shrink: 0;" onclick="viewArtworkDetails(${artwork.artwork_id})">
                                 <img src="${artwork.image_url || 'img/art1.jpg'}" alt="${artwork.title}">
                                 <div class="artwork-card-content">
                                     <h3>${artwork.title}</h3>
