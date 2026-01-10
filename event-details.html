@@ -388,18 +388,21 @@
             const imageModal = document.getElementById('image-modal');
             const closeBtn = document.getElementById('close-image-modal');
 
+            function closeImageModal() {
+                imageModal.classList.remove('show');
+                document.body.style.overflow = 'auto';
+                // Refresh the page to ensure sticky positioning works
+                window.location.reload();
+            }
+
             if (closeBtn) {
-                closeBtn.onclick = function() {
-                    imageModal.classList.remove('show');
-                    document.body.style.overflow = 'auto';
-                };
+                closeBtn.onclick = closeImageModal;
             }
 
             if (imageModal) {
                 imageModal.onclick = function(event) {
-                    if (event.target === imageModal) {
-                        imageModal.classList.remove('show');
-                        document.body.style.overflow = 'auto';
+                    if (!event.target.closest('.modal-content')) {
+                        closeImageModal();
                     }
                 };
             }
