@@ -305,10 +305,6 @@ Thank you for being part of BanArts where Bantayanon creativity lives, grows, an
                             <span class="detail-label">Size:</span>
                             <span id="artwork-modal-size">N/A</span>
                         </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Location:</span>
-                            <span id="artwork-modal-location">N/A</span>
-                        </div>
                     </div>
                     <div class="artwork-modal-actions">
                         <a href="#" class="view-full-details-btn" id="artwork-modal-view-full">View Full Details</a>
@@ -524,7 +520,6 @@ Thank you for being part of BanArts where Bantayanon creativity lives, grows, an
             const medium = document.getElementById('artwork-modal-medium');
             const year = document.getElementById('artwork-modal-year');
             const size = document.getElementById('artwork-modal-size');
-            const location = document.getElementById('artwork-modal-location');
             const saveBtn = document.getElementById('artwork-modal-save-btn');
             const viewFullBtn = document.getElementById('artwork-modal-view-full');
 
@@ -541,7 +536,6 @@ Thank you for being part of BanArts where Bantayanon creativity lives, grows, an
             if (medium) medium.textContent = artwork.medium || 'N/A';
             if (year) year.textContent = artwork.year || 'N/A';
             if (size) size.textContent = artwork.size || 'N/A';
-            if (location) location.textContent = artwork.location || 'N/A';
 
             // Set up save button
             if (saveBtn) {

@@ -43,6 +43,35 @@
                 font-size: 1em;
             }
         }
+
+        /* Image Viewer Modal Styles */
+        #image-modal {
+            background-color: rgba(0,0,0,0.9);
+            display:flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #image-modal .modal-content {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #close-image-modal {
+            z-index: 10001;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        #close-image-modal:hover {
+            color: #bbb;
+        }
+        .artwork-card img {
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .artwork-card img:hover {
+            transform: scale(1.02);
+        }
     </style>
 </head>
 <body>
@@ -206,6 +235,14 @@
         </div>
     </div>
 
+    <!-- Image Viewing Modal -->
+    <div id="image-modal" class="modal">
+        <div class="modal-content" style="max-width: 90%; max-height: 90vh; background: transparent; padding: 0; box-shadow: none;">
+            <span class="close" id="close-image-modal" style="color: white; font-size: 40px; position: absolute; top: 10px; right: 25px;">&times;</span>
+            <img id="modal-image-large" src="" style="width: 100%; height: auto; border-radius: 8px;">
+        </div>
+    </div>
+
     <script src="script.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -251,7 +288,7 @@
                                     const artworksGrid = document.getElementById('artworks-grid');
                                     artworksGrid.innerHTML = artworks.map(artwork => `
                                         <div class="artwork-card">
-                                            <img src="${artwork.image_url || 'img/art1.jpg'}" alt="${artwork.title}">
+                                            <img src="${artwork.image_url || 'img/art1.jpg'}" alt="${artwork.title}" onclick="openImageModal('${artwork.image_url || 'img/art1.jpg'}')">
                                             <h3>${artwork.title}</h3>
                                             <p>By ${artwork.artist_name || 'Unknown Artist'}</p>
                                         </div>
@@ -263,7 +300,7 @@
                             const artworksGrid = document.getElementById('artworks-grid');
                             artworksGrid.innerHTML = event.artworks.map(artwork => `
                                 <div class="artwork-card">
-                                    <img src="${artwork.image_url || 'img/art1.jpg'}" alt="${artwork.title}">
+                                    <img src="${artwork.image_url || 'img/art1.jpg'}" alt="${artwork.title}" onclick="openImageModal('${artwork.image_url || 'img/art1.jpg'}')">
                                     <h3>${artwork.title}</h3>
                                     <p>By ${artwork.artist_name || 'Unknown Artist'}</p>
                                 </div>
@@ -335,6 +372,38 @@
                 target.style.textDecoration = 'underline';
             }
         }
+
+        function openImageModal(imgUrl) {
+            const modal = document.getElementById('image-modal');
+            const modalImg = document.getElementById('modal-image-large');
+            if (modal && modalImg) {
+                modalImg.src = imgUrl;
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        // Close image modal logic
+        document.addEventListener('DOMContentLoaded', function() {
+            const imageModal = document.getElementById('image-modal');
+            const closeBtn = document.getElementById('close-image-modal');
+
+            if (closeBtn) {
+                closeBtn.onclick = function() {
+                    imageModal.classList.remove('show');
+                    document.body.style.overflow = 'auto';
+                };
+            }
+
+            if (imageModal) {
+                imageModal.onclick = function(event) {
+                    if (event.target === imageModal) {
+                        imageModal.classList.remove('show');
+                        document.body.style.overflow = 'auto';
+                    }
+                };
+            }
+        });
     </script>
 </body>
 </html>
