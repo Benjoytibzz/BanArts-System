@@ -583,16 +583,16 @@
 
                             <div class="contact-section">
                                 <h3>Contact the Artist</h3>
-                                <div style="display: flex; align-items: center; margin-bottom: 15px;">
+                                <div style="display: flex; align-items: flex-start; margin-bottom: 15px;">
                                     <img src="${artwork.artist_photo || 'img/profile icon.webp'}" alt="${artwork.artist_name}" style="width: 60px; height: 60px; border-radius: 50%; margin-right: 15px; object-fit: cover; border: 2px solid #007bff;">
                                     <div>
                                         <h4 style="margin: 0; color: #333;">${artwork.artist_name || 'Unknown Artist'}</h4>
                                         <p style="margin: 5px 0; color: #666; font-size: 0.9rem;">${artwork.artist_category || 'Artist'}</p>
+                                        ${artwork.artist_email ? `<p style="margin: 5px 0;"><strong>Email:</strong> ${artwork.artist_email}</p>` : ''}
+                                        ${artwork.artist_contact ? `<p style="margin: 5px 0;"><strong>Phone:</strong> ${artwork.artist_contact}</p>` : ''}
+                                        <p style="margin: 5px 0;"><strong>Artist Profile:</strong> <a href="artist-details.html?id=${artwork.artist_id || ''}" target="_blank">View Full Profile</a></p>
                                     </div>
                                 </div>
-                                ${artwork.artist_email ? `<p><strong>Email:</strong> ${artwork.artist_email}</p>` : ''}
-                                ${artwork.artist_contact ? `<p><strong>Phone:</strong> ${artwork.artist_contact}</p>` : ''}
-                                <p><strong>Artist Profile:</strong> <a href="artist-details.html?id=${artwork.artist_id || ''}" target="_blank">View Full Profile</a></p>
                             </div>
                         </div>
                         <a href="artworks.html" class="back-btn">Back to Artworks</a>
