@@ -49,6 +49,49 @@
         .artwork-card .heart-icon.unsaved i {
             color: #ccc;
         }
+
+        .artist-card {
+            position: relative;
+        }
+
+        .artist-card .heart-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            color: #ff4757;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .artist-card .heart-icon:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .artist-card .heart-icon.followed {
+            color: #ff4757;
+        }
+
+        .artist-card .heart-icon.unfollowed {
+            color: #ccc;
+        }
+
+        .artist-card .heart-icon.followed i {
+            color: #ff4757;
+        }
+
+        .artist-card .heart-icon.unfollowed i {
+            color: #ccc;
+        }
     </style>
 </head>
 <body>
@@ -460,11 +503,18 @@ Thank you for being part of BanArts where Bantayanon creativity lives, grows, an
                 card.style.flexShrink = '0';
                 card.innerHTML = `
                     <img src="${artist.photo_url || 'img/profile icon.webp'}" alt="${artist.name}">
+                    <div class="heart-icon unfollowed" data-artist-id="${artist.artist_id}">
+                        <i class="fas fa-heart"></i>
+                    </div>
                     <h3>${artist.name}</h3>
                     <p>${artist.about ? artist.about.substring(0, 100) + '...' : 'Artist from Bantayan Island'}</p>
                     <button class="artist-link" onclick="openAuthModalForArtist(${artist.artist_id})">View Profile</button>
                 `;
                 grid.appendChild(card);
+
+                // Attach heart icon listener for following
+                const heartIcon = card.querySelector('.heart-icon');
+                attachFollowIconListener(heartIcon, artist.artist_id);
             });
         }
 
@@ -765,6 +815,90 @@ Thank you for being part of BanArts where Bantayanon creativity lives, grows, an
             } else {
                 heartIcon.classList.add('unsaved');
                 heartIcon.classList.remove('saved');
+            }
+        }
+
+        function attachFollowIconListener(icon, artistId) {
+            const userId = localStorage.getItem('userId');
+            const userEmail = localStorage.getItem('userEmail');
+
+            if (userId && artistId) {
+                fetch(`/followed-artists/${userId}`)
+                    .then(response => response.json())
+                    .then(followedArtists => {
+                        const isFollowed = followedArtists.some(artist => artist.artist_id == artistId);
+                        updateFollowIcon(icon, isFollowed);
+                    })
+                    .catch(err => {
+                        console.error('Error checking follow status:', err);
+                        updateFollowIcon(icon, false);
+                    });
+            } else {
+                updateFollowIcon(icon, false);
+            }
+
+            icon.addEventListener('click', function(e) {
+                e.stopPropagation(); // Prevent card click
+
+                if (!userEmail) {
+                    openModal();
+                    openTab('signup');
+                    return;
+                }
+
+                const artistId = this.getAttribute('data-artist-id');
+                const userId = localStorage.getItem('userId');
+
+                if (!artistId || !userId) {
+                    alert('Artist ID or User ID not found. Please try again.');
+                    return;
+                }
+
+                // Toggle the class immediately
+                const wasFollowed = this.classList.contains('followed');
+                if (wasFollowed) {
+                    this.classList.remove('followed');
+                    this.classList.add('unfollowed');
+                } else {
+                    this.classList.remove('unfollowed');
+                    this.classList.add('followed');
+                }
+
+                fetch('/follow-artist', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'user-id': userId
+                    },
+                    body: JSON.stringify({ artist_id: artistId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    updateFollowIcon(this, data.followed);
+                    console.log(data.message);
+                })
+                .catch(err => {
+                    console.error('Follow error:', err);
+                    alert('Error updating follow status. Please try again.');
+                    // Revert the toggle
+                    if (wasFollowed) {
+                        this.classList.add('followed');
+                        this.classList.remove('unfollowed');
+                    } else {
+                        this.classList.add('unfollowed');
+                        this.classList.remove('followed');
+                    }
+                });
+            });
+        }
+
+        function updateFollowIcon(followIcon, isFollowed) {
+            if (isFollowed) {
+                followIcon.classList.add('followed');
+                followIcon.classList.remove('unfollowed');
+            } else {
+                followIcon.classList.add('unfollowed');
+                followIcon.classList.remove('followed');
             }
         }
 
