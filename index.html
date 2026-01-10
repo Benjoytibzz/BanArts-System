@@ -102,8 +102,8 @@ Thank you for being part of BanArts where Bantayanon creativity lives, grows, an
                 <h2>Featured Artists</h2>
                 <a href="artists.html" class="view-all-link">View All Artists</a>
             </div>
-            <div class="artists-grid" id="featuredArtistsGrid">
-                <!-- Featured artists will be loaded dynamically -->
+            <div class="artists-grid" id="featuredArtistsGrid" style="display: flex; overflow-x: auto; gap: 20px; padding: 10px 0; scrollbar-width: thin;">
+              <!-- Featured artists will be loaded dynamically -->
             </div>
         </section>
 
@@ -412,6 +412,8 @@ Thank you for being part of BanArts where Bantayanon creativity lives, grows, an
             artists.forEach(artist => {
                 const card = document.createElement('div');
                 card.className = 'artist-card';
+                card.style.cursor = 'pointer';
+                card.style.flexShrink = '0';
                 card.innerHTML = `
                     <img src="${artist.photo_url || 'img/profile icon.webp'}" alt="${artist.name}">
                     <h3>${artist.name}</h3>
