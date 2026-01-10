@@ -955,29 +955,38 @@ function addGalleryThumbnailsColumnsHelper(done) {
 }
 
 function insertDefaultData(done) {
-  // Insert default admin user (only if not exists)
-  db.get('SELECT * FROM Users WHERE email = ?', ['admin@banarts.com'], (err, row) => {
-    if (err) {
-      console.error('Error checking admin user:', err);
-      if (done) done(err);
-    } else if (!row) {
-      db.run('INSERT INTO Users (email, password, first_name, last_name, role) VALUES (?, ?, ?, ?, ?)', ['admin@banarts.com', 'bantayanonartists2026***', 'Admin', 'User', 'admin'], (err) => {
-        if (err) {
-          console.error('Error creating admin user:', err);
-        } else {
-          console.log('Admin user created');
-        }
+  // Clear all notifications to keep bell empty for new users
+  db.run('DELETE FROM Notifications', (deleteErr) => {
+    if (deleteErr) {
+      console.error('Error clearing notifications:', deleteErr);
+    } else {
+      console.log('Notifications cleared');
+    }
+
+    // Insert default admin user (only if not exists)
+    db.get('SELECT * FROM Users WHERE email = ?', ['admin@banarts.com'], (err, row) => {
+      if (err) {
+        console.error('Error checking admin user:', err);
+        if (done) done(err);
+      } else if (!row) {
+        db.run('INSERT INTO Users (email, password, first_name, last_name, role) VALUES (?, ?, ?, ?, ?)', ['admin@banarts.com', 'bantayanonartists2026***', 'Admin', 'User', 'admin'], (err) => {
+          if (err) {
+            console.error('Error creating admin user:', err);
+          } else {
+            console.log('Admin user created');
+          }
+          console.log('Database initialized - preserving existing data');
+          if (done) done();
+        });
+      } else {
+        // Force update admin password to the new one
+        db.run('UPDATE Users SET password = ? WHERE email = ?', ['bantayanonartists2026***', 'admin@banarts.com'], (err) => {
+          if (err) console.error('Error updating admin password:', err);
+        });
         console.log('Database initialized - preserving existing data');
         if (done) done();
-      });
-    } else {
-      // Force update admin password to the new one
-      db.run('UPDATE Users SET password = ? WHERE email = ?', ['bantayanonartists2026***', 'admin@banarts.com'], (err) => {
-        if (err) console.error('Error updating admin password:', err);
-      });
-      console.log('Database initialized - preserving existing data');
-      if (done) done();
-    }
+      }
+    });
   });
 }
 
@@ -1059,6 +1068,17 @@ const requireAdmin = (req, res, next) => {
 app.get('/test', (req, res) => {
   console.log('=== TEST ENDPOINT CALLED ===');
   res.json({ message: 'Server is working!', timestamp: new Date().toISOString() });
+});
+
+// Clear notifications (temporary)
+app.delete('/clear-notifications', (req, res) => {
+  db.run('DELETE FROM Notifications', function(err) {
+    if (err) {
+      console.error('Error clearing notifications:', err);
+      return res.status(500).json({ message: 'Server error' });
+    }
+    res.json({ message: 'Notifications cleared', deleted: this.changes });
+  });
 });
 
 // Notifications endpoints
@@ -1417,7 +1437,6 @@ app.post('/artists', upload.single('photo'), (req, res) => {
           return res.status(500).json({ message: 'Server error', error: err.message });
         }
         console.log('Artist created successfully:', row);
-        createNotification('artist_added', `System added new Artist: ${name}`, row.artist_id, 'Artist');
         res.json(processImageFields(row));
       });
     }
@@ -1445,7 +1464,6 @@ app.put('/artists/:id', upload.single('photo'), (req, res) => {
           console.error('Get updated artist error:', err);
           return res.status(500).json({ message: 'Server error' });
         }
-        createNotification('artist_updated', `System updated Artist: ${name}`, row.artist_id, 'Artist');
         res.json(processImageFields(row));
       });
     }
@@ -1557,7 +1575,6 @@ app.post('/artworks', upload.single('image'), (req, res) => {
           if (!row) {
             return res.status(500).json({ message: 'Error retrieving created artwork' });
           }
-          createNotification('artwork_added', `System added new Artwork: ${title}`, row.artwork_id, 'Artwork');
           res.json(processImageFields(row));
         });
       }
@@ -1598,7 +1615,6 @@ app.put('/artworks/:id', upload.single('image'), (req, res) => {
           if (!row) {
             return res.status(500).json({ message: 'Error retrieving updated artwork' });
           }
-          createNotification('artwork_updated', `System updated Artwork: ${title}`, row.artwork_id, 'Artwork');
           res.json(processImageFields(row));
         });
       }
@@ -1685,7 +1701,6 @@ app.post('/galleries', requireAuth, upload.single('image'), (req, res) => {
           console.error('Get inserted gallery error:', err);
           return res.status(500).json({ message: 'Server error' });
         }
-        createNotification('gallery_added', `System added new Gallery: ${name}`, row.gallery_id, 'Gallery');
         res.json(processImageFields(row));
       });
     }
@@ -1712,7 +1727,6 @@ app.put('/galleries/:id', requireAuth, upload.single('image'), (req, res) => {
           console.error('Get updated gallery error:', err);
           return res.status(500).json({ message: 'Server error' });
         }
-        createNotification('gallery_updated', `System updated Gallery: ${name}`, row.gallery_id, 'Gallery');
         res.json(processImageFields(row));
       });
     }
@@ -1785,7 +1799,6 @@ app.delete('/galleries/:id', requireAuth, (req, res) => {
            console.error('Get inserted gallery featured artwork error:', err);
            return res.status(500).json({ message: 'Server error' });
          }
-         createNotification('gallery_featured_artwork_added', `System added new Gallery Featured Artwork: ${title}`, row.gallery_featured_id, 'GalleryFeaturedArtwork');
          res.json(processImageFields(row));
        });
      }
@@ -1813,7 +1826,6 @@ app.delete('/galleries/:id', requireAuth, (req, res) => {
            console.error('Get updated gallery featured artwork error:', err);
            return res.status(500).json({ message: 'Server error' });
          }
-         createNotification('gallery_featured_artwork_updated', `System updated Gallery Featured Artwork: ${title}`, row.gallery_featured_id, 'GalleryFeaturedArtwork');
          res.json(processImageFields(row));
        });
      }
@@ -2168,7 +2180,6 @@ app.post('/events', requireAuth, upload.fields([
              row.exhibitors = [];
            }
          }
-         createNotification('event_added', `System added new Event: ${name}`, row.event_id, 'Event');
          res.json(processImageFields(row));
        });
      }
@@ -2270,7 +2281,6 @@ app.put('/events/:id', requireAuth, upload.fields([
              row.exhibitors = [];
            }
          }
-         createNotification('event_updated', `System updated Event: ${name}`, row.event_id, 'Event');
          res.json(processImageFields(row));
        });
      }
@@ -2331,7 +2341,6 @@ app.post('/videos', requireAuth, (req, res) => {
           console.error('Get inserted video error:', err);
           return res.status(500).json({ message: 'Server error' });
         }
-        createNotification('video_added', `System added new Video: ${title}`, row.video_id, 'Video');
         res.json(processImageFields(row));
       });
     }
@@ -2357,7 +2366,6 @@ app.put('/videos/:id', requireAuth, (req, res) => {
           console.error('Get updated video error:', err);
           return res.status(500).json({ message: 'Server error' });
         }
-        createNotification('video_updated', `System updated Video: ${title}`, row.video_id, 'Video');
         res.json(processImageFields(row));
       });
     }
@@ -2423,7 +2431,6 @@ app.post('/collections', requireAuth, uploadCollections.single('collector_image'
                console.error('Get inserted collection error:', err);
                return res.status(500).json({ message: 'Server error' });
             }
-            createNotification('collection_added', `System added new Collection: ${name_final}`, row.collection_id, 'Collection');
             res.json(processImageFields(row));
          });
       }
@@ -2454,7 +2461,6 @@ app.put('/collections/:id', requireAuth, uploadCollections.single('collector_ima
                console.error('Get updated collection error:', err);
                return res.status(500).json({ message: 'Server error' });
             }
-            createNotification('collection_updated', `System updated Collection: ${name_final}`, row.collection_id, 'Collection');
             res.json(processImageFields(row));
          });
       }
@@ -2610,7 +2616,6 @@ app.post('/artifacts', requireAuth, upload.single('image'), (req, res) => {
           console.error('Get inserted artifact error:', err);
           return res.status(500).json({ message: 'Server error' });
         }
-        createNotification('artifact_added', `System added new Artifact: ${name}`, row.artifact_id, 'Artifact');
         res.json(processImageFields(row));
       });
     }
@@ -2642,7 +2647,6 @@ app.put('/artifacts/:id', requireAuth, upload.single('image'), (req, res) => {
           console.error('Get updated artifact error:', err);
           return res.status(500).json({ message: 'Server error' });
         }
-        createNotification('artifact_updated', `System updated Artifact: ${name}`, row.artifact_id, 'Artifact');
         res.json(processImageFields(row));
       });
     }
@@ -2995,7 +2999,6 @@ app.post('/featured-artworks', requireAuth, upload.single('image'), (req, res) =
           console.error('Get inserted featured artwork error:', err);
           return res.status(500).json({ message: 'Server error' });
         }
-        createNotification('featured_artwork_added', `System added new Featured Artwork: ${name}`, row.id, 'FeaturedArtwork');
         res.json(processImageFields(row));
       });
     }
@@ -3572,7 +3575,6 @@ app.get('/artwork/:id', (req, res) => {
                             <li><strong>Medium:</strong> ${artwork.medium || 'N/A'}</li>
                             <li><strong>Dimensions:</strong> ${artwork.size || 'N/A'}</li>
                             <li><strong>Year:</strong> ${artwork.year || 'N/A'}</li>
-                            <li><strong>Location:</strong> ${artwork.location || 'N/A'}</li>
                             <li><strong>Price:</strong> ${artwork.price || 'N/A'}</li>
                             ${artwork.certificate ? `<li><strong>Certificate of Authenticity:</strong> ${artwork.certificate}</li>` : ''}
                             ${artwork.signature ? `<li><strong>Signature:</strong> ${artwork.signature}</li>` : ''}
@@ -3602,7 +3604,7 @@ app.get('/artwork/:id', (req, res) => {
         </section>
     </main>
 
-    <footer>
+   <footer>
         <div class="footer-content">
             <div class="footer-section">
                 <h3>About BanArts</h3>
@@ -3610,17 +3612,19 @@ app.get('/artwork/:id', (req, res) => {
             </div>
             <div class="footer-section">
                 <h3>Contact Us</h3>
-                <p>Email: info@banarts.com<br>Phone: +63 123 456 7890<br>Address: Bantayan Island, Cebu, Philippines</p>
+                <p>Email: bantayanonartists@gmail.com<br>Phone: 09481766048<br>Address: Bantayan Island, Cebu, Philippines</p>
             </div>
             <div class="footer-section">
                 <h3>Follow Us</h3>
-                <a href="#" class="social-link">Facebook</a><br>
-                <a href="#" class="social-link">Instagram</a><br>
-                <a href="#" class="social-link">Twitter</a>
+                <div class="social-icons">
+                    <a href="#" class="social-icon-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon-link" aria-label="Gmail"><i class="fas fa-envelope"></i></a>
+                    <a href="#" class="social-icon-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2023 BanArts. All rights reserved.</p>
+            <p>&copy; 2026 BanArts. All rights reserved.</p>
         </div>
     </footer>
 
@@ -3988,7 +3992,7 @@ app.get('/artwork/:id', (req, res) => {
 
     </main>
 
-    <footer>
+  <footer>
         <div class="footer-content">
             <div class="footer-section">
                 <h3>About BanArts</h3>
@@ -3996,17 +4000,19 @@ app.get('/artwork/:id', (req, res) => {
             </div>
             <div class="footer-section">
                 <h3>Contact Us</h3>
-                <p>Email: info@banarts.com<br>Phone: +63 123 456 7890<br>Address: Bantayan Island, Cebu, Philippines</p>
+                <p>Email: bantayanonartists@gmail.com<br>Phone: 09481766048<br>Address: Bantayan Island, Cebu, Philippines</p>
             </div>
             <div class="footer-section">
                 <h3>Follow Us</h3>
-                <a href="#" class="social-link">Facebook</a><br>
-                <a href="#" class="social-link">Instagram</a><br>
-                <a href="#" class="social-link">Twitter</a>
+                <div class="social-icons">
+                    <a href="#" class="social-icon-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon-link" aria-label="Gmail"><i class="fas fa-envelope"></i></a>
+                    <a href="#" class="social-icon-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2023 BanArts. All rights reserved.</p>
+            <p>&copy; 2026 BanArts. All rights reserved.</p>
         </div>
     </footer>
 

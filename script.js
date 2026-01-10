@@ -809,6 +809,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         function selectItem(item) {
+            const userId = localStorage.getItem('userId');
+            if (!userId) {
+                openModal();
+                openTab('signup');
+                hideDropdown();
+                input.value = '';
+                return;
+            }
             window.location.href = item.url;
             hideDropdown();
             input.value = '';
