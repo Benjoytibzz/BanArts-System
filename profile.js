@@ -228,6 +228,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const modal = document.getElementById('artwork-modal');
             if (modal) {
                 modal.classList.remove('show');
+                modal.style.opacity = '';
                 modal.setAttribute('aria-hidden', 'true');
                 document.body.classList.remove('no-scroll');
                 setTimeout(() => {
