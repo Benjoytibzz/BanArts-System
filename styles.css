@@ -2628,6 +2628,10 @@ input[type="password"]::-ms-clear {
         padding-left: 0;
     }
 
+    .artist-header-title {
+        justify-content: center;
+    }
+
     .artist-photo, .artwork-image {
         width: 150px;
         height: 150px;
