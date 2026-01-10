@@ -450,6 +450,9 @@ Thank you for being part of BanArts where Bantayanon creativity lives, grows, an
                 card.setAttribute('data-artwork-id', artwork.artwork_id);
                 card.innerHTML = `
                     <img src="${artwork.image_url || 'img/art1.jpg'}" alt="${artwork.title}">
+                    <div class="heart-icon unsaved" data-artwork-id="${artwork.artwork_id}">
+                        <i class="fas fa-heart"></i>
+                    </div>
                     <div class="artwork-card-content">
                         <h3>${artwork.title}</h3>
                         <p>By ${artwork.artist_name || 'Unknown Artist'}</p>
