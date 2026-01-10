@@ -193,6 +193,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         this.style.transformOrigin = 'center';
                         this.style.transform = 'scale(1)';
                     });
+                    // Add click to open modal
+                    newImg.addEventListener('click', function() {
+                        openArtworkModal(this.src);
+                    });
                     // Save to localStorage
                     const uploadsKey = getUserUploadsKey();
                     let uploads = JSON.parse(localStorage.getItem(uploadsKey) || '[]');
@@ -200,6 +204,58 @@ document.addEventListener('DOMContentLoaded', function() {
                     localStorage.setItem(uploadsKey, JSON.stringify(uploads));
                 };
                 reader.readAsDataURL(file);
+            }
+        });
+        
+        // Function to open artwork modal
+        function openArtworkModal(imageSrc) {
+            const modal = document.getElementById('artwork-modal');
+            const img = document.getElementById('artwork-modal-img');
+        
+            if (modal && img) {
+                img.src = imageSrc;
+                modal.style.display = 'flex';
+                modal.style.zIndex = '10000';
+                modal.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('no-scroll');
+            }
+        }
+        
+        // Function to close artwork modal
+        function closeArtworkModal() {
+            const modal = document.getElementById('artwork-modal');
+            if (modal) {
+                modal.classList.remove('show');
+                modal.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('no-scroll');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 300);
+            }
+        }
+        
+        // Event listeners for modal
+        document.addEventListener('DOMContentLoaded', function() {
+            const artworkModal = document.getElementById('artwork-modal');
+            if (artworkModal) {
+                const closeBtn = artworkModal.querySelector('.close');
+                if (closeBtn) {
+                    closeBtn.addEventListener('click', closeArtworkModal);
+                }
+        
+                // Close modal when clicking outside
+                window.addEventListener('click', function(e) {
+                    if (e.target === artworkModal) {
+                        closeArtworkModal();
+                    }
+                });
+        
+                // Close modal with Escape key
+                document.addEventListener('keydown', function(e) {
+                    if (e.key === 'Escape' && artworkModal.style.display === 'flex') {
+                        closeArtworkModal();
+                    }
+                });
             }
         });
 
@@ -228,6 +284,10 @@ document.addEventListener('DOMContentLoaded', function() {
             img.addEventListener('mouseleave', function() {
                 this.style.transformOrigin = 'center';
                 this.style.transform = 'scale(1)';
+            });
+            // Add click to open modal
+            img.addEventListener('click', function() {
+                openArtworkModal(this.src);
             });
             // Add remove functionality
             const removeBtn = card.querySelector('.remove-btn');
@@ -262,6 +322,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     newImg.addEventListener('mouseleave', function() {
                         this.style.transformOrigin = 'center';
                         this.style.transform = 'scale(1)';
+                    });
+                    // Add click to open modal
+                    newImg.addEventListener('click', function() {
+                        openArtworkModal(this.src);
                     });
                     const newRemoveBtn = newCard.querySelector('.remove-btn');
                     newRemoveBtn.addEventListener('click', function() {
