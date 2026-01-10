@@ -6,6 +6,50 @@
     <title>BanArts - Modern Art Platform</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .artwork-image-container {
+            position: relative;
+        }
+
+        .artwork-image-container .heart-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            color: #ff4757;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .artwork-image-container .heart-icon:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .artwork-image-container .heart-icon.saved {
+            color: #ff4757;
+        }
+
+        .artwork-image-container .heart-icon.unsaved {
+            color: #ccc;
+        }
+
+        .artwork-image-container .heart-icon.saved i {
+            color: #ff4757;
+        }
+
+        .artwork-image-container .heart-icon.unsaved i {
+            color: #ccc;
+        }
+    </style>
 </head>
 <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>

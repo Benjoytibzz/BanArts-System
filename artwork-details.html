@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Artwork Details - BanArts</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .artwork-details-container {
             max-width: 1200px;
@@ -24,11 +25,54 @@
             max-width: 500px;
         }
 
+        .artwork-image {
+            position: relative;
+        }
+
         .artwork-image img {
             width: 100%;
             height: auto;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .heart-icon {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            color: #ff4757;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .heart-icon:hover {
+            transform: scale(1.1);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .heart-icon.saved {
+            color: #ff4757;
+        }
+
+        .heart-icon.unsaved {
+            color: #ccc;
+        }
+
+        .heart-icon.saved i {
+            color: #ff4757;
+        }
+
+        .heart-icon.unsaved i {
+            color: #ccc;
         }
 
         .artwork-info {
@@ -132,6 +176,7 @@
             overflow: hidden;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             transition: transform 0.3s;
+            position: relative;
         }
 
         .artwork-card:hover {
@@ -503,6 +548,9 @@
                 <div class="artwork-header">
                     <div class="artwork-image">
                         <img src="${artwork.image_url || 'img/art1.jpg'}" alt="${artwork.title}">
+                        <div class="heart-icon unsaved" id="heart-icon" data-artwork-id="${artwork.artwork_id}">
+                            <i class="fas fa-heart"></i>
+                        </div>
                     </div>
                     <div class="artwork-info">
                         <h1 class="artwork-title">${artwork.title}</h1>
@@ -550,6 +598,9 @@
                         ${relatedArtworks.map(art => `
                             <div class="artwork-card" onclick="window.location.href='artwork-details.html?id=${art.artwork_id}'" style="cursor: pointer; flex-shrink: 0;">
                                 <img src="${art.image_url || 'img/art1.jpg'}" alt="${art.title}">
+                                <div class="heart-icon unsaved" data-artwork-id="${art.artwork_id}">
+                                    <i class="fas fa-heart"></i>
+                                </div>
                                 <div class="artwork-card-content">
                                     <h3>${art.title}</h3>
                                     <p>By ${art.artist_name || 'Unknown Artist'}</p>
@@ -562,6 +613,181 @@
             `;
 
             container.innerHTML = html;
+
+            // Initialize heart icon after HTML is inserted
+            initializeHeartIcon(artwork.artwork_id);
+
+            // Attach listeners to related artworks heart icons
+            document.querySelectorAll('.related-artworks .heart-icon').forEach(icon => {
+                const artworkId = icon.getAttribute('data-artwork-id');
+                const userId = localStorage.getItem('userId');
+                const userEmail = localStorage.getItem('userEmail');
+
+                if (userId && artworkId) {
+                    fetch(`/saved-artworks/${userId}`)
+                        .then(response => response.json())
+                        .then(savedArtworks => {
+                            const isSaved = savedArtworks.some(artwork => artwork.artwork_id == artworkId);
+                            updateHeartIcon(icon, isSaved);
+                        })
+                        .catch(err => {
+                            console.error('Error checking save status:', err);
+                            updateHeartIcon(icon, false);
+                        });
+                } else {
+                    updateHeartIcon(icon, false);
+                }
+
+                icon.addEventListener('click', function(e) {
+                    e.stopPropagation(); // Prevent card click
+
+                    if (!userEmail) {
+                        if (typeof openModal === 'function') {
+                            openModal();
+                            openTab('signup');
+                        }
+                        return;
+                    }
+
+                    const artworkId = this.getAttribute('data-artwork-id');
+                    const userId = localStorage.getItem('userId');
+
+                    if (!artworkId || !userId) {
+                        alert('Artwork ID or User ID not found. Please try again.');
+                        return;
+                    }
+
+                    // Toggle the class immediately
+                    const wasSaved = this.classList.contains('saved');
+                    if (wasSaved) {
+                        this.classList.remove('saved');
+                        this.classList.add('unsaved');
+                    } else {
+                        this.classList.remove('unsaved');
+                        this.classList.add('saved');
+                    }
+
+                    fetch('/save-artwork', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'user-id': userId
+                        },
+                        body: JSON.stringify({ artwork_id: artworkId })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        updateHeartIcon(this, data.saved);
+                        console.log(data.message);
+                    })
+                    .catch(err => {
+                        console.error('Save error:', err);
+                        alert('Error updating save status. Please try again.');
+                        // Revert the toggle
+                        if (wasSaved) {
+                            this.classList.add('saved');
+                            this.classList.remove('unsaved');
+                        } else {
+                            this.classList.add('unsaved');
+                            this.classList.remove('saved');
+                        }
+                    });
+                });
+            });
+        }
+
+        function initializeHeartIcon(artworkId) {
+            const heartIcon = document.getElementById('heart-icon');
+            if (!heartIcon) return;
+
+            const userId = localStorage.getItem('userId');
+            const userEmail = localStorage.getItem('userEmail');
+
+            if (userId && artworkId) {
+                // Check if user saved this artwork
+                fetch(`/saved-artworks/${userId}`)
+                    .then(response => response.json())
+                    .then(savedArtworks => {
+                        const isSaved = savedArtworks.some(artwork => artwork.artwork_id == artworkId);
+                        updateHeartIcon(heartIcon, isSaved);
+                    })
+                    .catch(err => {
+                        console.error('Error checking save status:', err);
+                        updateHeartIcon(heartIcon, false);
+                    });
+            } else {
+                updateHeartIcon(heartIcon, false);
+            }
+
+            heartIcon.addEventListener('click', function() {
+                if (!userEmail) {
+                    // Open login modal if not logged in
+                    if (typeof openModal === 'function') {
+                        openModal();
+                        openTab('signup');
+                    }
+                    return;
+                }
+
+                if (!artworkId) {
+                    alert('Artwork ID not found. Please try again.');
+                    return;
+                }
+
+                // Toggle the class immediately
+                const wasSaved = this.classList.contains('saved');
+                if (wasSaved) {
+                    this.classList.remove('saved');
+                    this.classList.add('unsaved');
+                } else {
+                    this.classList.remove('unsaved');
+                    this.classList.add('saved');
+                }
+
+                // Call save/unsave API
+                fetch('/save-artwork', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'user-id': userId
+                    },
+                    body: JSON.stringify({ artwork_id: artworkId })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error('Server error');
+                    }
+                })
+                .then(data => {
+                    updateHeartIcon(this, data.saved);
+                    // Optional: Show success message
+                    console.log(data.message);
+                })
+                .catch(err => {
+                    console.error('Save error:', err);
+                    alert('Error updating save status. Please try again.');
+                    // Revert the toggle
+                    if (wasSaved) {
+                        this.classList.add('saved');
+                        this.classList.remove('unsaved');
+                    } else {
+                        this.classList.add('unsaved');
+                        this.classList.remove('saved');
+                    }
+                });
+            });
+        }
+
+        function updateHeartIcon(heartIcon, isSaved) {
+            if (isSaved) {
+                heartIcon.classList.add('saved');
+                heartIcon.classList.remove('unsaved');
+            } else {
+                heartIcon.classList.add('unsaved');
+                heartIcon.classList.remove('saved');
+            }
         }
     </script>
 </body>

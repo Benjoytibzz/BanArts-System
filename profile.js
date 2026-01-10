@@ -343,10 +343,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     const card = document.createElement('div');
                     card.className = 'artwork-card';
                     card.innerHTML = `
-                        <img src="${artwork.image_url || 'img/art1.jpg'}" alt="${artwork.title}">
+                        <div class="artwork-image-container">
+                            <img src="${artwork.image_url || 'img/art1.jpg'}" alt="${artwork.title}">
+                            <div class="heart-icon saved" data-artwork-id="${artwork.artwork_id}">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                        </div>
                         <h3>${artwork.title}</h3>
                         <p>${artwork.medium || 'Artwork'}</p>
-                        <button class="save-btn saved" data-artwork-id="${artwork.artwork_id}">♥</button>
                     `;
                     artworksGrid.appendChild(card);
 
@@ -355,8 +359,9 @@ document.addEventListener('DOMContentLoaded', function() {
                         openArtworkModal(this.src);
                     });
 
-                    const saveBtn = card.querySelector('.save-btn');
-                    saveBtn.addEventListener('click', function() {
+                    const saveBtn = card.querySelector('.heart-icon');
+                    saveBtn.addEventListener('click', function(e) {
+                        e.stopPropagation(); // Prevent card click
                         const artworkId = this.getAttribute('data-artwork-id');
                         fetch('/save-artwork', {
                             method: 'POST',
