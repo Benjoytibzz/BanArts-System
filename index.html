@@ -470,20 +470,18 @@ Thank you for being part of BanArts where Bantayanon creativity lives, grows, an
 
         async function loadFeaturedMuseums() {
             const grid = document.getElementById('featuredMuseumsGrid');
-            const selectedIds = JSON.parse(localStorage.getItem('featuredMuseums') || '[]');
-            if (selectedIds.length === 0) {
-                grid.innerHTML = '<p>No featured museums selected.</p>';
-                return;
-            }
-
+            
             grid.innerHTML = '<div class="loading-container"><div class="loading-spinner"></div><span class="loading-text">Loading museums...</span></div>';
 
             try {
-                const response = await fetch('/museums');
+                const response = await fetch('/museums/featured');
                 if (response.ok) {
                     const museums = await response.json();
-                    const selectedMuseums = museums.filter(museum => selectedIds.includes(museum.museum_id));
-                    renderFeaturedMuseums(selectedMuseums);
+                    if (museums.length === 0) {
+                        grid.innerHTML = '<p>No featured museums selected.</p>';
+                        return;
+                    }
+                    renderFeaturedMuseums(museums);
                 } else {
                     throw new Error('Server returned an error');
                 }

@@ -538,6 +538,7 @@ function initializeDatabase(done) {
       image_url TEXT,
       contact_info TEXT,
       website TEXT,
+      is_featured INTEGER DEFAULT 0,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
@@ -1923,6 +1924,17 @@ app.get('/museums', (req, res) => {
    });
  });
 
+// Get featured museums
+app.get('/museums/featured', (req, res) => {
+  db.all('SELECT * FROM Museums WHERE is_featured = 1 ORDER BY created_at DESC', (err, rows) => {
+    if (err) {
+      console.error('Get featured museums error:', err);
+      return res.status(500).json({ message: 'Server error' });
+    }
+    res.json(rows.map(row => processImageFields(row)));
+  });
+});
+
 app.get('/museums/:id', (req, res) => {
   db.get('SELECT * FROM Museums WHERE museum_id = ?', [req.params.id], (err, row) => {
     if (err) {
@@ -1938,7 +1950,7 @@ app.get('/museums/:id', (req, res) => {
 });
 
 app.post('/museums', requireAuth, upload.single('image'), (req, res) => {
-  const { name, about, location, contact_info, website } = req.body;
+  const { name, about, location, contact_info, website, is_featured } = req.body;
   const image_url = req.file ? req.file.path : null;
 
   if (!name) {
@@ -1946,8 +1958,8 @@ app.post('/museums', requireAuth, upload.single('image'), (req, res) => {
   }
 
   db.run(
-    'INSERT INTO Museums (name, about, location, contact_info, website, image_url) VALUES (?, ?, ?, ?, ?, ?)',
-    [name, about, location, contact_info, website, image_url],
+    'INSERT INTO Museums (name, about, location, contact_info, website, image_url, is_featured) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    [name, about, location, contact_info, website, image_url, is_featured == 1 ? 1 : 0],
     function(err) {
       if (err) {
         console.error('Create museum error:', err);
@@ -1966,12 +1978,12 @@ app.post('/museums', requireAuth, upload.single('image'), (req, res) => {
 });
 
 app.put('/museums/:id', requireAuth, upload.single('image'), (req, res) => {
-  const { name, about, location } = req.body;
+  const { name, about, location, contact_info, website, is_featured } = req.body;
   const image_url = req.file ? req.file.path : req.body.image_url;
 
   db.run(
-    'UPDATE Museums SET name = ?, about = ?, location = ?, image_url = ?, updated_at = CURRENT_TIMESTAMP WHERE museum_id = ?',
-    [name, about, location, image_url, req.params.id],
+    'UPDATE Museums SET name = ?, about = ?, location = ?, contact_info = ?, website = ?, image_url = ?, is_featured = ?, updated_at = CURRENT_TIMESTAMP WHERE museum_id = ?',
+    [name, about, location, contact_info, website, image_url, is_featured == 1 ? 1 : 0, req.params.id],
     function(err) {
       if (err) {
         console.error('Update museum error:', err);

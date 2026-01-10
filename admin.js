@@ -630,6 +630,7 @@ function displayAdminMuseums(museums) {
                 <td>${museum.name}</td>
                 <td>${museum.location || ''}</td>
                 <td>${museum.contact_info || ''}</td>
+                <td>${museum.is_featured ? 'Yes' : 'No'}</td>
                 <td>${museum.website ? `<a href="${museum.website}" target="_blank">Link</a>` : ''}</td>
                 <td>
                     <button class="btn btn-secondary" onclick="editMuseum(${museum.museum_id})">Edit</button>
@@ -638,7 +639,7 @@ function displayAdminMuseums(museums) {
             </tr>
         `).join('');
     } else {
-        tbody.innerHTML = '<tr><td colspan="6" class="no-results">No museums found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="no-results">No museums found</td></tr>';
     }
 }
 
@@ -1739,14 +1740,6 @@ function loadItemData(type, id) {
                     document.getElementById('collection-collector-preview').innerHTML = '<img src="' + data.collector_image + '" style="max-width: 100px; max-height: 100px;">';
                 }
             }
-            if (type === 'museum') {
-                // Handle featured museum checkbox
-                const featuredMuseums = JSON.parse(localStorage.getItem('featuredMuseums') || '[]');
-                const checkbox = form.querySelector('input[name="is_featured"]');
-                if (checkbox) {
-                    checkbox.checked = featuredMuseums.includes(data.museum_id);
-                }
-            }
         })
         .catch(error => console.error(`Error loading ${type}:`, error));
 }
@@ -2109,23 +2102,6 @@ document.getElementById('admin-form').addEventListener('submit', function(e) {
         return response.json();
     })
     .then(data => {
-        // Handle featured museum checkbox
-        if (type === 'museum' && data.museum_id) {
-            const checkbox = document.querySelector('#admin-form input[name="is_featured"]');
-            const featuredMuseums = JSON.parse(localStorage.getItem('featuredMuseums') || '[]');
-            const index = featuredMuseums.indexOf(data.museum_id);
-            if (checkbox && checkbox.checked) {
-                if (index === -1) {
-                    featuredMuseums.push(data.museum_id);
-                }
-            } else {
-                if (index !== -1) {
-                    featuredMuseums.splice(index, 1);
-                }
-            }
-            localStorage.setItem('featuredMuseums', JSON.stringify(featuredMuseums));
-        }
-
         closeModal();
         // Reload current section and dashboard
         const activeSection = document.querySelector('.nav-link.active').getAttribute('data-section');
