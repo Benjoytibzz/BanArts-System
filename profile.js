@@ -354,9 +354,17 @@ document.addEventListener('DOMContentLoaded', function() {
                     `;
                     artworksGrid.appendChild(card);
 
-                    const img = card.querySelector('img');
-                    img.addEventListener('click', function() {
-                        openArtworkModal(this.src);
+                    // Add click handler to redirect to artwork details
+                    card.addEventListener('click', function(event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        const userId = localStorage.getItem('userId');
+                        if (userId) {
+                            window.location.href = `artwork-details.html?id=${artwork.artwork_id}`;
+                        } else {
+                            openModal();
+                            openTab('signup');
+                        }
                     });
 
                     const saveBtn = card.querySelector('.heart-icon');
@@ -420,8 +428,22 @@ document.addEventListener('DOMContentLoaded', function() {
                     `;
                     artistsGrid.appendChild(card);
 
+                    // Add click handler to redirect to artist details
+                    card.addEventListener('click', function(event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        const userId = localStorage.getItem('userId');
+                        if (userId) {
+                            window.location.href = `artist-details.html?id=${artist.artist_id}`;
+                        } else {
+                            openModal();
+                            openTab('signup');
+                        }
+                    });
+
                     const followBtn = card.querySelector('.follow-btn');
-                    followBtn.addEventListener('click', function() {
+                    followBtn.addEventListener('click', function(e) {
+                        e.stopPropagation(); // Prevent card click
                         const artistId = this.getAttribute('data-artist-id');
                         fetch('/follow-artist', {
                             method: 'POST',

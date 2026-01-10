@@ -382,12 +382,14 @@ main > section:nth-child(6) { animation-delay: 0.6s; }
     font-size: 3rem;
     margin-bottom: 1rem;
     color: #000;
+    text-align: justify;
 }
 
 .hero-content p {
     font-size: 1.2rem;
     margin-bottom: 2rem;
     color: #666;
+    text-align: justify;
 }
 
 .cta-button {
@@ -1342,6 +1344,7 @@ main > section:nth-child(6) { animation-delay: 0.6s; }
     font-weight: 500;
     color: #444;
     letter-spacing: 0.2px;
+    text-align: justify;
 }
 
 .gallery-bio {
@@ -1349,6 +1352,7 @@ main > section:nth-child(6) { animation-delay: 0.6s; }
     line-height: 1.6;
     margin-bottom: 2rem;
     font-weight: bold;
+    text-align: justify;
 }
 
 .artist-details h3 {
@@ -1442,6 +1446,7 @@ main > section:nth-child(6) { animation-delay: 0.6s; }
     color: #444;
     letter-spacing: 0.2px;
     margin-bottom: 2rem;
+    text-align: justify;
 }
 
 .artwork-price {
@@ -1703,6 +1708,7 @@ main > section:nth-child(6) { animation-delay: 0.6s; }
     padding: 0 1rem;
     color: #666;
     font-size: 0.9rem;
+    text-align: justify;
 }
 
 .museum-link {
@@ -2572,10 +2578,12 @@ input[type="password"]::-ms-clear {
     .hero-content h1 {
         font-size: 2rem;
         line-height: 1.2;
+        text-align: justify;
     }
 
     .hero-content p {
         font-size: 1rem;
+        text-align: justify;
     }
 
     .hero-image img {
@@ -2636,6 +2644,18 @@ input[type="password"]::-ms-clear {
         width: 150px;
         height: 150px;
         margin-bottom: 1rem;
+    }
+
+    .artist-bio {
+        text-align: justify;
+    }
+
+    .artwork-description {
+        text-align: justify;
+    }
+
+    .gallery-bio {
+        text-align: justify;
     }
 
     .profile-top {
@@ -3008,6 +3028,7 @@ body::before {
     color: #555;
     line-height: 1.6;
     font-size: 1rem;
+    text-align: justify;
 }
 
 .artwork-modal-details {
@@ -3135,6 +3156,7 @@ body::before {
     font-size: 1rem;
     margin-bottom: 1.5rem;
     background-color: transparent !important;
+    text-align: justify;
 }
 
 .artwork-modal-actions {
@@ -3759,6 +3781,12 @@ body::before {
     font-size: 0.9rem;
 }
 
+@media (min-width: 769px) {
+    .event-card p {
+        text-align: justify;
+    }
+}
+
 .event-link {
     display: block;
     padding: 0.75rem 1rem;
@@ -3779,6 +3807,10 @@ body::before {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 2rem;
+}
+
+#event-overview {
+    text-align: justify;
 }
 
 .current-events .event-card img {
