@@ -1926,11 +1926,17 @@ app.get('/museums', (req, res) => {
 
 // Get featured museums
 app.get('/museums/featured', (req, res) => {
+  console.log('Fetching featured museums...');
   db.all('SELECT * FROM Museums WHERE is_featured = 1 ORDER BY created_at DESC', (err, rows) => {
     if (err) {
       console.error('Get featured museums error:', err);
+      // If the column doesn't exist yet, return empty array instead of error
+      if (err.message.includes('no such column')) {
+        return res.json([]);
+      }
       return res.status(500).json({ message: 'Server error' });
     }
+    console.log(`Found ${rows ? rows.length : 0} featured museums`);
     res.json(rows.map(row => processImageFields(row)));
   });
 });
