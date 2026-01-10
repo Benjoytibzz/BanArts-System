@@ -3063,6 +3063,7 @@ body::before {
 }
 
 .view-full-details-btn {
+    display: inline-block;
     color: #007bff;
     text-decoration: none;
     font-weight: 500;
@@ -3164,6 +3165,7 @@ body::before {
 }
 
 .view-full-details-btn {
+    display: inline-block;
     background-color: #007bff;
     color: white;
     border: none;
@@ -3194,11 +3196,14 @@ body::before {
 
     .artwork-modal-actions {
         text-align: center;
+        width: 100%;
     }
 
     .view-full-details-btn {
+        display: block;
         width: 100%;
         max-width: 200px;
+        margin: 0 auto;
     }
 }
 
