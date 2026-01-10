@@ -215,6 +215,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (modal && img) {
                 img.src = imageSrc;
                 modal.style.display = 'flex';
+                modal.style.opacity = '1';
                 modal.style.zIndex = '10000';
                 modal.setAttribute('aria-hidden', 'false');
                 modal.classList.add('show');
