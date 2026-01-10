@@ -3413,6 +3413,19 @@ app.get('/artist/:id', (req, res) => {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${artist.name} - BanArts</title>
     <link rel="stylesheet" href="/styles.css">
+    <style>
+        @media (max-width: 768px) {
+            .artist-bio {
+                text-align: justify;
+            }
+            .artist-details h3 {
+                text-align: justify;
+            }
+            .artist-details p {
+                text-align: justify;
+            }
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -3472,8 +3485,8 @@ ${specialtiesList}
 ${exhibitionsList}
 ` : ''}
                         <h3>Contact</h3>
-                        ${artist.email ? `<p>Email: ${artist.email}</p>` : ''}
-                        ${artist.contact ? `<p>Phone: ${artist.contact}</p>` : ''}
+                        ${artist.email ? `<p><strong>Email:</strong> ${artist.email}</p>` : ''}
+                        ${artist.contact ? `<p><strong>Phone:</strong> ${artist.contact}</p>` : ''}
                         <a href="/artists.html" class="back-btn">Back to Artists</a>
                     </div>
                 </div>
@@ -3552,6 +3565,23 @@ app.get('/artwork/:id', (req, res) => {
     <title>${artwork.title} - BanArts</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="/styles.css">
+    <style>
+        @media (max-width: 768px) {
+            .artwork-description {
+                text-align: justify;
+            }
+            .artwork-details-info ul li {
+                text-align: justify;
+            }
+            .artwork-details-info h3 {
+                text-align: justify;
+            }
+            .artwork-details-info p {
+                text-align: justify;
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -3667,7 +3697,7 @@ app.get('/artwork/:id', (req, res) => {
             </div>
             <div class="footer-section">
                 <h3>Contact Us</h3>
-                <p>Email: bantayanonartists@gmail.com<br>Phone: 09481766048<br>Address: Bantayan Island, Cebu, Philippines</p>
+                <p><strong>Email:</strong> bantayanonartists@gmail.com<br><strong>Phone:</strong> 09481766048<br><strong>Address:</strong> Bantayan Island, Cebu, Philippines</p>
             </div>
             <div class="footer-section">
                 <h3>Follow Us</h3>
@@ -3778,6 +3808,13 @@ app.get('/artwork/:id', (req, res) => {
       <title>${museum.name} - BanArts</title>
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
       <link rel="stylesheet" href="/styles.css">
+      <style>
+        @media (max-width: 768px) {
+          .museum-contact-info {
+            text-align: justify !important;
+          }
+        }
+      </style>
   </head>
   <body>
       <header>
@@ -3851,8 +3888,8 @@ app.get('/artwork/:id', (req, res) => {
                       <p class="artist-bio">${museum.about || 'Museum description not available.'}</p>
                       <div class="artist-details">
                           <h3>Contact</h3>
-                          ${museum.contact_info ? `<p>${museum.contact_info}</p>` : ''}
-                          ${museum.website ? `<p>Website: <a href="${museum.website}" target="_blank">${museum.website}</a></p>` : ''}
+                          <p class="museum-contact-info"><strong>Phone:</strong> ${museum.contact_info || ''}</p>
+                          <p class="museum-contact-info"><strong>Website:</strong> <a href="${museum.website || '#'}" target="_blank">${museum.website || ''}</a></p>
                           <a href="/museums.html" class="back-btn">Back to Museums</a>
                       </div>
                   </div>
@@ -3897,6 +3934,32 @@ app.get('/artwork/:id', (req, res) => {
               </div>
           </div>
       </div>
+
+      </main>
+
+      <footer>
+          <div class="footer-content">
+              <div class="footer-section">
+                  <h3>About BanArts</h3>
+                  <p>BanArts is the official platform of the Bantayanon Artists Group, dedicated to showcasing the rich artistic heritage and contemporary creativity of Bantayan Island, Philippines. We connect local artists with art enthusiasts worldwide.</p>
+              </div>
+              <div class="footer-section">
+                  <h3>Contact Us</h3>
+                  <p><strong>Email:</strong> bantayanonartists@gmail.com<br><strong>Phone:</strong> 09481766048<br><strong>Address:</strong> Bantayan Island, Cebu, Philippines</p>
+              </div>
+              <div class="footer-section">
+                  <h3>Follow Us</h3>
+                  <div class="social-icons">
+                      <a href="#" class="social-icon-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                      <a href="#" class="social-icon-link" aria-label="Gmail"><i class="fas fa-envelope"></i></a>
+                      <a href="#" class="social-icon-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                  </div>
+              </div>
+          </div>
+          <div class="footer-bottom">
+              <p>&copy; 2026 BanArts. All rights reserved.</p>
+          </div>
+      </footer>
 
       <script src="/script.js"></script>
   </body>
@@ -3953,6 +4016,17 @@ app.get('/artwork/:id', (req, res) => {
     <title>${gallery.name} - BanArts</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="/styles.css">
+    <style>
+        @media (max-width: 768px) {
+            .artist-details p {
+                text-align: justify;
+                width: 100%;
+            }
+            .artist-details h3 {
+                text-align: justify;
+            }
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -4028,10 +4102,10 @@ app.get('/artwork/:id', (req, res) => {
                     <div class="artist-details">
                         ${gallery.collections ? `<h3>Collections</h3><p>${gallery.collections}</p>` : ''}
                         <h3>Contact</h3>
-                        ${gallery.email ? `<p>Email: ${gallery.email}</p>` : ''}
-                        ${gallery.phone ? `<p>Phone: ${gallery.phone}</p>` : ''}
-                        ${gallery.contact_info ? `<p>${gallery.contact_info}</p>` : ''}
-                        ${gallery.website ? `<p>Website: <a href="${gallery.website}" target="_blank">${gallery.website}</a></p>` : ''}
+                        ${gallery.email ? `<p><strong>Email:</strong> ${gallery.email}</p>` : ''}
+                        ${gallery.phone ? `<p><strong>Phone:</strong> ${gallery.phone}</p>` : ''}
+                        ${gallery.contact_info ? `<p><strong>Address:</strong> ${gallery.contact_info}</p>` : ''}
+                        ${gallery.website ? `<p><strong>Website:</strong> <a href="${gallery.website}" target="_blank">${gallery.website}</a></p>` : ''}
                         <a href="/galleries.html" class="back-btn">Back to Galleries</a>
                     </div>
                 </div>
@@ -4055,7 +4129,7 @@ app.get('/artwork/:id', (req, res) => {
             </div>
             <div class="footer-section">
                 <h3>Contact Us</h3>
-                <p>Email: bantayanonartists@gmail.com<br>Phone: 09481766048<br>Address: Bantayan Island, Cebu, Philippines</p>
+                <p><strong>Email:</strong> bantayanonartists@gmail.com<br><strong>Phone:</strong> 09481766048<br><strong>Address:</strong> Bantayan Island, Cebu, Philippines</p>
             </div>
             <div class="footer-section">
                 <h3>Follow Us</h3>

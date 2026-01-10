@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Event Details - BanArts</title>
+    <title>Museum Details - BanArts</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
     <style>
-        .event-tabs {
+        .museum-tabs {
             position: sticky;
             top: 0;
             z-index: 10;
@@ -17,7 +17,7 @@
             justify-content: flex-start;
             border-bottom: 2px solid #2063f3;
         }
-        .event-tab-btn {
+        .museum-tab-btn {
             border: none;
             background: none;
             color: inherit;
@@ -28,19 +28,22 @@
             padding: 0.5rem 0;
             transition: all 0.3s ease;
         }
-        .event-tab-btn.active {
+        .museum-tab-btn.active {
             color: #007bff !important;
             text-decoration: underline !important;
             text-underline-offset: 8px;
         }
         @media (max-width: 768px) {
-            .event-tabs {
+            .museum-tabs {
                 gap: 1rem;
                 justify-content: flex-start;
                 padding: 1rem 0;
             }
-            .event-tab-btn {
+            .museum-tab-btn {
                 font-size: 1em;
+            }
+            .museum-contact-info, .museum-website-info {
+                text-align: justify;
             }
         }
 
@@ -135,32 +138,26 @@
     </header>
 
     <main style="margin-top: 100px;">
-        <section class="event-details" style="padding: 2rem;">
-            <img id="event-image" src="img/bantayanon artists logo.jpg" alt="Event Logo" style="width: 100px; height: auto; float: left; margin-right: 1rem; margin-bottom: 1rem;">
-            <h2 id="event-name">Event Name</h2>
-            <p><strong>Date:</strong> <span id="event-date"></span></p>
-            <p><strong>Location:</strong> <span id="event-location"></span></p><br>
-            <div class="event-tabs">
-                <button class="event-tab-btn active" onclick="switchEventTab(event, 'overview')">Overview</button>
-                <button class="event-tab-btn" onclick="switchEventTab(event, 'artworks')">Artworks</button>
-                <button class="event-tab-btn" onclick="switchEventTab(event, 'exhibitors')">Exhibitors</button>
+        <section class="museum-details" style="padding: 2rem;">
+            <img id="museum-image" src="img/bantayanon artists logo.jpg" alt="Museum Logo" style="width: 100px; height: auto; float: left; margin-right: 1rem; margin-bottom: 1rem;">
+            <h2 id="museum-name">Museum Name</h2>
+            <p><strong>Location:</strong> <span id="museum-location"></span></p><br>
+            <div class="museum-tabs">
+                <button class="museum-tab-btn active" onclick="switchMuseumTab(event, 'overview')">Overview</button>
+                <button class="museum-tab-btn" onclick="switchMuseumTab(event, 'artifacts')">Artifacts</button>
             </div>
             <br>
             <br>
             <div id="overview-content">
                 <h3>Overview</h3>
-                <p id="event-overview"></p>
+                <p id="museum-overview"></p>
+                <p class="museum-contact-info"><strong>Address:</strong> <span id="museum-contact"></span></p>
+                <p class="museum-contact-info"><strong>Website:</strong> <a id="museum-website" href="#" target="_blank"></a></p>
             </div>
-            <div id="artworks-content" style="display: none;">
-                <h3>Featured Artworks</h3>
-                <div id="artworks-grid" class="artworks-grid" style="margin-bottom: 1rem;">
-                    <!-- Artworks will be loaded here -->
-                </div>
-            </div>
-            <div id="exhibitors-content" style="display: none;">
-                <h3>Exhibitors</h3>
-                <div id="exhibitors-grid" class="artists-grid" style="margin-bottom: 1rem;">
-                    <!-- Exhibitors will be loaded here -->
+            <div id="artifacts-content" style="display: none;">
+                <h3>Featured Artifacts</h3>
+                <div id="artifacts-grid" class="artworks-grid" style="margin-bottom: 1rem;">
+                    <!-- Artifacts will be loaded here -->
                 </div>
             </div>
         </section>
@@ -174,7 +171,7 @@
             </div>
             <div class="footer-section">
                 <h3>Contact Us</h3>
-                <p><strong>Email:</strong> info@banarts.com<br><strong>Phone:</strong> +63 123 456 7890<br><strong>Address:</strong> Bantayan Island, Cebu, Philippines</p>
+                <p><strong>Email:</strong> bantayanonartists@gmail.com<br><strong>Phone:</strong> 09481766048<br><strong>Address:</strong> Bantayan Island, Cebu, Philippines</p>
             </div>
             <div class="footer-section">
                 <h3>Follow Us</h3>
@@ -186,7 +183,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2023 BanArts. All rights reserved.</p>
+            <p>&copy; 2026 BanArts. All rights reserved.</p>
         </div>
     </footer>
 
@@ -247,119 +244,51 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const urlParams = new URLSearchParams(window.location.search);
-            const eventId = urlParams.get('id');
-            if (eventId) {
-                loadEventDetails(eventId);
+            const museumId = urlParams.get('id');
+            if (museumId) {
+                loadMuseumDetails(museumId);
             }
         });
 
-        function loadEventDetails(id) {
-            fetch(`/events/${id}`)
+        function loadMuseumDetails(id) {
+            fetch(`/museums/${id}`)
                 .then(response => response.json())
-                .then(event => {
-                    document.getElementById('event-name').textContent = event.name;
-                    document.getElementById('event-date').textContent = event.date ? new Date(event.date).toLocaleDateString() : '';
-                    document.getElementById('event-location').textContent = event.location || '';
-                    document.getElementById('event-overview').textContent = event.about || '';
-                    document.getElementById('event-image').src = event.image_url || 'img/bantayanon artists logo.jpg';
+                .then(museum => {
+                    document.getElementById('museum-name').textContent = museum.name;
+                    document.getElementById('museum-location').textContent = museum.location || '';
+                    document.getElementById('museum-overview').textContent = museum.about || '';
+                    document.getElementById('museum-contact').textContent = museum.contact_info || '';
+                    document.getElementById('museum-website').href = museum.website || '#';
+                    document.getElementById('museum-website').textContent = museum.website || '';
+                    document.getElementById('museum-image').src = museum.image_url || 'img/bantayanon artists logo.jpg';
 
-                    // Parse JSON strings if needed
-                    if (typeof event.artworks === 'string') {
-                        try {
-                            event.artworks = JSON.parse(event.artworks);
-                        } catch (e) {
-                            event.artworks = [];
-                        }
-                    }
-                    if (typeof event.exhibitors === 'string') {
-                        try {
-                            event.exhibitors = JSON.parse(event.exhibitors);
-                        } catch (e) {
-                            event.exhibitors = [];
-                        }
-                    }
-
-                    // Load artworks
-                    if (event.artworks && Array.isArray(event.artworks) && event.artworks.length > 0) {
-                        if (typeof event.artworks[0] === 'number' || typeof event.artworks[0] === 'string') {
-                            // Assume ids, fetch full artworks
-                            Promise.all(event.artworks.map(id => fetch(`/artworks/${id}`).then(r => r.json())))
-                                .then(artworks => {
-                                    const artworksGrid = document.getElementById('artworks-grid');
-                                    artworksGrid.innerHTML = artworks.map(artwork => `
-                                        <div class="artwork-card">
-                                            <img src="${artwork.image_url || 'img/art1.jpg'}" alt="${artwork.title}" onclick="openImageModal('${artwork.image_url || 'img/art1.jpg'}')">
-                                            <h3>${artwork.title}</h3>
-                                            <p>By ${artwork.artist_name || 'Unknown Artist'}</p>
-                                        </div>
-                                    `).join('');
-                                })
-                                .catch(error => console.error('Error loading artworks:', error));
-                        } else {
-                            // Assume full objects
-                            const artworksGrid = document.getElementById('artworks-grid');
-                            artworksGrid.innerHTML = event.artworks.map(artwork => `
-                                <div class="artwork-card">
-                                    <img src="${artwork.image_url || 'img/art1.jpg'}" alt="${artwork.title}" onclick="openImageModal('${artwork.image_url || 'img/art1.jpg'}')">
-                                    <h3>${artwork.title}</h3>
-                                    <p>By ${artwork.artist_name || 'Unknown Artist'}</p>
-                                </div>
-                            `).join('');
-                        }
-                    } else {
-                        document.getElementById('artworks-grid').innerHTML = '<p>No artworks selected for this event.</p>';
-                    }
-
-                    // Load exhibitors
-                    if (event.exhibitors && Array.isArray(event.exhibitors) && event.exhibitors.length > 0) {
-                        if (typeof event.exhibitors[0] === 'number' || typeof event.exhibitors[0] === 'string') {
-                            // Assume ids, fetch full artists
-                            Promise.all(event.exhibitors.map(id => fetch(`/artists/${id}`).then(r => r.json())))
-                                .then(artists => {
-                                    const exhibitorsGrid = document.getElementById('exhibitors-grid');
-                                    exhibitorsGrid.innerHTML = artists.map(artist => `
-                                        <div class="artist-card">
-                                            <img src="${artist.photo_url || 'img/profile icon.webp'}" alt="${artist.name}">
-                                            <h3>${artist.name}</h3>
-                                            <p>${artist.category || 'Artist'}</p>
-                                            <a href="artist-details.html?id=${artist.artist_id}" class="artist-link" onclick="handleViewProfile(event, ${artist.artist_id})">View Profile</a>
-                                        </div>
-                                    `).join('');
-                                })
-                                .catch(error => console.error('Error loading exhibitors:', error));
-                        } else {
-                            // Assume full objects
-                            const exhibitorsGrid = document.getElementById('exhibitors-grid');
-                            exhibitorsGrid.innerHTML = event.exhibitors.map(artist => `
-                                <div class="artist-card">
-                                    <img src="${artist.photo_url || 'img/profile icon.webp'}" alt="${artist.name}">
-                                    <h3>${artist.name}</h3>
-                                    <p>${artist.category || 'Artist'}</p>
-                                    <a href="artist-details.html?id=${artist.artist_id}" class="artist-link" onclick="handleViewProfile(event, ${artist.artist_id})">View Profile</a>
-                                </div>
-                            `).join('');
-                        }
-                    } else {
-                        document.getElementById('exhibitors-grid').innerHTML = '<p>No exhibitors selected for this event.</p>';
-                    }
+                    // Load artifacts
+                    fetch(`/artifacts?museum_id=${id}`)
+                        .then(response => response.json())
+                        .then(artifacts => {
+                            const artifactsGrid = document.getElementById('artifacts-grid');
+                            if (artifacts.length > 0) {
+                                artifactsGrid.innerHTML = artifacts.map(artifact => `
+                                    <div class="artwork-card">
+                                        <img src="${artifact.image_url || 'img/art1.jpg'}" alt="${artifact.name}" onclick="openImageModal('${artifact.image_url || 'img/art1.jpg'}')">
+                                        <h3>${artifact.name}</h3>
+                                        <p>${artifact.artist || 'Unknown Artist'}</p>
+                                    </div>
+                                `).join('');
+                            } else {
+                                artifactsGrid.innerHTML = '<p>No artifacts available for this museum.</p>';
+                            }
+                        })
+                        .catch(error => console.error('Error loading artifacts:', error));
                 })
-                .catch(error => console.error('Error loading event details:', error));
+                .catch(error => console.error('Error loading museum details:', error));
         }
 
-        function handleViewProfile(event, artistId) {
-            if (!localStorage.getItem('userEmail')) {
-                event.preventDefault();
-                openModal();
-                openTab('login');
-            }
-        }
-
-        function switchEventTab(event, section) {
+        function switchMuseumTab(event, section) {
             document.getElementById('overview-content').style.display = section === 'overview' ? 'block' : 'none';
-            document.getElementById('artworks-content').style.display = section === 'artworks' ? 'block' : 'none';
-            document.getElementById('exhibitors-content').style.display = section === 'exhibitors' ? 'block' : 'none';
+            document.getElementById('artifacts-content').style.display = section === 'artifacts' ? 'block' : 'none';
 
-            document.querySelectorAll('.event-tab-btn').forEach(btn => {
+            document.querySelectorAll('.museum-tab-btn').forEach(btn => {
                 btn.classList.remove('active');
                 btn.style.color = 'inherit';
                 btn.style.textDecoration = 'none';
