@@ -217,6 +217,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 modal.style.display = 'flex';
                 modal.style.zIndex = '10000';
                 modal.setAttribute('aria-hidden', 'false');
+                modal.classList.add('show');
                 document.body.classList.add('no-scroll');
             }
         }
