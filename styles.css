@@ -2744,9 +2744,11 @@ input[type="password"]::-ms-clear {
     .mobile-header-icons .notification-dropdown {
         position: absolute;
         top: 100%;
-        right: 0;
+        right: -70px;
         z-index: 10000;
-        max-width: 90vw;
+        width: 85vw;
+        min-width: 280px;
+        max-width: 350px;
         max-height: 70vh;
         margin-top: 0.5rem;
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
