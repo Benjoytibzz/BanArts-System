@@ -91,7 +91,7 @@
                     <div class="profile-dropdown">
                         <div class="profile-dropdown-header">
                             <img src="/img/profile icon.webp" alt="Profile" class="dropdown-profile-icon" id="dropdown-profile-icon">
-                            <div class="dropdown-profile-name">John Doe</div>
+                            <div class="dropdown-profile-name"></div>
                             <a href="/profile.html" class="view-profile-btn">View Profile</a>
                         </div>
                         <div class="profile-dropdown-item">My Collection</div>
@@ -510,7 +510,7 @@ Thank you for being part of BanArts where Bantayanon creativity lives, grows, an
                     <img src="${gallery.image_url || 'img/art1.jpg'}" alt="${gallery.name}">
                     <h3>${gallery.name}</h3>
                     <p>${gallery.about || 'Featured gallery.'}</p>
-                    <button class="gallery-link" onclick="openAuthModalForGallery()">Visit Gallery</button>
+                    <button class="gallery-link" onclick="openAuthModalForGallery(${gallery.gallery_id})">Visit Gallery</button>
                 `;
                 grid.appendChild(card);
             });
@@ -796,10 +796,10 @@ Thank you for being part of BanArts where Bantayanon creativity lives, grows, an
         }
 
         // Open auth modal for gallery access or redirect if logged in
-        function openAuthModalForGallery() {
+        function openAuthModalForGallery(galleryId) {
             const userId = localStorage.getItem('userId');
             if (userId) {
-                window.location.href = 'galleries.html';
+                window.location.href = '/gallery/' + galleryId;
             } else {
                 openModal();
                 openTab('signup');
