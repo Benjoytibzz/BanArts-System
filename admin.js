@@ -1242,6 +1242,7 @@ function getFormFields(type, id) {
                     <option value="Digital Art">Digital Art</option>
                     <option value="Drawing">Drawing</option>
                     <option value="Mural">Mural</option>
+                    <option value="Sculpture">Sculpture</option>
                 </select>
             </div>
             <div class="form-group">
@@ -1279,6 +1280,7 @@ function getFormFields(type, id) {
                     <option value="Digital Art">Digital Art</option>
                     <option value="Drawing">Drawing</option>
                     <option value="Mural">Mural</option>
+                    <option value="Sculpture">Sculpture</option>
                 </select>
             </div>
             <div class="form-group">
