@@ -2743,17 +2743,31 @@ input[type="password"]::-ms-clear {
     }
 
     .mobile-header-icons .notification-dropdown {
-        position: absolute;
-        top: 100%;
-        right: -60px;
-        left: auto;
+        position: fixed;
+        top: 80px; /* Below the sticky navbar */
+        left: 0;
+        right: 0;
         transform: none;
-        z-index: 10000;
-        width: 350px;
-        max-width: 95vw;
-        max-height: 80vh;
-        margin-top: 0.5rem;
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        z-index: 999; /* Below the header z-index (1000) */
+        width: 100%;
+        max-width: 100vw;
+        height: calc(100vh - 80px);
+        max-height: none;
+        margin-top: 0;
+        border-radius: 0;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        display: none;
+        flex-direction: column;
+    }
+
+    .mobile-header-icons .notification-dropdown.show,
+    .mobile-header-icons .notification-dropdown[style*="display: block"] {
+        display: flex !important;
+    }
+
+    .notification-content {
+        max-height: none; /* Allow it to fill the fixed height */
+        flex: 1;
     }
 }
 
