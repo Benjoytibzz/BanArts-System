@@ -2743,16 +2743,16 @@ input[type="password"]::-ms-clear {
     }
 
     .mobile-header-icons .notification-dropdown {
-        position: fixed;
-        top: 70px;
-        left: 50%;
-        transform: translateX(-50%);
-        right: auto;
+        position: absolute;
+        top: 100%;
+        right: -60px;
+        left: auto;
+        transform: none;
         z-index: 10000;
-        width: 95vw;
-        max-width: 400px;
+        width: 350px;
+        max-width: 95vw;
         max-height: 80vh;
-        margin-top: 0;
+        margin-top: 0.5rem;
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     }
 }
