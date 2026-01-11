@@ -600,6 +600,13 @@ Thank you for being part of BanArts where Bantayanon creativity lives, grows, an
             modal.style.display = 'flex';
             modal.style.zIndex = '10000';
             modal.setAttribute('aria-hidden', 'false');
+
+            // Position modal at current scroll position
+            const modalContent = modal.querySelector('.modal-content');
+            if (modalContent) {
+                modalContent.style.top = (window.scrollY + 20) + 'px';
+            }
+
             setTimeout(() => {
                 modal.classList.add('show');
                 document.body.classList.add('no-scroll');

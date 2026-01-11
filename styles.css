@@ -1967,7 +1967,10 @@ footer {
 
 .modal-content {
     background-color: #fff;
-    margin: auto; /* Changed from 0 to allow flex centering with scroll support */
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) scale(0.9);
     padding: 0;
     border-radius: 12px;
     width: 100%;
@@ -1977,12 +1980,11 @@ footer {
     min-width: 320px;
     max-height: 90vh;
     overflow-y: auto;
-    position: relative;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    transform: scale(0.9);
     transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     word-wrap: break-word;
     overflow-wrap: break-word;
+    z-index: 10001;
 }
 
 #artifact-modal-details {
@@ -1991,7 +1993,7 @@ footer {
 }
 
 .modal.show .modal-content {
-    transform: scale(1);
+    transform: translateX(-50%) scale(1);
 }
 
 /* Removed .modal.show styles as modal now uses opacity */
@@ -3135,11 +3137,13 @@ body::before {
 .modal .artwork-modal-content {
     max-width: 800px !important;
     width: 95% !important;
-    position: relative;
+    position: fixed !important;
+    left: 50% !important;
+    transform: translateX(-50%) scale(0.9) !important;
     background-color: white;
     border-radius: 12px;
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-    margin: 2rem auto;
+    margin: 0 !important;
 }
 
 .modal-header {

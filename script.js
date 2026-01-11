@@ -378,6 +378,13 @@ function openModal() {
     if (modal) {
         modal.style.display = 'flex';
         modal.style.zIndex = '10000';
+
+        // Position modal at current scroll position
+        const modalContent = modal.querySelector('.modal-content');
+        if (modalContent) {
+            modalContent.style.top = (window.scrollY + 20) + 'px';
+        }
+
         setTimeout(() => {
             modal.classList.add('show');
             modal.setAttribute('aria-hidden', 'false');
