@@ -32,7 +32,7 @@
         .artwork-image img {
             width: 100%;
             height: auto;
-            border-radius: 8px;
+            border-radius: 0px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 
@@ -180,7 +180,7 @@
 
         .artwork-card {
             background: white;
-            border-radius: 8px;
+            border-radius: 0px;
             overflow: hidden;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
             transition: transform 0.3s;
@@ -599,15 +599,20 @@
 
                             <div class="contact-section">
                                 <h3>Contact the Artist</h3>
-                                <div style="display: flex; flex-direction: column; align-items: flex-start; margin-bottom: 15px;">
-                                    <img src="${artwork.artist_photo || 'img/profile icon.webp'}" alt="${artwork.artist_name}" style="width: 60px; height: 60px; border-radius: 50%; margin-bottom: 10px; object-fit: cover; border: 2px solid #007bff;">
-                                    <div style="text-align: left;">
-                                        <h4 style="margin: 0; color: #333;">${artwork.artist_name || 'Unknown Artist'}</h4>
-                                        <p class="painting-text" style="margin: 5px 0; color: #666; font-size: 0.9rem;">Painting</p>
-                                        ${artwork.artist_email ? `<p style="margin: 5px 0;"><strong>Email:</strong> ${artwork.artist_email}</p>` : ''}
-                                        ${artwork.artist_contact ? `<p style="margin: 5px 0;"><strong>Phone:</strong> ${artwork.artist_contact}</p>` : ''}
-                                        <p style="margin: 5px 0;"><strong>Artist Profile:</strong> <a href="artist-details.html?id=${artwork.artist_id || ''}" target="_blank">View Full Profile</a></p>
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                                    <div style="display: flex; align-items: center;">
+                                        <img src="${artwork.artist_photo || 'img/profile icon.webp'}" alt="${artwork.artist_name}" style="width: 60px; height: 60px; border-radius: 50%; margin-right: 15px; object-fit: cover; border: 2px solid #007bff;">
+                                        <div style="text-align: left;">
+                                            <h4 style="margin: 0; color: #333;">${artwork.artist_name || 'Unknown Artist'}</h4>
+                                            <p class="painting-text" style="margin: 5px 0; color: #666; font-size: 0.9rem;">Painting</p>
+                                        </div>
                                     </div>
+                                    <button class="follow-btn" id="contact-follow-btn" data-artist-id="${artwork.artist_id}" style="margin: 0;">Follow</button>
+                                </div>
+                                <div style="text-align: left; margin-top: 10px;">
+                                    ${artwork.artist_email ? `<p style="margin: 5px 0;"><strong>Email:</strong> ${artwork.artist_email}</p>` : ''}
+                                    ${artwork.artist_contact ? `<p style="margin: 5px 0;"><strong>Phone:</strong> ${artwork.artist_contact}</p>` : ''}
+                                    <p style="margin: 5px 0;"><strong>Artist Profile:</strong> <a href="artist-details.html?id=${artwork.artist_id || ''}">View Full Profile</a></p>
                                 </div>
                             </div>
                         </div>
@@ -640,6 +645,9 @@
 
             // Initialize heart icon after HTML is inserted
             initializeHeartIcon(artwork.artwork_id);
+
+            // Initialize follow button after HTML is inserted
+            initializeFollowButton(artwork.artist_id);
 
             // Attach listeners to related artworks heart icons
             document.querySelectorAll('.related-artworks .heart-icon').forEach(icon => {
@@ -811,6 +819,66 @@
             } else {
                 heartIcon.classList.add('unsaved');
                 heartIcon.classList.remove('saved');
+            }
+        }
+
+        function initializeFollowButton(artistId) {
+            const followBtn = document.getElementById('contact-follow-btn');
+            if (!followBtn || !artistId) return;
+
+            const userId = localStorage.getItem('userId');
+            const userEmail = localStorage.getItem('userEmail');
+
+            // Check if user is following this artist
+            if (userId && artistId) {
+                fetch(`/followed-artists/${userId}`)
+                    .then(response => response.json())
+                    .then(followedArtists => {
+                        const isFollowed = followedArtists.some(artist => artist.artist_id == artistId);
+                        updateFollowButton(followBtn, isFollowed);
+                    })
+                    .catch(err => {
+                        console.error('Error checking follow status:', err);
+                    });
+            }
+
+            followBtn.addEventListener('click', function() {
+                if (!userEmail) {
+                    if (typeof openModal === 'function') {
+                        openModal();
+                        openTab('signup');
+                    }
+                    return;
+                }
+
+                // Call follow/unfollow API
+                fetch('/follow-artist', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'user-id': userId
+                    },
+                    body: JSON.stringify({ artist_id: artistId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    updateFollowButton(this, data.followed);
+                    console.log(data.message);
+                })
+                .catch(err => {
+                    console.error('Follow error:', err);
+                    alert('Error updating follow status. Please try again.');
+                });
+            });
+        }
+
+        function updateFollowButton(btn, isFollowed) {
+            if (isFollowed) {
+                btn.textContent = 'Followed';
+                btn.classList.add('followed');
+            } else {
+                btn.textContent = 'Follow';
+                btn.classList.remove('followed');
             }
         }
     </script>

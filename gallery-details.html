@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery Details - BanArts</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .gallery-tabs {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            padding: 1rem 0;
+            display: flex;
+            gap: 2rem;
+            justify-content: flex-start;
+            border-bottom: 2px solid #2063f3;
+        }
+        .gallery-tab-btn {
+            border: none;
+            background: none;
+            color: inherit;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2em;
+            outline: none !important;
+            padding: 0.5rem 0;
+            transition: all 0.3s ease;
+        }
+        .gallery-tab-btn.active {
+            color: #007bff !important;
+            text-decoration: underline !important;
+            text-underline-offset: 8px;
+        }
+        @media (max-width: 768px) {
+            .gallery-tabs {
+                gap: 1rem;
+                justify-content: flex-start;
+                padding: 1rem 0;
+            }
+            .gallery-tab-btn {
+                font-size: 1em;
+            }
+            .gallery-contact-info, .gallery-website-info {
+                text-align: justify;
+            }
+        }
+
+        /* Image Viewer Modal Styles */
+        #image-modal {
+            background-color: rgba(0,0,0,0.9);
+            display:flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #image-modal .modal-content {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #close-image-modal {
+            z-index: 10001;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        #close-image-modal:hover {
+            color: #bbb;
+        }
+        .artwork-card img {
+            cursor: pointer;
+            transition: transform 0.2s;
+            border-radius: 0px;
+        }
+        .artwork-card img:hover {
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav role="navigation" aria-label="Main navigation">
+            <div class="logo">
+                <img src="img/bantayanon artists logo.jpg" alt="BanArts Logo" class="logo-img">
+                BanArts
+            </div>
+            <div class="nav-menu">
+                <div class="search-bar">
+                    <label for="search-input" class="sr-only">Search artworks, artists, galleries...</label>
+                    <input type="text" id="search-input" placeholder="Search artworks, artists..." aria-describedby="search-help">
+                    <button type="submit" aria-label="Submit search">Search</button>
+                    <div id="search-help" class="sr-only">Type to search for artworks, artists, or galleries</div>
+                </div>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/artists.html">Artists</a></li>
+                    <li><a href="/artworks.html">Artworks</a></li>
+                    <li><a href="/galleries.html">Galleries</a></li>
+                    <li><a href="/museums.html">Museums</a></li>
+                    <li><a href="/events.html">Events</a></li>
+                    <li><a href="/videos.html">Videos</a></li>
+                    <li><a href="/collections.html">Collections</a></li>
+                </ul>
+                <div class="auth-buttons">
+                    <button type="button" class="login-link">Login</button>
+                    <button type="button" class="signup-btn">Signup</button>
+                </div>
+            </div>
+            <div class="mobile-header-icons">
+                <div class="notification-container"></div>
+                <div class="profile-dropdown-container mobile-icon">
+                    <a href="/profile.html" class="profile-icon" id="profile-icon-link">
+                        <div class="nav-profile-avatar" id="nav-profile-avatar"></div>
+                    </a>
+                    <div class="profile-dropdown">
+                        <div class="profile-dropdown-header">
+                            <img src="/img/profile icon.webp" alt="Profile" class="dropdown-profile-icon" id="dropdown-profile-icon">
+                            <div class="dropdown-profile-name">John Doe</div>
+                            <a href="/profile.html" class="view-profile-btn">View Profile</a>
+                        </div>
+                        <div class="profile-dropdown-item">My Collection</div>
+                        <a href="/profile.html#uploads" class="profile-dropdown-item">Artworks</a>
+                        <div class="dropdown-divider"></div>
+                        <div class="profile-dropdown-item">Favorites</div>
+                        <a href="/profile.html#saved" class="profile-dropdown-item">Saves</a>
+                        <a href="/profile.html#followed" class="profile-dropdown-item">Follows</a>
+                        <div class="dropdown-divider"></div>
+                        <div class="profile-dropdown-item settings-header">Settings</div>
+                        <a href="/settings.html" class="profile-dropdown-item edit-profile-btn">Edit Profile</a>
+                        <a href="#" class="profile-dropdown-item logout-item">Logout</a>
+                    </div>
+                </div>
+                <button class="mobile-menu-toggle" aria-label="Toggle navigation menu">
+                    &#9776;
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <main style="margin-top: 100px;">
+        <section class="gallery-details" style="padding: 2rem;">
+            <img id="gallery-image" src="img/bantayanon artists logo.jpg" alt="Gallery Logo" style="width: 500px; height: auto; display: block; margin: 0 auto 1rem; border-radius: 0;">
+            <h2 id="gallery-name">Gallery Name</h2>
+            <p><strong>Location:</strong> <span id="gallery-location"></span></p><br>
+            <div class="gallery-tabs">
+                <button class="gallery-tab-btn active" onclick="switchGalleryTab(event, 'overview')">Overview</button>
+                <button class="gallery-tab-btn" onclick="switchGalleryTab(event, 'artworks')">Artworks</button>
+            </div>
+            <br>
+            <br>
+            <div id="overview-content">
+                <h3>Overview</h3>
+                <p id="gallery-overview"></p>
+                <p class="gallery-contact-info"><strong>Address:</strong> <span id="gallery-contact"></span></p>
+                <p class="gallery-contact-info"><strong>Website:</strong> <a id="gallery-website" href="#" target="_blank"></a></p>
+            </div>
+            <div id="artworks-content" style="display: none;">
+                <h3>Featured Artworks</h3>
+                <div id="artworks-grid" class="artworks-grid" style="margin-bottom: 1rem;">
+                    <!-- Artworks will be loaded here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About BanArts</h3>
+                <p>BanArts is the official platform of the Bantayanon Artists Group, dedicated to showcasing the rich artistic heritage and contemporary creativity of Bantayan Island, Philippines. We connect local artists with art enthusiasts worldwide.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p><strong>Email:</strong> bantayanonartists@gmail.com<br><strong>Phone:</strong> 09481766048<br><strong>Address:</strong> Bantayan Island, Cebu, Philippines</p>
+            </div>
+            <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="social-icons">
+                    <a href="#" class="social-icon-link" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-icon-link" aria-label="Gmail"><i class="fas fa-envelope"></i></a>
+                    <a href="#" class="social-icon-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 BanArts. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Login/Signup Modal -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="modal-tabs">
+                <button class="tab-btn active" onclick="openTab('login')">Login</button>
+                <button class="tab-btn" onclick="openTab('signup')">Signup</button>
+            </div>
+            <div id="login-tab" class="tab-content active">
+                <img src="img/bantayanon artists logo.jpg" alt="BanArts Logo" class="modal-logo">
+                <h2>Login</h2>
+                <form>
+                    <input type="email" placeholder="Email" required>
+                    <input type="password" placeholder="Password" required>
+                    <button type="submit">Login</button>
+                </form>
+                <div class="divider">or</div>
+                <div class="social-login">
+                    <a href="/auth/facebook" class="social-link facebook"><img src="img/facebook-logo.avif" alt="Facebook"></a>
+                    <a href="/auth/google" class="social-link google"><img src="img/google-icon-logo-png-transparent.png" alt="Google"></a>
+                    <a href="/auth/twitter" class="social-link apple"><img src="img/twitter-x.webp" alt="Twitter"></a>
+                </div>
+                <p class="legal-text">By clicking Sign Up or Continue with Email, Twitter, Google, or Facebook, you agree to BanArts <a href="terms.html" style="color: blue; text-decoration: underline;">Terms and Conditions</a> and Privacy Policy. This site is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply.</p>
+            </div>
+            <div id="signup-tab" class="tab-content">
+                <img src="img/bantayanon artists logo.jpg" alt="BanArts Logo" class="modal-logo">
+                <h2>Signup</h2>
+                <form>
+                    <input type="text" placeholder="Full Name" required>
+                    <input type="email" placeholder="Email" required>
+                    <input type="password" placeholder="Password" required>
+                    <input type="password" placeholder="Confirm Password" required>
+                    <button type="submit">Signup</button>
+                </form>
+                <div class="divider">or</div>
+                <div class="social-login">
+                    <a href="/auth/facebook" class="social-link facebook"><img src="img/facebook-logo.avif" alt="Facebook"></a>
+                    <a href="/auth/google" class="social-link google"><img src="img/google-icon-logo-png-transparent.png" alt="Google"></a>
+                    <a href="/auth/twitter" class="social-link apple"><img src="img/twitter-x.webp" alt="Twitter"></a>
+                </div>
+                <p class="legal-text">By clicking Sign Up or Continue with Email, Twitter, Google, or Facebook, you agree to BanArts Terms and Conditions and Privacy Policy. This site is protected by reCAPTCHA and the Google Privacy Policy and Terms of Service apply.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Image Viewing Modal -->
+    <div id="image-modal" class="modal">
+        <div class="modal-content" style="max-width: 90%; max-height: 90vh; background: transparent; padding: 0; box-shadow: none;">
+            <span class="close" id="close-image-modal" style="color: white; font-size: 40px; position: absolute; top: 10px; right: 25px;">&times;</span>
+            <img id="modal-image-large" src="" style="width: 100%; height: auto; border-radius: 0;">
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const galleryId = urlParams.get('id');
+            if (galleryId) {
+                loadGalleryDetails(galleryId);
+            }
+        });
+
+        function loadGalleryDetails(id) {
+            fetch(`/galleries/${id}`)
+                .then(response => response.json())
+                .then(gallery => {
+                    document.getElementById('gallery-name').textContent = gallery.name;
+                    document.getElementById('gallery-location').textContent = gallery.location || '';
+                    document.getElementById('gallery-overview').textContent = gallery.about || '';
+                    document.getElementById('gallery-contact').textContent = gallery.contact_info || '';
+                    document.getElementById('gallery-website').href = gallery.website || '#';
+                    document.getElementById('gallery-website').textContent = gallery.website || '';
+                    document.getElementById('gallery-image').src = gallery.image_url || 'img/bantayanon artists logo.jpg';
+
+                    // Load artworks
+                    fetch(`/artworks?gallery_id=${id}`)
+                        .then(response => response.json())
+                        .then(artworks => {
+                            const artworksGrid = document.getElementById('artworks-grid');
+                            if (artworks.length > 0) {
+                                artworksGrid.innerHTML = artworks.map(artwork => `
+                                    <div class="artwork-card">
+                                        <img src="${artwork.image_url || 'img/art1.jpg'}" alt="${artwork.title}" onclick="openImageModal('${artwork.image_url || 'img/art1.jpg'}')">
+                                        <h3>${artwork.title}</h3>
+                                        <p>${artwork.artist || 'Unknown Artist'}</p>
+                                    </div>
+                                `).join('');
+                            } else {
+                                artworksGrid.innerHTML = '<p>No artworks available for this gallery.</p>';
+                            }
+                        })
+                        .catch(error => console.error('Error loading artworks:', error));
+                })
+                .catch(error => console.error('Error loading gallery details:', error));
+        }
+
+        function switchGalleryTab(event, section) {
+            document.getElementById('overview-content').style.display = section === 'overview' ? 'block' : 'none';
+            document.getElementById('artworks-content').style.display = section === 'artworks' ? 'block' : 'none';
+
+            document.querySelectorAll('.gallery-tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                btn.style.color = 'inherit';
+                btn.style.textDecoration = 'none';
+            });
+            
+            if (event && event.currentTarget) {
+                const target = event.currentTarget;
+                target.classList.add('active');
+                target.style.color = '#007bff';
+                target.style.textDecoration = 'underline';
+            }
+        }
+
+        function openImageModal(imgUrl) {
+            const modal = document.getElementById('image-modal');
+            const modalImg = document.getElementById('modal-image-large');
+            if (modal && modalImg) {
+                modalImg.src = imgUrl;
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        // Close image modal logic
+        document.addEventListener('DOMContentLoaded', function() {
+            const imageModal = document.getElementById('image-modal');
+            const closeBtn = document.getElementById('close-image-modal');
+
+            function closeImageModal() {
+                imageModal.classList.remove('show');
+                document.body.style.overflow = 'auto';
+                // Refresh the page to ensure sticky positioning works
+                window.location.reload();
+            }
+
+            if (closeBtn) {
+                closeBtn.onclick = closeImageModal;
+            }
+
+            if (imageModal) {
+                imageModal.onclick = function(event) {
+                    if (!event.target.closest('.modal-content')) {
+                        closeImageModal();
+                    }
+                };
+            }
+        });
+    </script>
+</body>
+</html>

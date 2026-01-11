@@ -250,9 +250,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         <img src="${dataUrl}" alt="Uploaded Artwork">
                         <h3>Uploaded Artwork</h3>
                         <p>Uploaded by me</p>
+                        <button class="remove-btn">Remove</button>
                     `;
                     uploadsGrid.appendChild(card);
-                    
+
                     const newImg = card.querySelector('img');
                     newImg.addEventListener('mousemove', function(e) {
                         const rect = this.getBoundingClientRect();
@@ -267,6 +268,18 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
                     newImg.addEventListener('click', function() {
                         openArtworkModal(this.src);
+                    });
+
+                    const removeBtn = card.querySelector('.remove-btn');
+                    removeBtn.addEventListener('click', function() {
+                        const uploadsKey = getUserUploadsKey();
+                        let currentUploads = JSON.parse(localStorage.getItem(uploadsKey) || '[]');
+                        const index = currentUploads.indexOf(dataUrl);
+                        if (index > -1) {
+                            currentUploads.splice(index, 1);
+                            localStorage.setItem(uploadsKey, JSON.stringify(currentUploads));
+                            location.reload();
+                        }
                     });
 
                     const uploadsKey = getUserUploadsKey();

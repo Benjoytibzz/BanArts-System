@@ -3674,7 +3674,7 @@ app.get('/artwork/:id', (req, res) => {
                         </div>
                         ${artwork.artist_email ? `<p><strong>Email:</strong> ${artwork.artist_email}</p>` : ''}
                         ${artwork.artist_contact ? `<p><strong>Phone:</strong> ${artwork.artist_contact}</p>` : ''}
-                        <p><strong>Artist Profile:</strong> <a href="/artist/${artwork.artist_id}" target="_blank">View Full Profile</a></p>
+                        <p><strong>Artist Profile:</strong> <a href="/artist/${artwork.artist_id}">View Full Profile</a></p>
                         <a href="/artworks.html" class="back-btn">Back to Artworks</a>
                     </div>
                 </div>
@@ -3809,9 +3809,34 @@ app.get('/artwork/:id', (req, res) => {
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
       <link rel="stylesheet" href="/styles.css">
       <style>
+        .museum-main-image {
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            border-radius: 0px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .museum-image-container {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .artist-info {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
         @media (max-width: 768px) {
           .museum-contact-info {
             text-align: justify !important;
+          }
+          .artist-details p {
+            text-align: justify;
+            width: 100%;
+          }
+          .artist-details h3 {
+            text-align: justify;
           }
         }
       </style>
@@ -3877,12 +3902,13 @@ app.get('/artwork/:id', (req, res) => {
 
       <main>
           <section class="museum-profile">
-              <div class="artist-header">
-                  <img src="${museum.image_url || '/img/museum.jpg'}" alt="${museum.name}" class="artist-photo">
-                  <div class="artist-info">
-                      <div class="artist-header-title">
-                          <h1>${museum.name}</h1>
-                      </div>
+              <div class="museum-image-container">
+                  <img src="${museum.image_url || '/img/museum.jpg'}" alt="${museum.name}" class="museum-main-image">
+              </div>
+              <div class="artist-info">
+                  <div class="artist-header-title">
+                      <h1>${museum.name}</h1>
+                  </div>
                       <p class="artist-specialty">Museum</p>
                       <p class="artist-location">Located in ${museum.location || 'Bantayan Island'}</p>
                       <p class="artist-bio">${museum.about || 'Museum description not available.'}</p>
@@ -4017,6 +4043,24 @@ app.get('/artwork/:id', (req, res) => {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="/styles.css">
     <style>
+        .gallery-main-image {
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+            border-radius: 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .gallery-image-container {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .artist-info {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
         @media (max-width: 768px) {
             .artist-details p {
                 text-align: justify;
@@ -4090,24 +4134,24 @@ app.get('/artwork/:id', (req, res) => {
 
     <main>
         <section class="gallery-profile">
-            <div class="artist-header">
-                <img src="${gallery.image_url || '/img/gallery.jpg'}" alt="${gallery.name}" class="artist-photo">
-                <div class="artist-info">
-                    <div class="artist-header-title">
-                        <h1>${gallery.name}</h1>
-                    </div>
-                    <p class="artist-specialty">${gallery.type || 'Art Gallery'}</p>
-                    <p class="artist-location">Located in ${gallery.location || 'Bantayan Island'}</p>
-                    <p class="artist-bio">${gallery.about || 'Gallery description not available.'}</p>
-                    <div class="artist-details">
-                        ${gallery.collections ? `<h3>Collections</h3><p>${gallery.collections}</p>` : ''}
-                        <h3>Contact</h3>
-                        ${gallery.email ? `<p><strong>Email:</strong> ${gallery.email}</p>` : ''}
-                        ${gallery.phone ? `<p><strong>Phone:</strong> ${gallery.phone}</p>` : ''}
-                        ${gallery.contact_info ? `<p><strong>Address:</strong> ${gallery.contact_info}</p>` : ''}
-                        ${gallery.website ? `<p><strong>Website:</strong> <a href="${gallery.website}" target="_blank">${gallery.website}</a></p>` : ''}
-                        <a href="/galleries.html" class="back-btn">Back to Galleries</a>
-                    </div>
+            <div class="gallery-image-container">
+                <img src="${gallery.image_url || '/img/gallery.jpg'}" alt="${gallery.name}" class="gallery-main-image">
+            </div>
+            <div class="artist-info">
+                <div class="artist-header-title">
+                     <h1 style="text-align: center;">${gallery.name}</h1>
+                 </div>
+                <p class="artist-specialty">${gallery.type || 'Art Gallery'}</p>
+                <p class="artist-location">Located in ${gallery.location || 'Bantayan Island'}</p>
+                <p class="artist-bio">${gallery.about || 'Gallery description not available.'}</p>
+                <div class="artist-details">
+                    ${gallery.collections ? `<h3>Collections</h3><p>"${gallery.collections}"</p>` : ''}
+                    <h3>Contact</h3>
+                    ${gallery.email ? `<p><strong>Email:</strong> ${gallery.email}</p>` : ''}
+                    ${gallery.phone ? `<p><strong>Phone:</strong> ${gallery.phone}</p>` : ''}
+                    ${gallery.contact_info ? `<p><strong>Address:</strong> ${gallery.contact_info}</p>` : ''}
+                    ${gallery.website ? `<p><strong>Website:</strong> <a href="${gallery.website}" target="_blank">${gallery.website}</a></p>` : ''}
+                    <a href="/galleries.html" class="back-btn">Back to Galleries</a>
                 </div>
             </div>
         </section>

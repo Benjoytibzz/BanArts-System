@@ -521,7 +521,7 @@ main > section:nth-child(6) { animation-delay: 0.6s; }
 .artwork-card {
     background-color: #fff;
     border: 1px solid #e0e0e0;
-    border-radius: 8px;
+    border-radius: 0px;
     overflow: hidden;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     transform: translateY(0);
@@ -538,6 +538,7 @@ main > section:nth-child(6) { animation-delay: 0.6s; }
     height: 200px;
     object-fit: cover;
     transition: transform 0.4s ease;
+    border-radius: 0;
 }
 
 .artwork-card:hover img {
@@ -611,7 +612,7 @@ main > section:nth-child(6) { animation-delay: 0.6s; }
 .gallery-card {
     background-color: #fff;
     border: 1px solid #e0e0e0;
-    border-radius: 8px;
+    border-radius: 0px;
     overflow: hidden;
     transition: box-shadow 0.3s;
 }
@@ -623,7 +624,8 @@ main > section:nth-child(6) { animation-delay: 0.6s; }
 .gallery-card img {
     width: 100%;
     height: 200px;
-    object-fit: cover;
+    object-fit:cover;
+    border-radius: 0px;
 }
 
 .gallery-card h3 {
@@ -680,7 +682,7 @@ main > section:nth-child(6) { animation-delay: 0.6s; }
 .artist-card {
     background-color: #fff;
     border: 1px solid #e0e0e0;
-    border-radius: 8px;
+    border-radius: 0px;
     overflow: hidden;
     transition: box-shadow 0.3s;
 }
@@ -1287,10 +1289,14 @@ main > section:nth-child(6) { animation-delay: 0.6s; }
 
 /* Gallery Profile Page */
 .gallery-profile {
-    padding: 2rem 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
+    padding: 2rem 0;
+    max-width: none;
+    margin: 0;
     margin-top: 80px; /* Account for fixed header */
+}
+
+.gallery-profile h1 {
+    text-align: center;
 }
 
 .artist-header {
@@ -1308,6 +1314,14 @@ main > section:nth-child(6) { animation-delay: 0.6s; }
     border-radius: 8px;
 }
 
+.gallery-photo {
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    height: 400px;
+    object-fit: cover;
+    border-radius: 0px;
+}
+
 .artist-info h1 {
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
@@ -1317,6 +1331,7 @@ main > section:nth-child(6) { animation-delay: 0.6s; }
 .artist-header-title {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 1rem;
     margin-bottom: 0.5rem;
 }
@@ -1357,8 +1372,14 @@ main > section:nth-child(6) { animation-delay: 0.6s; }
 
 .artist-details h3 {
     font-size: 1.2rem;
-    margin-bottom: 1rem;
+    margin-bottom: 2px;
     color: #000;
+    text-align: justify;
+}
+
+.artist-details p {
+    text-align: justify;
+    margin-top: 0;
 }
 
 .artist-details ul {
@@ -1369,6 +1390,17 @@ main > section:nth-child(6) { animation-delay: 0.6s; }
 .artist-details li {
     margin-bottom: 0.5rem;
     color: #666;
+}
+
+.artist-details ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+    margin: 0.5rem 0;
+}
+
+.artist-details ul li {
+    margin-bottom: 0.25rem;
+    text-align: justify;
 }
 
 .artist-artworks {
@@ -1407,7 +1439,7 @@ main > section:nth-child(6) { animation-delay: 0.6s; }
 .artwork-image {
     width: 400px;
     height: auto;
-    border-radius: 8px;
+    border-radius: 0px;
 }
 
 .artwork-info h1 {
@@ -1496,7 +1528,7 @@ main > section:nth-child(6) { animation-delay: 0.6s; }
 .testimonial-card {
     background-color: #fff;
     border: 1px solid #e0e0e0;
-    border-radius: 8px;
+    border-radius: 0px;
     overflow: hidden;
     transition: box-shadow 0.3s;
     display: flex;
@@ -1590,7 +1622,7 @@ main > section:nth-child(6) { animation-delay: 0.6s; }
 .feedback-card {
     background-color: #fff;
     border: 1px solid #e0e0e0;
-    border-radius: 8px;
+    border-radius: 0px;
     padding: 2rem;
     text-align: center;
     transition: box-shadow 0.3s;
@@ -1634,7 +1666,7 @@ main > section:nth-child(6) { animation-delay: 0.6s; }
 .video-card {
     background-color: #fff;
     border: 1px solid #e0e0e0;
-    border-radius: 8px;
+    border-radius: 0px;
     overflow: hidden;
     transition: box-shadow 0.3s;
 }
@@ -1683,7 +1715,7 @@ main > section:nth-child(6) { animation-delay: 0.6s; }
 .museum-card {
     background-color: #fff;
     border: 1px solid #e0e0e0;
-    border-radius: 8px;
+    border-radius: 0px;
     overflow: hidden;
     transition: box-shadow 0.3s;
 }
@@ -2944,7 +2976,7 @@ body::before {
     height: auto;
     max-height: 500px;
     object-fit: contain;
-    border-radius: 8px;
+    border-radius: 0px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -3131,7 +3163,7 @@ body::before {
     height: auto;
     max-height: 400px;
     object-fit: contain;
-    border-radius: 8px;
+    border-radius: 0px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
@@ -3584,7 +3616,7 @@ body::before {
 /* Improved Artwork Cards */
 .artwork-card {
     background: white;
-    border-radius: 12px;
+    border-radius: 0px;
     overflow: hidden;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     transition: all 0.3s ease;
@@ -3758,7 +3790,7 @@ body::before {
 .event-card {
     background-color: #fff;
     border: 1px solid #e0e0e0;
-    border-radius: 8px;
+    border-radius: 0px;
     overflow: hidden;
     transition: box-shadow 0.3s;
     margin-bottom: 2rem;
@@ -3924,7 +3956,7 @@ body {
 .artwork-modal-image img {
     width: 100%;
     height: auto;
-    border-radius: 8px;
+    border-radius: 0px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
