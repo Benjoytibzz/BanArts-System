@@ -556,7 +556,7 @@ Thank you for being part of BanArts where Bantayanon creativity lives, grows, an
                     <img src="${museum.image_url || 'img/art1.jpg'}" alt="${museum.name}">
                     <h3>${museum.name}</h3>
                     <p>${museum.about || 'Featured museum.'}</p>
-                    <button class="museum-link" onclick="openAuthModalForMuseum()">Learn More</button>
+                    <button class="museum-link" onclick="openAuthModalForMuseum(${museum.museum_id})">Learn More</button>
                 `;
                 grid.appendChild(card);
             });
@@ -807,10 +807,10 @@ Thank you for being part of BanArts where Bantayanon creativity lives, grows, an
         }
 
         // Open auth modal for museum access or redirect if logged in
-        function openAuthModalForMuseum() {
+        function openAuthModalForMuseum(museumId) {
             const userId = localStorage.getItem('userId');
             if (userId) {
-                window.location.href = 'museums.html';
+                window.location.href = '/museum/' + museumId;
             } else {
                 openModal();
                 openTab('signup');
