@@ -2742,15 +2742,16 @@ input[type="password"]::-ms-clear {
     }
 
     .mobile-header-icons .notification-dropdown {
-        position: absolute;
-        top: 100%;
-        right: -70px;
+        position: fixed;
+        top: 70px;
+        left: 50%;
+        transform: translateX(-50%);
+        right: auto;
         z-index: 10000;
-        width: 85vw;
-        min-width: 280px;
-        max-width: 350px;
-        max-height: 70vh;
-        margin-top: 0.5rem;
+        width: 95vw;
+        max-width: 400px;
+        max-height: 80vh;
+        margin-top: 0;
         box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
     }
 }
