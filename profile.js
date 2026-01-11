@@ -76,9 +76,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function openArtworkModal(imageSrc) {
         const modal = document.getElementById('artwork-modal');
         const img = document.getElementById('artwork-modal-img');
-    
+        const modalContent = modal ? modal.querySelector('.modal-content') : null;
+
         if (modal && img) {
             img.src = imageSrc;
+            if (modalContent) {
+                modalContent.style.top = window.scrollY + 'px';
+            }
             modal.style.display = 'flex';
             modal.style.opacity = '1';
             modal.style.pointerEvents = 'auto';
@@ -91,6 +95,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to close artwork modal
     function closeArtworkModal() {
         const modal = document.getElementById('artwork-modal');
+        const modalContent = modal ? modal.querySelector('.modal-content') : null;
         if (modal) {
             modal.classList.remove('show');
             modal.setAttribute('aria-hidden', 'true');
@@ -98,6 +103,9 @@ document.addEventListener('DOMContentLoaded', function() {
             modal.style.opacity = '0';
             modal.style.pointerEvents = 'none';
             document.body.classList.remove('no-scroll');
+            if (modalContent) {
+                modalContent.style.top = '0px';
+            }
         }
     }
     
