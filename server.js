@@ -3811,15 +3811,17 @@ app.get('/artwork/:id', (req, res) => {
       <style>
         .museum-main-image {
             width: 100%;
-            max-width: 800px;
             height: auto;
+            max-height: 600px;
             display: block;
-            margin: 0 auto;
-            border-radius: 0px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin: 0;
+            border-radius: 0;
+            object-fit: cover;
         }
         .museum-image-container {
-            text-align: center;
+            width: 100%;
+            margin: 0;
+            padding: 0;
             margin-bottom: 40px;
         }
         .artist-info {
@@ -3900,11 +3902,11 @@ app.get('/artwork/:id', (req, res) => {
           </nav>
       </header>
 
-      <main>
-          <section class="museum-profile">
-              <div class="museum-image-container">
-                  <img src="${museum.image_url || '/img/museum.jpg'}" alt="${museum.name}" class="museum-main-image">
-              </div>
+      <main style="margin-top: 0; padding: 0;">
+          <div class="museum-image-container">
+              <img src="${museum.image_url || '/img/museum.jpg'}" alt="${museum.name}" class="museum-main-image">
+          </div>
+          <section class="museum-profile" style="margin-top: 0; padding-top: 0;">
               <div class="artist-info">
                   <div class="artist-header-title">
                       <h1>${museum.name}</h1>
@@ -4045,12 +4047,15 @@ app.get('/artwork/:id', (req, res) => {
     <style>
         .gallery-main-image {
             width: 100%;
-            max-width: 800px;
+            max-width: 100%;
             height: auto;
             display: block;
-            margin: 0 auto;
+            margin-top: 0;
             border-radius: 0;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        header {
+            background-color: #007bff !important;
         }
         .gallery-image-container {
             text-align: center;
@@ -4062,6 +4067,10 @@ app.get('/artwork/:id', (req, res) => {
             text-align: center;
         }
         @media (max-width: 768px) {
+            .artist-info {
+                padding-left: 15px;
+                padding-right: 15px;
+            }
             .artist-details p {
                 text-align: justify;
                 width: 100%;
@@ -4132,7 +4141,7 @@ app.get('/artwork/:id', (req, res) => {
         </nav>
     </header>
 
-    <main>
+    <main style="margin-top: -250px; padding: 0;">
         <section class="gallery-profile">
             <div class="gallery-image-container">
                 <img src="${gallery.image_url || '/img/gallery.jpg'}" alt="${gallery.name}" class="gallery-main-image">

@@ -294,11 +294,12 @@
             .contact-section {
                 display: flex;
                 flex-direction: column;
-                align-items: flex-start;
+                align-items: stretch;
             }
 
             .contact-section > div {
                 text-align: left;
+                width: 100%;
             }
 
             .painting-text {
@@ -599,7 +600,7 @@
 
                             <div class="contact-section">
                                 <h3>Contact the Artist</h3>
-                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                                     <div style="display: flex; align-items: center;">
                                         <img src="${artwork.artist_photo || 'img/profile icon.webp'}" alt="${artwork.artist_name}" style="width: 60px; height: 60px; border-radius: 50%; margin-right: 15px; object-fit: cover; border: 2px solid #007bff;">
                                         <div style="text-align: left;">
