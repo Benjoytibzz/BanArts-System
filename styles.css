@@ -2521,7 +2521,8 @@ input[type="password"]::-ms-clear {
         position: absolute;
         top: 100%;
         left: 0;
-        width: 100%;
+        right: 0;
+        width: auto;
         background-color: #007bff;
         flex-direction: column;
         padding: 0.5rem 0;
@@ -2532,6 +2533,8 @@ input[type="password"]::-ms-clear {
         visibility: hidden;
         transition: all 0.3s ease;
         z-index: 999;
+        margin-left: -1rem;
+        margin-right: -1rem;
     }
 
     .nav-menu.show {
