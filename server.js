@@ -1475,6 +1475,8 @@ app.post('/artists', upload.single('photo'), (req, res) => {
           return res.status(500).json({ message: 'Server error', error: err.message });
         }
         console.log('Artist created successfully:', row);
+        // Create notification for new artist
+        createNotification('artist', `New artist added: ${row.name}`, row.artist_id, 'artist');
         res.json(processImageFields(row));
       });
     }
@@ -1613,6 +1615,8 @@ app.post('/artworks', upload.single('image'), (req, res) => {
           if (!row) {
             return res.status(500).json({ message: 'Error retrieving created artwork' });
           }
+          // Create notification for new artwork
+          createNotification('artwork', `New artwork added: ${row.title}`, row.artwork_id, 'artwork');
           res.json(processImageFields(row));
         });
       }
@@ -1739,6 +1743,8 @@ app.post('/galleries', requireAuth, upload.single('image'), (req, res) => {
           console.error('Get inserted gallery error:', err);
           return res.status(500).json({ message: 'Server error' });
         }
+        // Create notification for new gallery
+        createNotification('gallery', `New gallery added: ${row.name}`, row.gallery_id, 'gallery');
         res.json(processImageFields(row));
       });
     }
@@ -1837,6 +1843,8 @@ app.delete('/galleries/:id', requireAuth, (req, res) => {
            console.error('Get inserted gallery featured artwork error:', err);
            return res.status(500).json({ message: 'Server error' });
          }
+         // Create notification for new gallery featured artwork
+         createNotification('gallery_featured', `New featured artwork added: ${row.title}`, row.gallery_featured_id, 'gallery_featured');
          res.json(processImageFields(row));
        });
      }
@@ -1977,6 +1985,8 @@ app.post('/museums', requireAuth, upload.single('image'), (req, res) => {
           console.error('Get inserted museum error:', err);
           return res.status(500).json({ message: 'Server error' });
         }
+        // Create notification for new museum
+        createNotification('museum', `New museum added: ${row.name}`, row.museum_id, 'museum');
         res.json(processImageFields(row));
       });
     }
@@ -2244,6 +2254,8 @@ app.post('/events', requireAuth, upload.fields([
              row.exhibitors = [];
            }
          }
+         // Create notification for new event
+         createNotification('event', `New event added: ${row.name}`, row.event_id, 'event');
          res.json(processImageFields(row));
        });
      }
@@ -2415,6 +2427,8 @@ app.post('/videos', requireAuth, (req, res) => {
           console.error('Get inserted video error:', err);
           return res.status(500).json({ message: 'Server error' });
         }
+        // Create notification for new video
+        createNotification('video', `New video added: ${row.title}`, row.video_id, 'video');
         res.json(processImageFields(row));
       });
     }
@@ -2505,6 +2519,8 @@ app.post('/collections', requireAuth, uploadCollections.single('collector_image'
                console.error('Get inserted collection error:', err);
                return res.status(500).json({ message: 'Server error' });
             }
+            // Create notification for new collection
+            createNotification('collection', `New collection added: ${row.name}`, row.collection_id, 'collection');
             res.json(processImageFields(row));
          });
       }
@@ -2690,6 +2706,8 @@ app.post('/artifacts', requireAuth, upload.single('image'), (req, res) => {
           console.error('Get inserted artifact error:', err);
           return res.status(500).json({ message: 'Server error' });
         }
+        // Create notification for new artifact
+        createNotification('artifact', `New artifact added: ${row.name}`, row.museum_id, 'museum');
         res.json(processImageFields(row));
       });
     }

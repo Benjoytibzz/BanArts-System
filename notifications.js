@@ -50,43 +50,55 @@
     console.log('[Notifications] Updating UI. Total notifications:', notifications.length, 'Unread:', unreadCount);
     
     const badgeEl = document.getElementById('notification-badge');
+    const mobileBadgeEl = document.getElementById('mobile-notification-badge');
     const listEl = document.getElementById('notification-list');
+    const mobileListEl = document.getElementById('mobile-notification-list');
     const footerEl = document.getElementById('notification-footer');
+    const mobileFooterEl = document.getElementById('mobile-notification-footer');
 
-    if (badgeEl) {
-      if (unreadCount > 0) {
-        badgeEl.classList.remove('hidden');
-        badgeEl.textContent = unreadCount > 99 ? '99+' : unreadCount;
-        console.log('[Notifications] Badge updated to:', badgeEl.textContent);
-      } else {
-        badgeEl.classList.add('hidden');
+    const updateBadge = (el) => {
+      if (el) {
+        if (unreadCount > 0) {
+          el.style.display = 'flex';
+          el.classList.remove('hidden');
+          el.textContent = unreadCount > 99 ? '99+' : unreadCount;
+        } else {
+          el.style.display = 'none';
+          el.classList.add('hidden');
+        }
       }
-    }
+    };
+
+    updateBadge(badgeEl);
+    updateBadge(mobileBadgeEl);
+
+    const notificationHtml = notifications.length === 0 
+      ? '<div class="notification-empty">No notifications yet</div>'
+      : notifications.map(notification => `
+          <div class="notification-item ${notification.is_read ? '' : 'unread'}" data-id="${notification.notification_id}">
+            <div class="notification-item-content">
+              <div class="notification-item-message">${escapeHtml(notification.message)}</div>
+              <div class="notification-item-time">${formatTime(notification.created_at)}</div>
+            </div>
+          </div>
+        `).join('');
 
     if (listEl) {
-      if (notifications.length === 0) {
-        console.log('[Notifications] No notifications to display');
-        listEl.innerHTML = '<div class="notification-empty">No notifications yet</div>';
-        if (footerEl) footerEl.style.display = 'none';
-      } else {
-        console.log('[Notifications] Rendering', notifications.length, 'notifications');
-        listEl.innerHTML = notifications
-          .map(notification => `
-            <div class="notification-item ${notification.is_read ? '' : 'unread'}" data-id="${notification.notification_id}">
-              <div class="notification-item-content">
-                <div class="notification-item-message">${escapeHtml(notification.message)}</div>
-                <div class="notification-item-time">${formatTime(notification.created_at)}</div>
-              </div>
-            </div>
-          `)
-          .join('');
+      listEl.innerHTML = notificationHtml;
+    }
+    if (mobileListEl) {
+      mobileListEl.innerHTML = notificationHtml;
+    }
 
-        if (footerEl && unreadCount > 0) {
-          footerEl.style.display = 'block';
-        }
+    if (footerEl) {
+      footerEl.style.display = (notifications.length > 0 && unreadCount > 0) ? 'block' : 'none';
+    }
+    if (mobileFooterEl) {
+      mobileFooterEl.style.display = (notifications.length > 0 && unreadCount > 0) ? 'block' : 'none';
+    }
 
-        addNotificationItemListeners();
-      }
+    if (notifications.length > 0) {
+      addNotificationItemListeners();
     }
   }
 
@@ -122,7 +134,39 @@
     items.forEach(item => {
       item.addEventListener('click', () => {
         const id = item.getAttribute('data-id');
+        const notification = notifications.find(n => n.notification_id == id);
+        
         markAsRead(id);
+
+        if (notification && notification.related_item_id) {
+          let url = '';
+          switch (notification.related_item_type) {
+            case 'artwork':
+              url = `artwork-details.html?id=${notification.related_item_id}`;
+              break;
+            case 'artist':
+              url = `artist-details.html?id=${notification.related_item_id}`;
+              break;
+            case 'event':
+              url = `event-details.html?id=${notification.related_item_id}`;
+              break;
+            case 'gallery':
+              url = `/gallery/${notification.related_item_id}`;
+              break;
+            case 'museum':
+              url = `/museum/${notification.related_item_id}`;
+              break;
+            case 'artifact':
+              url = `/museum/${notification.related_item_id}`;
+              break;
+            case 'collection':
+              url = 'collections.html';
+              break;
+          }
+          if (url) {
+            window.location.href = url;
+          }
+        }
       });
     });
   }
@@ -157,9 +201,13 @@
 
   function setupEventListeners() {
     const markAllReadBtn = document.getElementById('mark-all-read');
+    const mobileMarkAllReadBtn = document.getElementById('mobile-mark-all-read');
 
     if (markAllReadBtn) {
       markAllReadBtn.addEventListener('click', markAllAsRead);
+    }
+    if (mobileMarkAllReadBtn) {
+      mobileMarkAllReadBtn.addEventListener('click', markAllAsRead);
     }
   }
 

@@ -3640,6 +3640,23 @@ body::before {
 #page-info {
     font-weight: 500;
     color: #666;
+    white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+    .pagination {
+        gap: 0.5rem;
+        padding: 0.5rem;
+    }
+    
+    .pagination button {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.9rem;
+    }
+    
+    #page-info {
+        font-size: 0.9rem;
+    }
 }
 
 /* Improved Artwork Cards */
