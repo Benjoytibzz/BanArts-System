@@ -1504,6 +1504,11 @@ app.put('/artists/:id', upload.single('photo'), (req, res) => {
           console.error('Get updated artist error:', err);
           return res.status(500).json({ message: 'Server error' });
         }
+        
+        if (row) {
+          createNotification('artist_update', `Artist profile updated: ${row.name}`, row.artist_id, 'artist');
+        }
+        
         res.json(processImageFields(row));
       });
     }
@@ -1657,6 +1662,9 @@ app.put('/artworks/:id', upload.single('image'), (req, res) => {
           if (!row) {
             return res.status(500).json({ message: 'Error retrieving updated artwork' });
           }
+          
+          createNotification('artwork_update', `Artwork updated: ${row.title}`, row.artwork_id, 'artwork');
+          
           res.json(processImageFields(row));
         });
       }
@@ -1771,6 +1779,11 @@ app.put('/galleries/:id', requireAuth, upload.single('image'), (req, res) => {
           console.error('Get updated gallery error:', err);
           return res.status(500).json({ message: 'Server error' });
         }
+        
+        if (row) {
+          createNotification('gallery_update', `Gallery updated: ${row.name}`, row.gallery_id, 'gallery');
+        }
+        
         res.json(processImageFields(row));
       });
     }
@@ -1872,6 +1885,11 @@ app.delete('/galleries/:id', requireAuth, (req, res) => {
            console.error('Get updated gallery featured artwork error:', err);
            return res.status(500).json({ message: 'Server error' });
          }
+         
+         if (row) {
+           createNotification('gallery_featured_update', `Featured artwork updated: ${row.title}`, row.gallery_featured_id, 'gallery_featured');
+         }
+         
          res.json(processImageFields(row));
        });
      }
@@ -2014,6 +2032,11 @@ app.put('/museums/:id', requireAuth, upload.single('image'), (req, res) => {
           console.error('Get updated museum error:', err);
           return res.status(500).json({ message: 'Server error' });
         }
+        
+        if (row) {
+          createNotification('museum_update', `Museum updated: ${row.name}`, row.museum_id, 'museum');
+        }
+        
         res.json(processImageFields(row));
       });
     }
@@ -2367,6 +2390,11 @@ app.put('/events/:id', requireAuth, upload.fields([
              row.exhibitors = [];
            }
          }
+         
+         if (row) {
+           createNotification('event_update', `Event updated: ${row.name}`, row.event_id, 'event');
+         }
+         
          res.json(processImageFields(row));
        });
      }
@@ -2454,6 +2482,11 @@ app.put('/videos/:id', requireAuth, (req, res) => {
           console.error('Get updated video error:', err);
           return res.status(500).json({ message: 'Server error' });
         }
+        
+        if (row) {
+          createNotification('video_update', `Video updated: ${row.title}`, row.video_id, 'video');
+        }
+        
         res.json(processImageFields(row));
       });
     }
@@ -2551,6 +2584,11 @@ app.put('/collections/:id', requireAuth, uploadCollections.single('collector_ima
                console.error('Get updated collection error:', err);
                return res.status(500).json({ message: 'Server error' });
             }
+            
+            if (row) {
+              createNotification('collection_update', `Collection updated: ${row.name}`, row.collection_id, 'collection');
+            }
+            
             res.json(processImageFields(row));
          });
       }
@@ -2739,6 +2777,11 @@ app.put('/artifacts/:id', requireAuth, upload.single('image'), (req, res) => {
           console.error('Get updated artifact error:', err);
           return res.status(500).json({ message: 'Server error' });
         }
+        
+        if (row) {
+          createNotification('artifact_update', `Artifact updated: ${row.name}`, row.museum_id, 'museum');
+        }
+        
         res.json(processImageFields(row));
       });
     }

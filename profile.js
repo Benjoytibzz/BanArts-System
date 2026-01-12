@@ -150,6 +150,24 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Function to handle tab selection from URL hash
+    function handleHash() {
+        const hash = window.location.hash;
+        if (hash === '#uploads') {
+            showContent(uploadsContent, uploadsBtn);
+        } else if (hash === '#saved') {
+            showContent(savedContent, savedBtn);
+        } else if (hash === '#followed') {
+            showContent(followedContent, followedBtn);
+        }
+    }
+
+    // Handle initial hash on page load
+    handleHash();
+
+    // Listen for hash changes (when clicking dropdown links while already on profile page)
+    window.addEventListener('hashchange', handleHash);
+
     // Fetch latest user data from server
     const userId = localStorage.getItem('userId');
     if (userId) {
