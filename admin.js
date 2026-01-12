@@ -1423,6 +1423,7 @@ function getFormFields(type, id) {
                             <input type="hidden" name="artwork_source[]" value="new">
                             <input type="file" name="artwork_files" accept="image/*" required style="flex: 1;">
                             <input type="text" name="artwork_names" placeholder="Artwork Name" required style="flex: 1;">
+                            <input type="text" name="artwork_artists" placeholder="Artist Name" required style="flex: 1;">
                         </div>
                     `).join('')}
                 </div>
@@ -1545,6 +1546,7 @@ function addArtworkUploadRow() {
         <input type="hidden" name="artwork_source[]" value="new">
         <input type="file" name="artwork_files" accept="image/*" style="flex: 1;">
         <input type="text" name="artwork_names" placeholder="Artwork Name" style="flex: 1;">
+        <input type="text" name="artwork_artists" placeholder="Artist Name" style="flex: 1;">
         <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove(); updateArtworkRowNumbers();" style="padding: 2px 8px;">×</button>
     `;
     
@@ -1704,18 +1706,19 @@ function loadItemData(type, id) {
                             row.style.marginBottom = '8px';
                             row.style.alignItems = 'center';
                             row.innerHTML = `
-                                <span style="min-width: 25px;">${i + 1}.</span>
-                                <div style="flex: 1;">
-                                    <input type="hidden" name="artwork_source[]" value="existing">
-                                    <input type="file" name="artwork_files" accept="image/*" onchange="this.previousElementSibling.value='new'">
-                                    <div class="current-artwork-preview" style="margin-top: 5px;">
-                                        <img src="${artwork.image_url}" style="max-height: 40px; border-radius: 4px;">
-                                        <input type="hidden" name="existing_artwork_urls[]" value="${artwork.image_url}">
-                                    </div>
-                                </div>
-                                <input type="text" name="artwork_names" value="${artwork.title || ''}" placeholder="Artwork Name" required style="flex: 1;">
-                                <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove(); updateArtworkRowNumbers();" style="padding: 2px 8px;">×</button>
-                            `;
+                                                        <span style="min-width: 25px;">${i + 1}.</span>
+                                                        <div style="flex: 1;">
+                                                            <input type="hidden" name="artwork_source[]" value="existing">
+                                                            <input type="file" name="artwork_files" accept="image/*" onchange="this.previousElementSibling.value='new'">
+                                                            <div class="current-artwork-preview" style="margin-top: 5px;">
+                                                                <img src="${artwork.image_url}" style="max-height: 40px; border-radius: 4px;">
+                                                                <input type="hidden" name="existing_artwork_urls[]" value="${artwork.image_url}">
+                                                            </div>
+                                                        </div>
+                                                        <input type="text" name="artwork_names" value="${artwork.title || ''}" placeholder="Artwork Name" required style="flex: 1;">
+                                                        <input type="text" name="artwork_artists" value="${artwork.artist_name || ''}" placeholder="Artist Name" required style="flex: 1;">
+                                                        <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove(); updateArtworkRowNumbers();" style="padding: 2px 8px;">×</button>
+                                                    `;
                             container.appendChild(row);
                         });
                     }

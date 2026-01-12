@@ -318,7 +318,7 @@
                                         <div class="artwork-card">
                                             <img src="${artwork.image_url || 'img/art1.jpg'}" alt="${artwork.title}" onclick="openImageModal('${artwork.image_url || 'img/art1.jpg'}')">
                                             <h3>${artwork.title}</h3>
-                                            <p>By ${artwork.artist_name || 'Unknown Artist'}</p>
+                                            <p>${artwork.artist_name && artwork.artist_name !== 'Unknown Artist' ? 'By ' + artwork.artist_name : ''}</p>
                                         </div>
                                     `).join('');
                                 })
@@ -330,7 +330,7 @@
                                 <div class="artwork-card">
                                     <img src="${artwork.image_url || 'img/art1.jpg'}" alt="${artwork.title}" onclick="openImageModal('${artwork.image_url || 'img/art1.jpg'}')">
                                     <h3>${artwork.title}</h3>
-                                    <p>By ${artwork.artist_name || 'Unknown Artist'}</p>
+                                    <p>${artwork.artist_name && artwork.artist_name !== 'Unknown Artist' ? 'By ' + artwork.artist_name : ''}</p>
                                 </div>
                             `).join('');
                         }

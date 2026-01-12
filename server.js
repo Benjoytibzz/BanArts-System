@@ -2165,9 +2165,10 @@ app.post('/events', requireAuth, upload.fields([
     { name: 'artwork_files', maxCount: 50 }
 ]), (req, res) => {
     const { type, name, org, about, date, location, logo_url, status } = req.body;
-    
+
     // Extract array fields that might have [] in their names
     const artwork_names = req.body.artwork_names || req.body['artwork_names[]'];
+    const artwork_artists = req.body.artwork_artists || req.body['artwork_artists[]'];
     const exhibitors = req.body.exhibitors || req.body['exhibitors[]'];
 
     // Event image
@@ -2181,10 +2182,12 @@ app.post('/events', requireAuth, upload.fields([
     if (req.files && req.files['artwork_files']) {
         const files = req.files['artwork_files'];
         const names = Array.isArray(artwork_names) ? artwork_names : [artwork_names];
-        
+        const artists = Array.isArray(artwork_artists) ? artwork_artists : [artwork_artists];
+
         files.forEach((file, index) => {
             eventArtworks.push({
                 title: names[index] || `Artwork ${index + 1}`,
+                artist_name: artists[index] || 'Unknown Artist',
                 image_url: file.path
             });
         });
@@ -2198,12 +2201,18 @@ app.post('/events', requireAuth, upload.fields([
         return res.status(400).json({ message: 'A minimum of 10 artworks is required' });
     }
 
+    // Format date for SQLite
+    let formattedDate = date;
+    if (date && typeof date === 'string' && date.includes('T')) {
+        formattedDate = date.replace('T', ' ') + ':00';
+    }
+
     const eventStatus = status || 'upcoming';
     const exhibitorsList = Array.isArray(exhibitors) ? exhibitors : (exhibitors ? [exhibitors] : []);
 
     db.run(
       'INSERT INTO Events (type, name, org, about, date, location, image_url, logo_url, artworks, exhibitors, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [type, name, org, about, date, location, image_url, logo_url, JSON.stringify(eventArtworks), JSON.stringify(exhibitorsList), eventStatus],
+      [type, name, org, about, formattedDate, location, image_url, logo_url, JSON.stringify(eventArtworks), JSON.stringify(exhibitorsList), eventStatus],
       function(err) {
        if (err) {
          console.error('Create event error:', err);
@@ -2246,10 +2255,11 @@ app.put('/events/:id', requireAuth, upload.fields([
     { name: 'artwork_files', maxCount: 50 }
 ]), (req, res) => {
     const { type, name, org, about, date, location, logo_url, status } = req.body;
-    
+
     // Extract array fields that might have [] in their names
     const artwork_source = req.body.artwork_source || req.body['artwork_source[]'];
     const artwork_names = req.body.artwork_names || req.body['artwork_names[]'];
+    const artwork_artists = req.body.artwork_artists || req.body['artwork_artists[]'];
     const existing_artwork_urls = req.body.existing_artwork_urls || req.body['existing_artwork_urls[]'];
     const exhibitors = req.body.exhibitors || req.body['exhibitors[]'];
 
@@ -2264,9 +2274,10 @@ app.put('/events/:id', requireAuth, upload.fields([
     if (artwork_source) {
         const sources = Array.isArray(artwork_source) ? artwork_source : [artwork_source];
         const names = Array.isArray(artwork_names) ? artwork_names : [artwork_names];
+        const artists = Array.isArray(artwork_artists) ? artwork_artists : [artwork_artists];
         const existingUrls = Array.isArray(existing_artwork_urls) ? existing_artwork_urls : [existing_artwork_urls].filter(Boolean);
         const files = (req.files && req.files['artwork_files']) ? req.files['artwork_files'] : [];
-        
+
         let fileIndex = 0;
         let existingIndex = 0;
 
@@ -2274,11 +2285,13 @@ app.put('/events/:id', requireAuth, upload.fields([
             if (source === 'new' && files[fileIndex]) {
                 eventArtworks.push({
                     title: names[i] || `Artwork ${i + 1}`,
+                    artist_name: artists[i] || 'Unknown Artist',
                     image_url: files[fileIndex++].path
                 });
             } else if (source === 'existing' && existingUrls[existingIndex]) {
                 eventArtworks.push({
                     title: names[i] || `Artwork ${i + 1}`,
+                    artist_name: artists[i] || 'Unknown Artist',
                     image_url: existingUrls[existingIndex++]
                 });
             }
@@ -2296,12 +2309,18 @@ app.put('/events/:id', requireAuth, upload.fields([
       return res.status(400).json({ message: 'Event name is required' });
     }
 
+    // Format date for SQLite
+    let formattedDate = date;
+    if (date && typeof date === 'string' && date.includes('T')) {
+        formattedDate = date.replace('T', ' ') + ':00';
+    }
+
     const eventStatus = status || 'upcoming';
     const exhibitorsList = Array.isArray(exhibitors) ? exhibitors : (exhibitors ? [exhibitors] : []);
 
     db.run(
       'UPDATE Events SET type = ?, name = ?, org = ?, about = ?, date = ?, location = ?, image_url = ?, logo_url = ?, artworks = ?, exhibitors = ?, status = ?, updated_at = CURRENT_TIMESTAMP WHERE event_id = ?',
-      [type, name, org, about, date, location, image_url, logo_url, JSON.stringify(eventArtworks), JSON.stringify(exhibitorsList), eventStatus, req.params.id],
+      [type, name, org, about, formattedDate, location, image_url, logo_url, JSON.stringify(eventArtworks), JSON.stringify(exhibitorsList), eventStatus, req.params.id],
       function(err) {
        if (err) {
          console.error('Update event error:', err);
