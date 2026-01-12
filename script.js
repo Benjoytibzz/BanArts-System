@@ -1419,8 +1419,9 @@ function updateNotificationUI(notifications, unreadCount) {
                 item.addEventListener('click', function() {
                     const id = this.getAttribute('data-id');
                     const type = this.getAttribute('data-type');
+                    const itemId = this.getAttribute('data-item-id');
                     markNotificationAsRead(id);
-                    navigateToNotificationItem(type);
+                    navigateToNotificationItem(type, itemId);
                 });
             });
         }
@@ -1444,18 +1445,31 @@ function markAllNotificationsAsRead() {
 }
 
 function navigateToNotificationItem(type, itemId) {
+    if (!type) return;
+    
+    const normalizedType = type.toLowerCase();
     const pageMap = {
-        'Artist': 'artist-details.html',
-        'Artwork': 'artwork-details.html',
-        'Museum': 'museums.html',
-        'Gallery': 'galleries.html',
-        'Event': 'event-details.html'
+        'artist': 'artist-details.html',
+        'artwork': 'artwork-details.html',
+        'museum': '/museum/',
+        'gallery': '/gallery/',
+        'event': 'event-details.html',
+        'video': 'videos.html',
+        'collection': 'collections.html'
     };
 
-    const page = pageMap[type];
-    if (page && itemId) {
+    const page = pageMap[normalizedType];
+    if (!page) return;
+
+    if (normalizedType === 'museum' || normalizedType === 'gallery') {
+        if (itemId) {
+            window.location.href = `${page}${itemId}`;
+        } else {
+            window.location.href = normalizedType === 'museum' ? 'museums.html' : 'galleries.html';
+        }
+    } else if (itemId) {
         window.location.href = `${page}?id=${itemId}`;
-    } else if (page) {
+    } else {
         window.location.href = page;
     }
 }
