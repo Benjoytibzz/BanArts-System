@@ -171,11 +171,10 @@
         }
 
         .artworks-grid {
-            display: flex;
-            overflow-x: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 20px;
             padding: 10px 0;
-            scrollbar-width: thin;
         }
 
         .artwork-card {
