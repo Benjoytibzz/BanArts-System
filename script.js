@@ -417,6 +417,13 @@ function openForgotPasswordModal() {
     if (modal) {
         modal.style.display = 'flex';
         modal.style.zIndex = '10000';
+
+        // Position modal at current scroll position
+        const modalContent = modal.querySelector('.modal-content');
+        if (modalContent) {
+            modalContent.style.top = (window.scrollY + 20) + 'px';
+        }
+
         setTimeout(() => {
             modal.classList.add('show');
             modal.setAttribute('aria-hidden', 'false');
@@ -1631,6 +1638,13 @@ function openArtifactModal(artifactId) {
 
             modal.style.display = 'flex';
             modal.style.zIndex = '10000';
+
+            // Position modal at current scroll position
+            const modalContent = modal.querySelector('.modal-content');
+            if (modalContent) {
+                modalContent.style.top = (window.scrollY + 20) + 'px';
+            }
+
             setTimeout(() => modal.classList.add('show'), 10);
             document.body.classList.add('no-scroll');
             modal.setAttribute('aria-hidden', 'false');

@@ -4269,6 +4269,13 @@ app.get('/artwork/:id', (req, res) => {
             if (modal) {
                 modal.style.display = 'flex';
                 modal.style.zIndex = '10000';
+
+                // Position modal at current scroll position
+                const modalContent = modal.querySelector('.modal-content');
+                if (modalContent) {
+                    modalContent.style.top = (window.scrollY + 20) + 'px';
+                }
+
                 setTimeout(() => {
                     modal.classList.add('show');
                     document.body.classList.add('no-scroll');
@@ -4345,6 +4352,13 @@ app.get('/artwork/:id', (req, res) => {
                     if (modal) {
                         modal.style.display = 'flex';
                         modal.style.zIndex = '10000'; // Ensure it's above everything
+                        
+                        // Position modal at current scroll position
+                        const modalContent = modal.querySelector('.modal-content');
+                        if (modalContent) {
+                            modalContent.style.top = (window.scrollY + 20) + 'px';
+                        }
+
                         setTimeout(() => {
                             modal.classList.add('show');
                             document.body.classList.add('no-scroll');
