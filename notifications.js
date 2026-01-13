@@ -151,12 +151,15 @@
               url = `event-details.html?id=${notification.related_item_id}`;
               break;
             case 'gallery':
+            case 'gallery_featured':
+            case 'gallery_featured_update':
+            case 'gallery_update':
               url = `/gallery/${notification.related_item_id}`;
               break;
             case 'museum':
-              url = `/museum/${notification.related_item_id}`;
-              break;
             case 'artifact':
+            case 'artifact_update':
+            case 'museum_update':
               url = `/museum/${notification.related_item_id}`;
               break;
             case 'collection':

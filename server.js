@@ -646,30 +646,6 @@ function initializeDatabase(done) {
       UNIQUE(user_id, artist_id)
     );
 
-    -- UserUploadedArtworks table
-    CREATE TABLE IF NOT EXISTS UserUploadedArtworks (
-      upload_id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER NOT NULL,
-      title TEXT NOT NULL,
-      description TEXT,
-      image_url TEXT,
-      category TEXT,
-      tags TEXT,
-      status TEXT DEFAULT 'pending',
-      uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE
-    );
-
-    -- Booths table
-    CREATE TABLE IF NOT EXISTS Booths (
-      booth_id INTEGER PRIMARY KEY AUTOINCREMENT,
-      artist_name TEXT NOT NULL,
-      artwork_count INTEGER NOT NULL,
-      artwork_images TEXT,
-      artwork_titles TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    );
 
     -- CuratedHighlights table
     CREATE TABLE IF NOT EXISTS CuratedHighlights (
@@ -1867,7 +1843,7 @@ app.delete('/galleries/:id', requireAuth, (req, res) => {
            return res.status(500).json({ message: 'Server error' });
          }
          // Create notification for new gallery featured artwork
-         createNotification('gallery_featured', `New featured artwork added: ${row.title}`, row.gallery_featured_id, 'gallery_featured');
+         createNotification('gallery_update', `Featured artwork updated: ${row.title}`, row.gallery_id, 'gallery');
          res.json(processImageFields(row));
        });
      }
@@ -1895,11 +1871,11 @@ app.delete('/galleries/:id', requireAuth, (req, res) => {
            console.error('Get updated gallery featured artwork error:', err);
            return res.status(500).json({ message: 'Server error' });
          }
-         
+
          if (row) {
-           createNotification('gallery_featured_update', `Featured artwork updated: ${row.title}`, row.gallery_featured_id, 'gallery_featured');
+           createNotification('gallery_update', `Featured artwork updated: ${row.title}`, row.gallery_id, 'gallery');
          }
-         
+
          res.json(processImageFields(row));
        });
      }
@@ -2833,7 +2809,7 @@ app.post('/artifacts', requireAuth, upload.single('image'), (req, res) => {
           return res.status(500).json({ message: 'Server error' });
         }
         // Create notification for new artifact
-        createNotification('artifact', `New artifact added: ${row.name}`, row.museum_id, 'museum');
+        createNotification('museum_update', `Featured artifact updated: ${row.name}`, row.museum_id, 'museum');
         res.json(processImageFields(row));
       });
     }
@@ -2867,7 +2843,7 @@ app.put('/artifacts/:id', requireAuth, upload.single('image'), (req, res) => {
         }
         
         if (row) {
-          createNotification('artifact_update', `Artifact updated: ${row.name}`, row.museum_id, 'museum');
+          createNotification('museum_update', `Featured artifact updated: ${row.name}`, row.museum_id, 'museum');
         }
         
         res.json(processImageFields(row));
