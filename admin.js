@@ -70,9 +70,9 @@ function loadArtists() {
         });
 }
 
-// Load recent galleries for dashboard
+// Load featured galleries for dashboard
 function loadDashboardGalleries() {
-    fetch('/galleries?_limit=4')
+    fetch('/galleries/featured?_limit=4')
         .then(response => response.json())
         .then(galleries => {
             const container = document.getElementById('recent-galleries');
@@ -114,9 +114,9 @@ function loadDashboardArtists() {
         });
 }
 
-// Load recent artworks for dashboard
+// Load featured artworks for dashboard
 function loadDashboardArtworks() {
-    fetch('/artworks?_limit=4')
+    fetch('/artworks/featured?_limit=4')
         .then(response => response.json())
         .then(artworks => {
             const container = document.getElementById('recent-artworks');
@@ -695,6 +695,7 @@ function displayAdminEvents(events) {
                 <td>${event.date ? new Date(event.date).toLocaleDateString() : ''}</td>
                 <td>${event.location || ''}</td>
                 <td>${event.status || ''}</td>
+                <td>${event.is_featured ? 'Yes' : 'No'}</td>
                 <td>
                     <button class="btn btn-secondary" onclick="editEvent(${event.event_id})">Edit</button>
                     <button class="btn btn-danger" onclick="deleteEvent(${event.event_id})">Delete</button>
@@ -702,9 +703,13 @@ function displayAdminEvents(events) {
             </tr>
         `).join('');
     } else {
-        tbody.innerHTML = '<tr><td colspan="6" class="no-results">No events found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="no-results">No events found</td></tr>';
     }
 }
+
+
+
+
 
 // Videos Search Logic
 function setupVideoSearch() {
@@ -833,7 +838,7 @@ function displayAdminArtifacts(artifacts) {
 }
 
 function loadDashboardMuseums() {
-    fetch('/museums?_limit=4')
+    fetch('/museums/featured?_limit=4')
         .then(response => response.json())
         .then(museums => {
             const container = document.getElementById('recent-museums');
@@ -850,6 +855,30 @@ function loadDashboardMuseums() {
         .catch(error => {
             console.error('Error loading dashboard museums:', error);
             document.getElementById('recent-museums').innerHTML = '<div class="loading">Error loading museums</div>';
+        });
+}
+
+// Load featured events for dashboard
+function loadDashboardEvents() {
+    fetch('/events/featured')
+        .then(response => response.json())
+        .then(events => {
+            const container = document.getElementById('featured-events');
+            if (!container) return;
+            container.innerHTML = events.slice(0, 4).map(event => `
+                <div class="dashboard-card">
+                    <img src="${event.image_url || '/img/art1.jpg'}" alt="${event.name}">
+                    <div class="dashboard-card-content">
+                        <h3>${event.name}</h3>
+                        <p>${event.date ? new Date(event.date).toLocaleDateString() : 'Date not specified'}</p>
+                    </div>
+                </div>
+            `).join('');
+        })
+        .catch(error => {
+            console.error('Error loading dashboard events:', error);
+            const container = document.getElementById('featured-events');
+            if (container) container.innerHTML = '<div class="loading">Error loading events</div>';
         });
 }
 
@@ -940,6 +969,9 @@ if (userRole === 'admin') {
                     case 'events':
                         loadEvents();
                         break;
+                    case 'events-featured':
+                        loadAdminFeaturedEvents();
+                        break;
                     case 'videos':
                         loadVideos();
                         break;
@@ -998,6 +1030,7 @@ if (userRole === 'admin') {
         loadDashboardArtists();
         loadDashboardGalleries();
         loadDashboardMuseums();
+        loadDashboardEvents();
     }
 
 
@@ -1145,7 +1178,8 @@ function openModal(type, id = null) {
     }
 
     const formHtml = getFormFields(type, id);
-    form.innerHTML = formHtml;
+    form.innerHTML = `<input type="hidden" name="type" value="${type}">${formHtml}`;
+    form.setAttribute('data-type', type);
 
     // Set appropriate title
     title.textContent = id ? `Edit ${type}` : `Add New ${type}`;
@@ -1156,8 +1190,11 @@ function openModal(type, id = null) {
         form.removeAttribute('data-id');
     }
 
-    if (type === 'collection') {
+    // Set enctype for file uploads
+    if (['artist', 'artwork', 'gallery', 'museum', 'event', 'collection', 'artifact'].includes(type)) {
         form.enctype = 'multipart/form-data';
+    } else {
+        form.enctype = 'application/x-www-form-urlencoded';
     }
 
     modal.classList.add('show');
@@ -1196,6 +1233,7 @@ function closeModal() {
     // Remove any preview images
     form.querySelectorAll('.preview-image').forEach(preview => preview.remove());
     form.removeAttribute('data-id');
+    form.removeAttribute('data-type');
 }
 
 function getFormFields(type, id) {
@@ -1247,6 +1285,7 @@ function getFormFields(type, id) {
             </div>
             <div class="form-group">
                 <label>Photo:</label>
+                <input type="hidden" name="photo_url">
                 <input type="file" name="photo" accept="image/*">
                 <small>Leave empty to keep current photo</small>
             </div>
@@ -1254,7 +1293,10 @@ function getFormFields(type, id) {
                 <label>Featured:</label>
                 <input type="checkbox" name="is_featured">
             </div>
-            <button type="submit" class="btn btn-primary">Save</button>
+            <div style="text-align: right; margin-top: 20px;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
         `,
         artwork: `
             <div class="form-group">
@@ -1301,13 +1343,17 @@ function getFormFields(type, id) {
             </div>
             <div class="form-group">
                 <label>Image:</label>
+                <input type="hidden" name="image_url">
                 <input type="file" name="image" accept="image/*">
             </div>
             <div class="form-group">
                 <label>Featured:</label>
                 <input type="checkbox" name="is_featured">
             </div>
-            <button type="submit" class="btn btn-primary">Save</button>
+            <div style="text-align: right; margin-top: 20px;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
         `,
         gallery: `
             <div class="form-group">
@@ -1340,6 +1386,7 @@ function getFormFields(type, id) {
             </div>
             <div class="form-group">
                 <label>Image:</label>
+                <input type="hidden" name="image_url">
                 <input type="file" name="image" accept="image/*">
                 <small>Leave empty to keep current image</small>
             </div>
@@ -1347,7 +1394,10 @@ function getFormFields(type, id) {
                 <label>Featured:</label>
                 <input type="checkbox" name="is_featured">
             </div>
-            <button type="submit" class="btn btn-primary">Save</button>
+            <div style="text-align: right; margin-top: 20px;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
         `,
         museum: `
             <div class="form-group">
@@ -1372,6 +1422,7 @@ function getFormFields(type, id) {
             </div>
             <div class="form-group">
                 <label>Image:</label>
+                <input type="hidden" name="image_url">
                 <input type="file" name="image" accept="image/*">
                 <small>Leave empty to keep current image</small>
             </div>
@@ -1379,7 +1430,10 @@ function getFormFields(type, id) {
                 <label>Featured:</label>
                 <input type="checkbox" name="is_featured">
             </div>
-            <button type="submit" class="btn btn-primary">Save</button>
+            <div style="text-align: right; margin-top: 20px;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
         `,
         event: `
             <div class="form-group">
@@ -1412,6 +1466,7 @@ function getFormFields(type, id) {
             </div>
             <div class="form-group">
                 <label>Image:</label>
+                <input type="hidden" name="image_url">
                 <input type="file" name="image" accept="image/*">
             </div>
             <div class="form-group">
@@ -1435,7 +1490,14 @@ function getFormFields(type, id) {
                     <!-- Artists will be loaded dynamically -->
                 </select>
             </div>
-            <button type="submit" class="btn btn-primary">Save</button>
+            <div class="form-group">
+                <label>Featured:</label>
+                <input type="checkbox" name="is_featured">
+            </div>
+            <div style="text-align: right; margin-top: 20px;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
         `,
         video: `
             <div class="form-group">
@@ -1450,7 +1512,10 @@ function getFormFields(type, id) {
                 <label>URL:</label>
                 <input type="url" name="url">
             </div>
-            <button type="submit" class="btn btn-primary">Save</button>
+            <div style="text-align: right; margin-top: 20px;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
         `,
         collection: `
             <div class="form-group">
@@ -1463,9 +1528,13 @@ function getFormFields(type, id) {
             </div>
             <div class="form-group">
                 <label>Collector Image:</label>
+                <input type="hidden" name="collector_image">
                 <input type="file" name="collector_image" accept="image/*" style="width: auto !important;">
             </div>
-            <button type="submit" class="btn btn-primary">Save</button>
+            <div style="text-align: right; margin-top: 20px;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
         `,
         user: `
             <div class="form-group">
@@ -1495,7 +1564,10 @@ function getFormFields(type, id) {
                 <label>Active:</label>
                 <input type="checkbox" name="is_active" checked>
             </div>
-            <button type="submit" class="btn btn-primary">Save</button>
+            <div style="text-align: right; margin-top: 20px;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
         `,
         'gallery-featured': `
             <div class="form-group">
@@ -1515,6 +1587,7 @@ function getFormFields(type, id) {
             </div>
             <div class="form-group">
                 <label>Image:</label>
+                <input type="hidden" name="image_url">
                 <input type="file" name="image" accept="image/*">
                 <small>Leave empty to keep current image</small>
             </div>
@@ -1522,7 +1595,10 @@ function getFormFields(type, id) {
                 <label>Display Order:</label>
                 <input type="number" name="display_order" value="0" min="0">
             </div>
-            <button type="submit" class="btn btn-primary">Save</button>
+            <div style="text-align: right; margin-top: 20px;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </div>
         `
     };
 
@@ -2010,13 +2086,7 @@ function deleteGalleryFeaturedArtwork(id) {
 document.getElementById('admin-form').addEventListener('submit', function(e) {
     e.preventDefault();
     const formData = new FormData(this);
-    const section = document.querySelector('.nav-link.active').getAttribute('data-section');
-    let type;
-    if (section === 'gallery-featured') {
-        type = 'gallery-featured';
-    } else {
-        type = section.slice(0, -1); // Remove 's' for other sections
-    }
+    const type = this.getAttribute('data-type');
     const id = this.getAttribute('data-id');
     
     // Validate required fields for gallery-featured
@@ -2064,18 +2134,22 @@ document.getElementById('admin-form').addEventListener('submit', function(e) {
     let url;
     if (type === 'gallery-featured') {
         url = id ? `/gallery-featured-artworks/${id}` : `/gallery-featured-artworks`;
+    } else if (type === 'gallery') {
+        url = id ? `/galleries/${id}` : `/galleries`;
     } else {
         url = id ? `/${type}s/${id}` : `/${type}s`;
     }
+
+    console.log(`Saving ${type} (id: ${id}) via ${method} to ${url}`);
 
     const headers = {};
     let body;
 
     if (hasFiles) {
-        // Send as FormData for file uploads
+        console.log('Form has files, sending as FormData');
         body = formData;
     } else {
-        // Convert to JSON for regular data
+        console.log('Form has no files, sending as JSON');
         const data = {};
         for (let [key, value] of formData.entries()) {
             if (data[key]) {
@@ -2093,6 +2167,7 @@ document.getElementById('admin-form').addEventListener('submit', function(e) {
             data.status = statusValue;
         }
         body = JSON.stringify(data);
+        console.log('JSON payload:', data);
     }
 
     fetch(url, {
@@ -2101,8 +2176,13 @@ document.getElementById('admin-form').addEventListener('submit', function(e) {
         body: body
     })
     .then(response => {
+        console.log(`Response received for ${type} ${method}:`, response.status);
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            return response.json().then(errData => {
+                throw new Error(errData.message || `HTTP error! status: ${response.status}`);
+            }).catch(() => {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            });
         }
         return response.json();
     })
@@ -2133,7 +2213,10 @@ document.getElementById('admin-form').addEventListener('submit', function(e) {
                 loadMuseums();
                 loadDashboardMuseums();
                 break;
-            case 'events': loadEvents(); break;
+            case 'events':
+                loadEvents();
+                loadDashboardEvents();
+                break;
             case 'videos': loadVideos(); break;
             case 'collections': loadCollections(); break;
             case 'users': loadUsers(); break;
@@ -2147,6 +2230,8 @@ document.getElementById('admin-form').addEventListener('submit', function(e) {
 
 // Artifact modal functions
 function openArtifactModal() {
+    document.getElementById('artifact-modal-title').textContent = 'Add New Artifact';
+    document.getElementById('artifact-submit-text').textContent = 'Add Artifact';
     const modal = document.getElementById('artifact-modal');
     const form = document.getElementById('artifact-form');
 
@@ -2162,7 +2247,10 @@ function closeArtifactModal() {
     if (modal) modal.classList.remove('show');
     document.body.style.overflow = '';
     const form = document.getElementById('artifact-form');
-    if (form) form.reset();
+    if (form) {
+        form.reset();
+        form.removeAttribute('data-id');
+    }
 }
 
 // Collection modal functions
@@ -2222,6 +2310,8 @@ function loadMuseumsForDropdown() {
 
 // CRUD operations for artifacts
 function editArtifact(id) {
+    document.getElementById('artifact-modal-title').textContent = 'Edit Artifact';
+    document.getElementById('artifact-submit-text').textContent = 'Update Artifact';
     fetch(`/artifacts/${id}`)
         .then(response => response.json())
         .then(artifact => {

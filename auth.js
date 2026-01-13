@@ -2,8 +2,6 @@ const jwt = require('jsonwebtoken');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const FacebookStrategy = require('passport-facebook').Strategy;
-const TwitterStrategy = require('passport-twitter').Strategy;
 require('dotenv').config({ override: true });
 
 module.exports = function(db) {
@@ -36,37 +34,6 @@ module.exports = function(db) {
     console.warn('⚠️ Google OAuth not configured - GOOGLE_CLIENT_ID missing or placeholder');
   }
 
-  if (process.env.FACEBOOK_APP_ID && process.env.FACEBOOK_APP_ID !== 'your_facebook_app_id') {
-    passport.use(new FacebookStrategy({
-      clientID: process.env.FACEBOOK_APP_ID,
-      clientSecret: process.env.FACEBOOK_APP_SECRET,
-      callbackURL: process.env.FACEBOOK_CALLBACK_URL,
-      profileFields: ['id', 'displayName', 'emails', 'photos']
-    }, (accessToken, refreshToken, profile, done) => {
-      findOrCreateOAuthUser(db, 'facebook', profile, accessToken, refreshToken, done);
-    }));
-    console.log('✅ Facebook OAuth strategy configured');
-  } else {
-    console.warn('⚠️ Facebook OAuth not configured - FACEBOOK_APP_ID missing or placeholder');
-  }
-
-  if (process.env.TWITTER_CONSUMER_KEY && process.env.TWITTER_CONSUMER_KEY !== 'your_twitter_key') {
-    try {
-      passport.use(new TwitterStrategy({
-        consumerKey: process.env.TWITTER_CONSUMER_KEY,
-        consumerSecret: process.env.TWITTER_CONSUMER_SECRET,
-        callbackURL: process.env.TWITTER_CALLBACK_URL,
-        includeEmail: true
-      }, (token, tokenSecret, profile, done) => {
-        findOrCreateOAuthUser(db, 'twitter', profile, token, tokenSecret, done);
-      }));
-      console.log('✅ Twitter OAuth strategy configured');
-    } catch (error) {
-      console.warn('Twitter OAuth strategy not configured properly:', error.message);
-    }
-  } else {
-    console.warn('⚠️ Twitter OAuth not configured - TWITTER_CONSUMER_KEY missing or placeholder');
-  }
 
   passport.serializeUser((user, done) => {
     done(null, user.user_id);

@@ -457,7 +457,7 @@
                 <li><a class="nav-link" data-section="videos">Videos</a></li>
                 <li><a class="nav-link" data-section="collections">Collections</a></li>
                 <li><a class="nav-link" data-section="users">Users</a></li>
-                <li><a href="/" class="nav-link">Back to Site</a></li>
+                <li><a href="/index.html" class="nav-link">Back to Site</a></li>
             </ul>
         </aside>
 
@@ -499,6 +499,53 @@
                     <div class="stat-card">
                         <div class="stat-number" id="videos-count">-</div>
                         <div class="stat-label">Total Videos</div>
+                    </div>
+                </div>
+
+                <div class="dashboard-content">
+                    <div class="dashboard-section">
+                        <div class="section-header">
+                            <h2>Featured Artworks</h2>
+                        </div>
+                        <div class="dashboard-grid" id="recent-artworks">
+                            <!-- featured artworks will be loaded here -->
+                        </div>
+                    </div>
+
+                    <div class="dashboard-section">
+                        <div class="section-header">
+                            <h2>Featured Artists</h2>
+                        </div>
+                        <div class="dashboard-grid" id="featured-artists">
+                            <!-- featured artists will be loaded here -->
+                        </div>
+                    </div>
+
+                    <div class="dashboard-section">
+                        <div class="section-header">
+                            <h2>Featured Galleries</h2>
+                        </div>
+                        <div class="dashboard-grid" id="recent-galleries">
+                            <!-- featured galleries will be loaded here -->
+                        </div>
+                    </div>
+
+                    <div class="dashboard-section">
+                        <div class="section-header">
+                            <h2>Featured Museums</h2>
+                        </div>
+                        <div class="dashboard-grid" id="recent-museums">
+                            <!-- featured museums will be loaded here -->
+                        </div>
+                    </div>
+
+                    <div class="dashboard-section">
+                        <div class="section-header">
+                            <h2>Featured Events</h2>
+                        </div>
+                        <div class="dashboard-grid" id="featured-events">
+                            <!-- featured events will be loaded here -->
+                        </div>
                     </div>
                 </div>
             </section>
@@ -695,10 +742,11 @@
                                 <th>Date</th>
                                 <th>Location</th>
                                 <th>Status</th>
+                                <th>Featured</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="events-table-body">
                             <tr>
                                 <td colspan="7" class="loading">Loading events...</td>
                             </tr>
@@ -706,6 +754,7 @@
                     </table>
                 </div>
             </section>
+
 
             <section id="videos" class="section">
                 <div class="admin-header">
@@ -875,7 +924,7 @@
         <div class="modal-content">
             <span class="close" onclick="closeModal()">&times;</span>
             <h2 id="modal-title">Add New Item</h2>
-            <form id="admin-form">
+            <form id="admin-form" enctype="multipart/form-data">
                 <!-- Form fields will be dynamically added here -->
             </form>
         </div>
@@ -885,7 +934,7 @@
     <div id="artifact-modal" class="modal">
         <div class="modal-content" style="max-width: 800px;">
             <span class="close" onclick="closeArtifactModal()">&times;</span>
-            <h2>Add New Artifact</h2>
+            <h2 id="artifact-modal-title">Add New Artifact</h2>
             <form id="artifact-form" enctype="multipart/form-data">
                 <div class="form-group">
                     <label>Museum:</label>
@@ -959,11 +1008,12 @@
                 </div>
                 <div class="form-group">
                     <label>Image:</label>
+                    <input type="hidden" name="image_url">
                     <input type="file" name="image" accept="image/*">
                 </div>
                 <div style="text-align: right; margin-top: 20px;">
                     <button type="button" class="btn btn-secondary" onclick="closeArtifactModal()">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Add Artifact</button>
+                    <button type="submit" class="btn btn-primary" id="artifact-submit-text">Add Artifact</button>
                 </div>
             </form>
         </div>
@@ -997,6 +1047,7 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start;">
                     <div class="form-group">
                         <label>Collection Image:</label>
+                        <input type="hidden" name="collector_image">
                         <input type="file" name="collector_image" accept="image/*" style="width: auto !important;" onchange="previewCollectionImage(this)">
                         <small style="color: #666;">Upload an image representing the collection</small>
                         <div id="collection-collector-preview" style="margin-top: 10px; max-width: 200px;"></div>

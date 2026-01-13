@@ -23,53 +23,37 @@ console.log('PORT:', process.env.PORT);
 console.log('NODE_ENV:', process.env.NODE_ENV);
 console.log('Cloudinary:', process.env.CLOUDINARY_CLOUD_NAME ? 'Configured' : 'MISSING');
 console.log('Google Callback:', process.env.GOOGLE_CALLBACK_URL || 'NOT SET');
-console.log('Facebook Callback:', process.env.FACEBOOK_CALLBACK_URL || 'NOT SET');
 console.log('-------------------------');
 
 process.on('uncaughtException', (err) => {
   console.error('Uncaught Exception:', err);
-  process.exit(1);
+  // Don't exit in development
 });
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('Unhandled Rejection at:', promise, 'reason:', reason);
-  process.exit(1);
+  // Don't exit in development
 });
 
 const app = express();
 const PORT = process.env.PORT || 3002;
 
-// Configure Cloudinary or Local storage for multer
+// Configure Local storage for multer
 let storage;
-if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
-  console.log('Using Cloudinary storage');
-  storage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-      folder: 'banarts',
-      allowed_formats: ['jpg', 'png', 'jpeg', 'gif', 'webp'],
-      public_id: (req, file) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        return uniqueSuffix;
-      }
-    },
-  });
-} else {
-  console.log('Cloudinary credentials missing, using local disk storage');
-  storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-      const dir = 'img';
-      if (!fs.existsSync(dir)) {
-        fs.mkdirSync(dir, { recursive: true });
-      }
-      cb(null, dir);
-    },
-    filename: (req, file, cb) => {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-      cb(null, uniqueSuffix + path.extname(file.originalname));
+console.log('Using local disk storage');
+storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const dir = 'img';
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
     }
-  });
-}
+    cb(null, dir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
 const upload = multer({ storage: storage });
 
 // Use same storage for collections as other uploads
@@ -578,6 +562,7 @@ function initializeDatabase(done) {
       contact_info TEXT,
       website TEXT,
       status TEXT DEFAULT 'upcoming',
+      is_featured INTEGER DEFAULT 0,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
@@ -982,9 +967,33 @@ function addGalleryThumbnailsColumnsHelper(done) {
           }
           added++;
           if (added === missingColumns.length) {
-            insertDefaultData(done);
+            addEventColumns(done);
           }
         });
+      });
+    } else {
+      addEventColumns(done);
+    }
+  });
+}
+
+function addEventColumns(done) {
+  db.all("PRAGMA table_info(Events)", (err, rows) => {
+    if (err) {
+      console.error('Error getting Events schema:', err);
+      insertDefaultData(done);
+      return;
+    }
+
+    const columns = rows.map(row => row.name);
+    if (!columns.includes('is_featured')) {
+      db.run('ALTER TABLE Events ADD COLUMN is_featured INTEGER DEFAULT 0', (alterErr) => {
+        if (alterErr) {
+          console.error('Error adding is_featured to Events:', alterErr);
+        } else {
+          console.log('✅ Added is_featured column to Events');
+        }
+        insertDefaultData(done);
       });
     } else {
       insertDefaultData(done);
@@ -1706,16 +1715,16 @@ app.get('/galleries', (req, res) => {
    });
  });
 
-// Get featured gallery
+// Get featured galleries
 app.get('/galleries/featured', (req, res) => {
-   db.get('SELECT * FROM Galleries WHERE is_featured = 1', (err, row) => {
-     if (err) {
-       console.error('Get featured gallery error:', err);
-       return res.status(500).json({ message: 'Server error' });
-     }
-     res.json(processImageFields(row) || null);
-   });
- });
+    db.all('SELECT * FROM Galleries WHERE is_featured = 1 ORDER BY created_at DESC', (err, rows) => {
+      if (err) {
+        console.error('Get featured galleries error:', err);
+        return res.status(500).json({ message: 'Server error' });
+      }
+      res.json(rows.map(row => processImageFields(row)));
+    });
+  });
 
 app.get('/galleries/:id', (req, res) => {
   db.get('SELECT * FROM Galleries WHERE gallery_id = ?', [req.params.id], (err, row) => {
@@ -2164,6 +2173,34 @@ app.get('/events', (req, res) => {
   });
 });
 
+// Get featured events
+app.get('/events/featured', (req, res) => {
+  db.all('SELECT * FROM Events WHERE is_featured = 1 ORDER BY date DESC', (err, rows) => {
+    if (err) {
+      console.error('Get featured events error:', err);
+      return res.status(500).json({ message: 'Server error' });
+    }
+    // Parse JSON fields
+    rows.forEach(row => {
+      if (row.artworks) {
+        try {
+          row.artworks = JSON.parse(row.artworks);
+        } catch (e) {
+          row.artworks = [];
+        }
+      }
+      if (row.exhibitors) {
+        try {
+          row.exhibitors = JSON.parse(row.exhibitors);
+        } catch (e) {
+          row.exhibitors = [];
+        }
+      }
+    });
+    res.json(rows.map(row => processImageFields(row)));
+  });
+});
+
 app.get('/events/:id', (req, res) => {
   db.get('SELECT * FROM Events WHERE event_id = ?', [req.params.id], (err, row) => {
     if (err) {
@@ -2197,12 +2234,13 @@ app.post('/events', requireAuth, upload.fields([
     { name: 'image', maxCount: 1 },
     { name: 'artwork_files', maxCount: 50 }
 ]), (req, res) => {
-    const { type, name, org, about, date, location, logo_url, status } = req.body;
+    try {
+        const { type, name, org, about, date, location, logo_url, status, is_featured } = req.body;
 
-    // Extract array fields that might have [] in their names
-    const artwork_names = req.body.artwork_names || req.body['artwork_names[]'];
-    const artwork_artists = req.body.artwork_artists || req.body['artwork_artists[]'];
-    const exhibitors = req.body.exhibitors || req.body['exhibitors[]'];
+        // Extract array fields that might have [] in their names
+        const artwork_names = req.body.artwork_names || req.body['artwork_names[]'] || [];
+        const artwork_artists = req.body.artwork_artists || req.body['artwork_artists[]'] || [];
+        const exhibitors = req.body.exhibitors || req.body['exhibitors[]'] || [];
 
     // Event image
     let image_url = null;
@@ -2244,12 +2282,12 @@ app.post('/events', requireAuth, upload.fields([
     const exhibitorsList = Array.isArray(exhibitors) ? exhibitors : (exhibitors ? [exhibitors] : []);
 
     db.run(
-      'INSERT INTO Events (type, name, org, about, date, location, image_url, logo_url, artworks, exhibitors, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [type, name, org, about, formattedDate, location, image_url, logo_url, JSON.stringify(eventArtworks), JSON.stringify(exhibitorsList), eventStatus],
+      'INSERT INTO Events (type, name, org, about, date, location, image_url, logo_url, artworks, exhibitors, status, is_featured) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [type || 'event', name, org, about, formattedDate, location, image_url, logo_url, JSON.stringify(eventArtworks), JSON.stringify(exhibitorsList), eventStatus, is_featured == 1 ? 1 : 0],
       function(err) {
        if (err) {
          console.error('Create event error:', err);
-         return res.status(500).json({ message: 'Server error' });
+         return res.status(500).json({ message: 'Server error: ' + err.message });
        }
        // Get the inserted record
        db.get('SELECT * FROM Events WHERE event_id = ?', [this.lastID], (err, row) => {
@@ -2283,20 +2321,26 @@ app.post('/events', requireAuth, upload.fields([
        });
      }
    );
+    } catch (error) {
+        console.error('Unexpected error in POST /events:', error);
+        res.status(500).json({ message: 'Internal server error: ' + error.message });
+    }
  });
 
 app.put('/events/:id', requireAuth, upload.fields([
     { name: 'image', maxCount: 1 },
     { name: 'artwork_files', maxCount: 50 }
 ]), (req, res) => {
-    const { type, name, org, about, date, location, logo_url, status } = req.body;
+    try {
+        const { type, name, org, about, date, location, logo_url, status, is_featured } = req.body;
+        const id = req.params.id;
 
-    // Extract array fields that might have [] in their names
-    const artwork_source = req.body.artwork_source || req.body['artwork_source[]'];
-    const artwork_names = req.body.artwork_names || req.body['artwork_names[]'];
-    const artwork_artists = req.body.artwork_artists || req.body['artwork_artists[]'];
-    const existing_artwork_urls = req.body.existing_artwork_urls || req.body['existing_artwork_urls[]'];
-    const exhibitors = req.body.exhibitors || req.body['exhibitors[]'];
+        // Extract array fields that might have [] in their names
+        const artwork_source = req.body.artwork_source || req.body['artwork_source[]'] || [];
+        const artwork_names = req.body.artwork_names || req.body['artwork_names[]'] || [];
+        const artwork_artists = req.body.artwork_artists || req.body['artwork_artists[]'] || [];
+        const existing_artwork_urls = req.body.existing_artwork_urls || req.body['existing_artwork_urls[]'] || [];
+        const exhibitors = req.body.exhibitors || req.body['exhibitors[]'] || [];
 
     // Event image
     let image_url = req.body.image_url;
@@ -2353,53 +2397,70 @@ app.put('/events/:id', requireAuth, upload.fields([
     const eventStatus = status || 'upcoming';
     const exhibitorsList = Array.isArray(exhibitors) ? exhibitors : (exhibitors ? [exhibitors] : []);
 
-    db.run(
-      'UPDATE Events SET type = ?, name = ?, org = ?, about = ?, date = ?, location = ?, image_url = ?, logo_url = ?, artworks = ?, exhibitors = ?, status = ?, updated_at = CURRENT_TIMESTAMP WHERE event_id = ?',
-      [type, name, org, about, formattedDate, location, image_url, logo_url, JSON.stringify(eventArtworks), JSON.stringify(exhibitorsList), eventStatus, req.params.id],
-      function(err) {
-       if (err) {
-         console.error('Update event error:', err);
-         return res.status(500).json({ message: 'Server error' });
-       }
-       if (this.changes === 0) {
-         return res.status(404).json({ message: 'Event not found' });
-       }
-       // Get the updated record
-       db.get('SELECT * FROM Events WHERE event_id = ?', [req.params.id], (err, row) => {
-         if (err) {
-           console.error('Get updated event error:', err);
-           return res.status(500).json({ message: 'Server error' });
-         }
-         
-         if (!row) {
-            return res.status(404).json({ message: 'Event not found after update' });
-         }
+    const updateEventRecord = (finalArtworks) => {
+        db.run(
+          'UPDATE Events SET type = ?, name = ?, org = ?, about = ?, date = ?, location = ?, image_url = ?, logo_url = ?, artworks = ?, exhibitors = ?, status = ?, is_featured = ?, updated_at = CURRENT_TIMESTAMP WHERE event_id = ?',
+          [type || 'event', name, org, about, formattedDate, location, image_url, logo_url, JSON.stringify(finalArtworks), JSON.stringify(exhibitorsList), eventStatus, is_featured == 1 ? 1 : 0, id],
+          function(err) {
+           if (err) {
+             console.error('Update event error:', err);
+             return res.status(500).json({ message: 'Server error: ' + err.message });
+           }
+           if (this.changes === 0) {
+             return res.status(404).json({ message: 'Event not found' });
+           }
+           // Get the updated record
+           db.get('SELECT * FROM Events WHERE event_id = ?', [id], (err, row) => {
+             if (err) {
+               console.error('Get updated event error:', err);
+               return res.status(500).json({ message: 'Server error' });
+             }
+             
+             if (!row) {
+                return res.status(404).json({ message: 'Event not found after update' });
+             }
 
-         // Parse JSON fields
-         if (row.artworks) {
-           try {
-             row.artworks = JSON.parse(row.artworks);
-           } catch (e) {
-             row.artworks = [];
-           }
+             // Parse JSON fields
+             if (row.artworks) {
+               try {
+                 row.artworks = JSON.parse(row.artworks);
+               } catch (e) {
+                 row.artworks = [];
+               }
+             }
+             if (row.exhibitors) {
+               try {
+                 row.exhibitors = JSON.parse(row.exhibitors);
+               } catch (e) {
+                 row.exhibitors = [];
+               }
+             }
+             
+             createNotification('event_update', `Event updated: ${row.name}`, row.event_id, 'event');
+             res.json(processImageFields(row));
+           });
          }
-         if (row.exhibitors) {
-           try {
-             row.exhibitors = JSON.parse(row.exhibitors);
-           } catch (e) {
-             row.exhibitors = [];
-           }
-         }
-         
-         if (row) {
-           createNotification('event_update', `Event updated: ${row.name}`, row.event_id, 'event');
-         }
-         
-         res.json(processImageFields(row));
-       });
-     }
-   );
- });
+       );
+    };
+
+    if (eventArtworks.length === 0 && (!artwork_source || artwork_source.length === 0) && !req.body.artworks) {
+        db.get('SELECT artworks FROM Events WHERE event_id = ?', [id], (err, row) => {
+            let existingArtworks = [];
+            if (row && row.artworks) {
+                try {
+                    existingArtworks = JSON.parse(row.artworks);
+                } catch(e) {}
+            }
+            updateEventRecord(existingArtworks);
+        });
+    } else {
+        updateEventRecord(eventArtworks);
+    }
+} catch (error) {
+    console.error('Unexpected error in PUT /events/:id:', error);
+    res.status(500).json({ message: 'Internal server error: ' + error.message });
+}
+});
 
 app.delete('/events/:id', requireAuth, (req, res) => {
   db.run('DELETE FROM Events WHERE event_id = ?', [req.params.id], function(err) {
@@ -2411,6 +2472,32 @@ app.delete('/events/:id', requireAuth, (req, res) => {
       return res.status(404).json({ message: 'Event not found' });
     }
     res.json({ message: 'Event deleted' });
+  });
+});
+
+app.post('/events/:id/set-featured', requireAuth, (req, res) => {
+  db.run('UPDATE Events SET is_featured = 1 WHERE event_id = ?', [req.params.id], function(err) {
+    if (err) {
+      console.error('Set featured event error:', err);
+      return res.status(500).json({ message: 'Server error' });
+    }
+    if (this.changes === 0) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+    res.json({ message: 'Event set as featured' });
+  });
+});
+
+app.post('/events/:id/unset-featured', requireAuth, (req, res) => {
+  db.run('UPDATE Events SET is_featured = 0 WHERE event_id = ?', [req.params.id], function(err) {
+    if (err) {
+      console.error('Unset featured event error:', err);
+      return res.status(500).json({ message: 'Server error' });
+    }
+    if (this.changes === 0) {
+      return res.status(404).json({ message: 'Event not found' });
+    }
+    res.json({ message: 'Event removed from featured' });
   });
 });
 
@@ -4482,6 +4569,18 @@ app.get('/artwork/:id', (req, res) => {
   // Dynamic artist details route
   app.get('/artist/:id', (req, res) => {
     res.redirect(`/artist-details.html?id=${req.params.id}`);
+  });
+
+  app.get('/gallery/:id', (req, res) => {
+    res.redirect(`/gallery-details.html?id=${req.params.id}`);
+  });
+
+  app.get('/museum/:id', (req, res) => {
+    res.redirect(`/museum_details.html?id=${req.params.id}`);
+  });
+
+  app.get('/event/:id', (req, res) => {
+    res.redirect(`/event-details.html?id=${req.params.id}`);
   });
 
   // Facebook Compliance Routes

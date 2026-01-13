@@ -50,6 +50,10 @@
             color: #ccc;
         }
 
+        .event-link {
+            border: none;
+        }
+
     </style>
 </head>
 <body>
@@ -169,6 +173,16 @@ Thank you for being part of BanArts where Bantayanon creativity lives, grows, an
             </div>
             <div class="museums-grid" id="featuredMuseumsGrid">
                 <!-- Featured museums will be loaded dynamically -->
+            </div>
+        </section>
+
+        <section class="featured-events" style="padding: 2rem 2rem;">
+            <div class="section-header">
+                <h2>Featured Events</h2>
+                <a href="events.html" class="view-all-link">View All Events</a>
+            </div>
+            <div class="events-grid" id="featuredEventsGrid">
+                <!-- Featured events will be loaded dynamically -->
             </div>
         </section>
     </main>
@@ -363,6 +377,7 @@ Thank you for being part of BanArts where Bantayanon creativity lives, grows, an
             loadFeaturedArtists();
             loadFeaturedGalleries();
             loadFeaturedMuseums();
+            loadFeaturedEvents();
         }
 
         async function loadFeaturedArtworks() {
@@ -553,6 +568,53 @@ Thank you for being part of BanArts where Bantayanon creativity lives, grows, an
                     <h3>${museum.name}</h3>
                     <p>${museum.about || 'Featured museum.'}</p>
                     <button class="museum-link" onclick="openAuthModalForMuseum(${museum.museum_id})">Learn More</button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        async function loadFeaturedEvents() {
+            const grid = document.getElementById('featuredEventsGrid');
+            
+            grid.innerHTML = '<div class="loading-container"><div class="loading-spinner"></div><span class="loading-text">Loading events...</span></div>';
+
+            try {
+                const response = await fetch('/events/featured');
+                if (response.ok) {
+                    const events = await response.json();
+                    if (events.length === 0) {
+                        grid.innerHTML = '<p>No featured events selected.</p>';
+                        return;
+                    }
+                    renderFeaturedEvents(events);
+                } else {
+                    throw new Error('Server returned an error');
+                }
+            } catch (error) {
+                console.error('Error loading featured events:', error);
+                grid.innerHTML = `
+                    <div class="error-message">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Failed to load featured events. Please try again.
+                        <br>
+                        <button class="retry-btn" onclick="loadFeaturedEvents()">Retry</button>
+                    </div>
+                `;
+            }
+        }
+
+        function renderFeaturedEvents(events) {
+            const grid = document.getElementById('featuredEventsGrid');
+            grid.innerHTML = '';
+            events.forEach(event => {
+                const card = document.createElement('div');
+                card.className = 'event-card';
+                card.innerHTML = `
+                    <img src="${event.image_url || 'img/art1.jpg'}" alt="${event.name}">
+                    <h3>${event.name}</h3>
+                    <p>${event.date ? new Date(event.date).toLocaleDateString() : 'Date TBD'}</p>
+                    <p>${event.about || 'Featured event.'}</p>
+                    <button class="event-link" onclick="openAuthModalForEvent(${event.event_id})">View Details</button>
                 `;
                 grid.appendChild(card);
             });
@@ -814,6 +876,17 @@ Thank you for being part of BanArts where Bantayanon creativity lives, grows, an
             const userId = localStorage.getItem('userId');
             if (userId) {
                 window.location.href = '/museum/' + museumId;
+            } else {
+                openModal();
+                openTab('signup');
+            }
+        }
+
+        // Open auth modal for event access or redirect if logged in
+        function openAuthModalForEvent(eventId) {
+            const userId = localStorage.getItem('userId');
+            if (userId) {
+                window.location.href = '/event/' + eventId;
             } else {
                 openModal();
                 openTab('signup');
