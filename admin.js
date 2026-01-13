@@ -70,9 +70,9 @@ function loadArtists() {
         });
 }
 
-// Load recent galleries for dashboard
+// Load featured galleries for dashboard
 function loadDashboardGalleries() {
-    fetch('/galleries?_limit=4')
+    fetch('/galleries/featured?_limit=4')
         .then(response => response.json())
         .then(galleries => {
             const container = document.getElementById('recent-galleries');
@@ -114,9 +114,9 @@ function loadDashboardArtists() {
         });
 }
 
-// Load recent artworks for dashboard
+// Load featured artworks for dashboard
 function loadDashboardArtworks() {
-    fetch('/artworks?_limit=4')
+    fetch('/artworks/featured?_limit=4')
         .then(response => response.json())
         .then(artworks => {
             const container = document.getElementById('recent-artworks');
@@ -833,7 +833,7 @@ function displayAdminArtifacts(artifacts) {
 }
 
 function loadDashboardMuseums() {
-    fetch('/museums?_limit=4')
+    fetch('/museums/featured?_limit=4')
         .then(response => response.json())
         .then(museums => {
             const container = document.getElementById('recent-museums');

@@ -1706,16 +1706,16 @@ app.get('/galleries', (req, res) => {
    });
  });
 
-// Get featured gallery
+// Get featured galleries
 app.get('/galleries/featured', (req, res) => {
-   db.get('SELECT * FROM Galleries WHERE is_featured = 1', (err, row) => {
-     if (err) {
-       console.error('Get featured gallery error:', err);
-       return res.status(500).json({ message: 'Server error' });
-     }
-     res.json(processImageFields(row) || null);
-   });
- });
+    db.all('SELECT * FROM Galleries WHERE is_featured = 1 ORDER BY created_at DESC', (err, rows) => {
+      if (err) {
+        console.error('Get featured galleries error:', err);
+        return res.status(500).json({ message: 'Server error' });
+      }
+      res.json(rows.map(row => processImageFields(row)));
+    });
+  });
 
 app.get('/galleries/:id', (req, res) => {
   db.get('SELECT * FROM Galleries WHERE gallery_id = ?', [req.params.id], (err, row) => {
