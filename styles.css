@@ -686,6 +686,8 @@ main > section:nth-child(6) { animation-delay: 0.6s; }
     border-radius: 0px;
     overflow: hidden;
     transition: box-shadow 0.3s;
+    width: 250px;
+    flex-shrink: 0;
 }
 
 .artist-card:hover {
