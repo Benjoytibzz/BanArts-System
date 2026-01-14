@@ -823,12 +823,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         function selectItem(item) {
-            const userId = localStorage.getItem('userId');
-            if (!userId) {
+            const userEmail = localStorage.getItem('userEmail');
+            if (!userEmail) {
                 openModal();
                 openTab('signup');
-                hideDropdown();
-                input.value = '';
                 return;
             }
             window.location.href = item.url;
@@ -928,6 +926,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         button.addEventListener('click', async function(e) {
             e.preventDefault();
+            const userEmail = localStorage.getItem('userEmail');
+            if (!userEmail) {
+                openModal();
+                openTab('signup');
+                return;
+            }
             const query = input.value.trim();
             if (query) {
                 try {
