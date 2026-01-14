@@ -3629,7 +3629,7 @@ ${specialtiesList}
 ${exhibitionsList}
 ` : ''}
                         <h3>Contact</h3>
-                        ${artist.email ? `<p><strong>Email:</strong> ${artist.email}</p>` : ''}
+                        ${artist.email ? `<p><strong>Email:</strong> ${artist.email}</p>` : ''}<br>
                         ${artist.contact ? `<p><strong>Phone:</strong> ${artist.contact}</p>` : ''}
                         <a href="/artists.html" class="back-btn">Back to Artists</a>
                     </div>
