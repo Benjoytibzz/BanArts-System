@@ -3,6 +3,22 @@
 // Global variables
 
 // Global function definitions for form submission callbacks
+function loadVideos() {
+    fetch('/videos')
+        .then(response => response.json())
+        .then(videos => {
+            allAdminVideos = videos;
+            if (window.displayAdminVideos) {
+                window.displayAdminVideos(videos);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading videos:', error);
+            const tbody = document.querySelector('#videos-table tbody');
+            if (tbody) tbody.innerHTML = '<tr><td colspan="4">Error loading videos</td></tr>';
+        });
+}
+
 function loadMuseums() {
     fetch('/museums')
         .then(response => response.json())
@@ -770,6 +786,8 @@ function displayAdminVideos(videos) {
     }
 }
 
+window.displayAdminVideos = displayAdminVideos;
+
 // Artifacts Search Logic
 function setupArtifactSearch() {
     const searchInput = document.getElementById('admin-artifact-search');
@@ -1345,6 +1363,7 @@ function getFormFields(type, id) {
                 <label>Image:</label>
                 <input type="hidden" name="image_url">
                 <input type="file" name="image" accept="image/*">
+                <small>Leave empty to keep current image</small>
             </div>
             <div class="form-group">
                 <label>Featured:</label>
@@ -1468,6 +1487,7 @@ function getFormFields(type, id) {
                 <label>Image:</label>
                 <input type="hidden" name="image_url">
                 <input type="file" name="image" accept="image/*">
+                <small>Leave empty to keep current image</small>
             </div>
             <div class="form-group">
                 <label>Upload Artworks (Minimum 10):</label>
