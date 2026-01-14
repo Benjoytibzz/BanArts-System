@@ -2641,9 +2641,8 @@ input[type="password"]::-ms-clear {
     }
 
     .artworks-grid, .artists-grid, .galleries-grid, .museums-grid {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
         gap: 2rem;
     }
 
