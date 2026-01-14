@@ -94,8 +94,9 @@ const getImagePath = (path) => {
     if (!path) return null;
     if (typeof path !== 'string') return path;
     if (path.startsWith('http')) return path;
-    // For local paths, ensure they start with /
-    return path.startsWith('/') ? path : `/${path}`;
+    // For local paths, ensure they start with / and use forward slashes
+    const normalizedPath = path.replace(/\\/g, '/');
+    return normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`;
 };
 
 const validatePassword = (password) => {
@@ -4158,6 +4159,14 @@ app.get('/artwork/:id', (req, res) => {
         return res.status(404).send('Gallery not found');
       }
 
+      // Process image fields for the gallery
+      const processedGallery = processImageFields(gallery);
+
+      // Handle type field if it's "[object Object]" (corrupted data)
+      if (processedGallery.type === '[object Object]') {
+        processedGallery.type = 'Art Gallery';
+      }
+
       // Get gallery's featured artworks (filter out NULL or empty titles)
       db.all(`
         SELECT * FROM GalleryFeaturedArtworks
@@ -4185,7 +4194,7 @@ app.get('/artwork/:id', (req, res) => {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${gallery.name} - BanArts</title>
+    <title>${processedGallery.name} - BanArts</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="/styles.css">
     <style>
@@ -4288,22 +4297,22 @@ app.get('/artwork/:id', (req, res) => {
     <main style="margin-top: -250px; padding: 0;">
         <section class="gallery-profile">
             <div class="gallery-image-container">
-                <img src="${gallery.image_url || '/img/gallery.jpg'}" alt="${gallery.name}" class="gallery-main-image">
+                <img src="${processedGallery.image_url || '/img/gallery.jpg'}" alt="${processedGallery.name}" class="gallery-main-image">
             </div>
             <div class="artist-info">
                 <div class="artist-header-title">
-                     <h1 style="text-align: center;">${gallery.name}</h1>
+                     <h1 style="text-align: center;">${processedGallery.name}</h1>
                  </div>
-                <p class="artist-specialty">${gallery.type || 'Art Gallery'}</p>
-                <p class="artist-location">Located in ${gallery.location || 'Bantayan Island'}</p>
-                <p class="artist-bio">${gallery.about || 'Gallery description not available.'}</p>
+                <p class="artist-specialty">${processedGallery.type || 'Art Gallery'}</p>
+                <p class="artist-location">Located in ${processedGallery.location || 'Bantayan Island'}</p>
+                <p class="artist-bio">${processedGallery.about || 'Gallery description not available.'}</p>
                 <div class="artist-details">
-                    ${gallery.collections ? `<h3>Collections</h3><p>"${gallery.collections}"</p>` : ''}
+                    ${processedGallery.collections ? `<h3>Collections</h3><p>"${processedGallery.collections}"</p>` : ''}
                     <h3>Contact</h3>
-                    ${gallery.email ? `<p><strong>Email:</strong> ${gallery.email}</p>` : ''}
-                    ${gallery.phone ? `<p><strong>Phone:</strong> ${gallery.phone}</p>` : ''}
-                    ${gallery.contact_info ? `<p><strong>Address:</strong> ${gallery.contact_info}</p>` : ''}
-                    ${gallery.website ? `<p><strong>Website:</strong> <a href="${gallery.website}" target="_blank">${gallery.website}</a></p>` : ''}
+                    ${processedGallery.email ? `<p><strong>Email:</strong> ${processedGallery.email}</p>` : ''}
+                    ${processedGallery.phone ? `<p><strong>Phone:</strong> ${processedGallery.phone}</p>` : ''}
+                    ${processedGallery.contact_info ? `<p><strong>Address:</strong> ${processedGallery.contact_info}</p>` : ''}
+                    ${processedGallery.website ? `<p><strong>Website:</strong> <a href="${processedGallery.website}" target="_blank">${processedGallery.website}</a></p>` : ''}
                     <a href="/galleries.html" class="back-btn">Back to Galleries</a>
                 </div>
             </div>
