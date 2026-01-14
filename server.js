@@ -1678,31 +1678,45 @@ app.delete('/artworks/:id', requireAuth, (req, res) => {
 
 // Galleries CRUD
 app.get('/galleries', (req, res) => {
-   const limit = req.query._limit ? parseInt(req.query._limit) : null;
-   let sql = 'SELECT * FROM Galleries ORDER BY created_at DESC';
-   if (limit) {
-     sql += ` LIMIT ${limit}`;
-   }
+    const limit = req.query._limit ? parseInt(req.query._limit) : null;
+    let sql = 'SELECT * FROM Galleries ORDER BY created_at DESC';
+    if (limit) {
+      sql += ` LIMIT ${limit}`;
+    }
 
-   db.all(sql, (err, rows) => {
-     if (err) {
-       console.error('Get galleries error:', err);
-       return res.status(500).json({ message: 'Server error' });
-     }
-     res.json(rows.map(row => processImageFields(row)));
-   });
- });
+    db.all(sql, (err, rows) => {
+      if (err) {
+        console.error('Get galleries error:', err);
+        return res.status(500).json({ message: 'Server error' });
+      }
+      res.json(rows.map(row => {
+        const processedRow = processImageFields(row);
+        // Fix corrupted type field
+        if (processedRow.type === '[object Object]' || !processedRow.type) {
+          processedRow.type = 'Art Gallery';
+        }
+        return processedRow;
+      }));
+    });
+  });
 
 // Get featured galleries
 app.get('/galleries/featured', (req, res) => {
-    db.all('SELECT * FROM Galleries WHERE is_featured = 1 ORDER BY created_at DESC', (err, rows) => {
-      if (err) {
-        console.error('Get featured galleries error:', err);
-        return res.status(500).json({ message: 'Server error' });
-      }
-      res.json(rows.map(row => processImageFields(row)));
-    });
-  });
+     db.all('SELECT * FROM Galleries WHERE is_featured = 1 ORDER BY created_at DESC', (err, rows) => {
+       if (err) {
+         console.error('Get featured galleries error:', err);
+         return res.status(500).json({ message: 'Server error' });
+       }
+       res.json(rows.map(row => {
+         const processedRow = processImageFields(row);
+         // Fix corrupted type field
+         if (processedRow.type === '[object Object]' || !processedRow.type) {
+           processedRow.type = 'Art Gallery';
+         }
+         return processedRow;
+       }));
+     });
+   });
 
 app.get('/galleries/:id', (req, res) => {
   db.get('SELECT * FROM Galleries WHERE gallery_id = ?', [req.params.id], (err, row) => {
