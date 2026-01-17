@@ -1769,10 +1769,24 @@ document.addEventListener('DOMContentLoaded', function() {
             const email = document.getElementById('signup-email').value;
             const password = document.getElementById('signup-password').value;
             const confirmPassword = document.getElementById('signup-confirm-password').value;
+            const securityQuestion = document.getElementById('signup-security-question').value;
+            const securityAnswer = document.getElementById('signup-security-answer').value;
             const errorDiv = document.getElementById('signup-error');
 
             if (password !== confirmPassword) {
                 errorDiv.textContent = 'Passwords do not match';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            if (!securityQuestion) {
+                errorDiv.textContent = 'Please select a security question';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            if (!securityAnswer) {
+                errorDiv.textContent = 'Please provide an answer to your security question';
                 errorDiv.style.display = 'block';
                 return;
             }
@@ -1790,7 +1804,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const response = await fetch('/signup', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password, first_name, last_name })
+                    body: JSON.stringify({ email, password, first_name, last_name, security_question: securityQuestion, security_answer: securityAnswer })
                 });
                 
                 const data = await response.json();

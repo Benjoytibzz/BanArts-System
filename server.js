@@ -429,6 +429,8 @@ function initializeDatabase(done) {
       oauth_provider TEXT,
       oauth_id TEXT,
       is_active INTEGER DEFAULT 1,
+      security_question TEXT,
+      security_answer TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
@@ -753,6 +755,8 @@ function addMissingColumns(done) {
     if (!columns.includes('oauth_token_expiry')) missingColumns.push('oauth_token_expiry DATETIME');
     if (!columns.includes('bio')) missingColumns.push('bio TEXT');
     if (!columns.includes('location')) missingColumns.push('location TEXT');
+    if (!columns.includes('security_question')) missingColumns.push('security_question TEXT');
+    if (!columns.includes('security_answer')) missingColumns.push('security_answer TEXT');
 
     if (missingColumns.length > 0) {
       console.log('Adding missing OAuth columns to Users:', missingColumns);
@@ -1182,10 +1186,14 @@ app.post('/logout', (req, res) => {
 });
 
 app.post('/signup', (req, res) => {
-  const { email, password, first_name, last_name } = req.body;
+  const { email, password, first_name, last_name, security_question, security_answer } = req.body;
   
   if (!email || !password) {
     return res.status(400).json({ success: false, message: 'Email and password required' });
+  }
+
+  if (!security_question || !security_answer) {
+    return res.status(400).json({ success: false, message: 'Security question and answer are required' });
   }
 
   const passwordCheck = validatePassword(password);
@@ -1194,8 +1202,8 @@ app.post('/signup', (req, res) => {
   }
 
   db.run(
-    'INSERT INTO Users (email, password, first_name, last_name, user_type, role) VALUES (?, ?, ?, ?, ?, ?)',
-    [email, password, first_name || '', last_name || '', 'visitor', 'user'],
+    'INSERT INTO Users (email, password, first_name, last_name, user_type, role, security_question, security_answer) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+    [email, password, first_name || '', last_name || '', 'visitor', 'user', security_question, security_answer],
     function(err) {
       if (err) {
         if (err.message.includes('UNIQUE')) {
@@ -3266,10 +3274,10 @@ app.post('/upload-profile-picture', upload.single('profile_picture'), (req, res)
 
 // Register new user (no auth required)
 app.post('/register', (req, res) => {
-  const { email, password, first_name, last_name } = req.body;
+  const { email, password, first_name, last_name, security_question, security_answer } = req.body;
   db.run(
-    'INSERT INTO Users (email, password, first_name, last_name, role) VALUES (?, ?, ?, ?, ?)',
-    [email, password, first_name || '', last_name || '', 'user'],
+    'INSERT INTO Users (email, password, first_name, last_name, role, security_question, security_answer) VALUES (?, ?, ?, ?, ?, ?, ?)',
+    [email, password, first_name || '', last_name || '', 'user', security_question || null, security_answer || null],
     function(err) {
       if (err) {
         console.error('Register error:', err);

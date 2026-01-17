@@ -502,6 +502,18 @@ We extend our heartfelt gratitude to every collector who believes in the beauty 
                             <i class="far fa-eye"></i>
                         </button>
                     </div>
+                    <div class="security-question-field" style="margin-top: 10px;">
+                        <label for="signup-security-question" style="display: block; margin-bottom: 5px; font-size: 0.9rem; color: #666;">Security Question (for account recovery)</label>
+                        <select id="signup-security-question" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 10px; background: white;">
+                            <option value="" disabled selected>Select a security question</option>
+                            <option value="What was the name of your first pet?">What was the name of your first pet?</option>
+                            <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                            <option value="What was the name of your elementary school?">What was the name of your elementary school?</option>
+                            <option value="In what city were you born?">In what city were you born?</option>
+                            <option value="What is your favorite book?">What is your favorite book?</option>
+                        </select>
+                        <input type="text" id="signup-security-answer" placeholder="Your Answer" required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                    </div>
                     <button type="submit">Signup</button>
                     <div id="signup-error" style="color: red; margin-top: 1rem; display: none;"></div>
                 </form>
