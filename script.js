@@ -1177,6 +1177,8 @@ function updateNavbar() {
                 localStorage.removeItem('userRole');
                 localStorage.removeItem('userId');
                 localStorage.removeItem('userName');
+                localStorage.removeItem('userBio');
+                localStorage.removeItem('userLocation');
                 localStorage.removeItem('userProfileImage');
                 window.location.href = '/';
             });
@@ -1193,6 +1195,8 @@ function updateNavbar() {
                 localStorage.removeItem('userRole');
                 localStorage.removeItem('userId');
                 localStorage.removeItem('userName');
+                localStorage.removeItem('userBio');
+                localStorage.removeItem('userLocation');
                 localStorage.removeItem('userProfileImage');
                 window.location.href = '/';
             });
@@ -1210,6 +1214,8 @@ function updateNavbar() {
                 localStorage.removeItem('userRole');
                 localStorage.removeItem('userId');
                 localStorage.removeItem('userName');
+                localStorage.removeItem('userBio');
+                localStorage.removeItem('userLocation');
                 localStorage.removeItem('userProfileImage');
                 window.location.href = '/';
             });

@@ -751,6 +751,8 @@ function addMissingColumns(done) {
     if (!columns.includes('oauth_token')) missingColumns.push('oauth_token TEXT');
     if (!columns.includes('oauth_refresh_token')) missingColumns.push('oauth_refresh_token TEXT');
     if (!columns.includes('oauth_token_expiry')) missingColumns.push('oauth_token_expiry DATETIME');
+    if (!columns.includes('bio')) missingColumns.push('bio TEXT');
+    if (!columns.includes('location')) missingColumns.push('location TEXT');
 
     if (missingColumns.length > 0) {
       console.log('Adding missing OAuth columns to Users:', missingColumns);
@@ -3297,7 +3299,7 @@ app.get('/users', requireAuth, (req, res) => {
 });
 
 app.get('/users/:id', requireAuth, (req, res) => {
-  db.get('SELECT user_id, email, role, is_active, created_at, profile_picture FROM Users WHERE user_id = ?', [req.params.id], (err, row) => {
+  db.get('SELECT user_id, email, first_name, last_name, bio, location, role, is_active, created_at, profile_picture FROM Users WHERE user_id = ?', [req.params.id], (err, row) => {
     if (err) {
       console.error('Get user error:', err);
       return res.status(500).json({ message: 'Server error' });
@@ -3333,28 +3335,41 @@ app.post('/users', requireAuth, (req, res) => {
 });
 
 app.put('/users/:id', requireAuth, (req, res) => {
-  const { email, role, is_active } = req.body;
-  db.run(
-    'UPDATE Users SET email = ?, role = ?, is_active = ?, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?',
-    [email, role, is_active, req.params.id],
-    function(err) {
+  const fields = [];
+  const params = [];
+  const allowedFields = ['email', 'role', 'is_active', 'first_name', 'last_name', 'bio', 'location'];
+  
+  allowedFields.forEach(field => {
+    if (req.body[field] !== undefined) {
+      fields.push(`${field} = ?`);
+      params.push(req.body[field]);
+    }
+  });
+
+  if (fields.length === 0) {
+    return res.status(400).json({ message: 'No fields to update' });
+  }
+
+  const sql = `UPDATE Users SET ${fields.join(', ')}, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?`;
+  params.push(req.params.id);
+
+  db.run(sql, params, function(err) {
+    if (err) {
+      console.error('Update user error:', err);
+      return res.status(500).json({ message: 'Server error' });
+    }
+    if (this.changes === 0) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    // Get the updated record
+    db.get('SELECT user_id, email, first_name, last_name, bio, location, role, is_active, created_at, profile_picture FROM Users WHERE user_id = ?', [req.params.id], (err, row) => {
       if (err) {
-        console.error('Update user error:', err);
+        console.error('Get updated user error:', err);
         return res.status(500).json({ message: 'Server error' });
       }
-      if (this.changes === 0) {
-        return res.status(404).json({ message: 'User not found' });
-      }
-      // Get the updated record
-      db.get('SELECT user_id, email, role, is_active, created_at FROM Users WHERE user_id = ?', [req.params.id], (err, row) => {
-        if (err) {
-          console.error('Get updated user error:', err);
-          return res.status(500).json({ message: 'Server error' });
-        }
-        res.json(processImageFields(row));
-      });
-    }
-  );
+      res.json(processImageFields(row));
+    });
+  });
 });
 
 app.delete('/users/:id', requireAuth, (req, res) => {

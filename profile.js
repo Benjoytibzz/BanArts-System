@@ -3,7 +3,7 @@
 function getUserUploadsKey() {
     const userId = localStorage.getItem('userId');
     const userEmail = localStorage.getItem('userEmail');
-    return `userUploads_${userId || userEmail || 'default'}`;
+    return `userUploads_${userId || userEmail || 'default'}`
 }
 
 function getUserProfileImageKey() {
@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load common elements and data first
     const profileName = document.getElementById('profile-name');
     const profileLocation = document.getElementById('profile-location');
+    const profileBio = document.getElementById('profile-bio');
     const dropdownProfileName = document.querySelector('.dropdown-profile-name');
     const navProfileAvatar = document.getElementById('nav-profile-avatar');
     const dropdownProfileIcon = document.getElementById('dropdown-profile-icon');
@@ -23,11 +24,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const savedName = localStorage.getItem('userName') || 'John Doe';
     const savedLocation = localStorage.getItem('userLocation') || 'Philippines';
+    const savedBio = localStorage.getItem('userBio') || 'Tell us about yourself...';
     const savedInitials = localStorage.getItem('userInitials') || 'JD';
-    let savedProfileImage = localStorage.getItem(getUserProfileImageKey());
+    let savedProfileImage = localStorage.getItem(getUserProfileImageKey());                                                                                                                                                                ;
     
     if (profileName) profileName.textContent = savedName;
     if (profileLocation) profileLocation.textContent = savedLocation;
+    if (profileBio) profileBio.textContent = savedBio;
     if (savedProfileImage && profileImage) profileImage.src = savedProfileImage;
     if (dropdownProfileName) dropdownProfileName.textContent = savedName;
     
@@ -179,10 +182,31 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(user => {
             if (user && user.user_id) {
+                // Update profile information from server
+                const fullName = user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.email.split('@')[0];
+                const location = user.location || 'Philippines';
+                const bio = user.bio || 'Tell us about yourself...';
+                
+                if (profileName) profileName.textContent = fullName;
+                if (profileLocation) profileLocation.textContent = location;
+                if (profileBio) profileBio.textContent = bio;
+                if (dropdownProfileName) dropdownProfileName.textContent = fullName;
+
+                // Sync to localStorage
+                localStorage.setItem('userName', fullName);
+                localStorage.setItem('userLocation', location);
+                localStorage.setItem('userBio', bio);
+
+                // Update initials
+                const initials = fullName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                localStorage.setItem('userInitials', initials);
+
                 if (user.profile_picture) {
                     if (profileImage) profileImage.src = user.profile_picture;
                     localStorage.setItem(getUserProfileImageKey(), user.profile_picture);
-                    updateProfileIcons(user.profile_picture, savedInitials);
+                    updateProfileIcons(user.profile_picture, initials);
+                } else {
+                    updateProfileIcons(null, initials);
                 }
             }
         })
@@ -242,14 +266,72 @@ document.addEventListener('DOMContentLoaded', function() {
     // Location editing
     if (profileLocation) {
         profileLocation.addEventListener('blur', function() {
-            localStorage.setItem('userLocation', profileLocation.textContent);
+            const newLocation = profileLocation.textContent;
+            localStorage.setItem('userLocation', newLocation);
+            updateUserOnServer({ location: newLocation });
         });
+    }
+
+    // Name editing
+    if (profileName) {
+        profileName.addEventListener('blur', function() {
+            const newName = profileName.textContent;
+            localStorage.setItem('userName', newName);
+            if (dropdownProfileName) dropdownProfileName.textContent = newName;
+            
+            // Update initials
+            const initials = newName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+            localStorage.setItem('userInitials', initials);
+            updateProfileIcons(localStorage.getItem(getUserProfileImageKey()), initials);
+
+            // Split name into first and last
+            const nameParts = newName.split(' ');
+            const firstName = nameParts[0];
+            const lastName = nameParts.slice(1).join(' ');
+            updateUserOnServer({ first_name: firstName, last_name: lastName });
+        });
+    }
+
+    // Bio editing
+    if (profileBio) {
+        profileBio.addEventListener('blur', function() {
+            const newBio = profileBio.textContent;
+            localStorage.setItem('userBio', newBio);
+            updateUserOnServer({ bio: newBio });
+        });
+    }
+
+    function updateUserOnServer(data) {
+        const userId = localStorage.getItem('userId');
+        if (!userId) return;
+
+        fetch(`/users/${userId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(updatedUser => {
+            console.log('User updated on server:', updatedUser);
+        })
+        .catch(err => console.error('Error updating user on server:', err));
     }
 
     const saveProfileBtn = document.getElementById('save-profile-btn');
     if (saveProfileBtn) {
         saveProfileBtn.addEventListener('click', function() {
-            localStorage.setItem('userLocation', profileLocation.textContent);
+            const nameParts = profileName ? profileName.textContent.split(' ') : ['John', 'Doe'];
+            const data = {
+                first_name: nameParts[0],
+                last_name: nameParts.slice(1).join(' '),
+                location: profileLocation ? profileLocation.textContent : '',
+                bio: profileBio ? profileBio.textContent : ''
+            };
+            
+            updateUserOnServer(data);
             alert('Profile saved!');
         });
     }
@@ -258,6 +340,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const uploadNewBtn = document.getElementById('upload-new-btn');
     const uploadInput = document.getElementById('upload-input');
     const uploadsGrid = document.getElementById('uploads-grid');
+    const uploadsCountSpan = document.getElementById('uploads-count');
+
+    function updateUploadsCount() {
+        if (uploadsCountSpan) {
+            const uploadsKey = getUserUploadsKey();
+            const uploads = JSON.parse(localStorage.getItem(uploadsKey) || '[]');
+            uploadsCountSpan.textContent = uploads.length;
+        }
+    }
 
     if (uploadNewBtn && uploadInput && uploadsGrid) {
         uploadNewBtn.addEventListener('click', function() {
@@ -270,6 +361,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const dataUrl = e.target.result;
+                    
+                    const uploadsKey = getUserUploadsKey();
+                    let uploads = JSON.parse(localStorage.getItem(uploadsKey) || '[]');
+                    uploads.push(dataUrl);
+                    localStorage.setItem(uploadsKey, JSON.stringify(uploads));
+                    
+                    updateUploadsCount();
+                    
                     const card = document.createElement('div');
                     card.className = 'artwork-card';
                     card.innerHTML = `
@@ -279,7 +378,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         <button class="remove-btn">Remove</button>
                     `;
                     uploadsGrid.appendChild(card);
-
+                    
+                    // ... rest of the card initialization ...
                     const newImg = card.querySelector('img');
                     newImg.addEventListener('mousemove', function(e) {
                         const rect = this.getBoundingClientRect();
@@ -298,25 +398,21 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     const removeBtn = card.querySelector('.remove-btn');
                     removeBtn.addEventListener('click', function() {
-                        const uploadsKey = getUserUploadsKey();
                         let currentUploads = JSON.parse(localStorage.getItem(uploadsKey) || '[]');
                         const index = currentUploads.indexOf(dataUrl);
                         if (index > -1) {
                             currentUploads.splice(index, 1);
                             localStorage.setItem(uploadsKey, JSON.stringify(currentUploads));
-                            location.reload();
+                            updateUploadsCount();
+                            card.remove();
                         }
                     });
-
-                    const uploadsKey = getUserUploadsKey();
-                    let uploads = JSON.parse(localStorage.getItem(uploadsKey) || '[]');
-                    uploads.push(dataUrl);
-                    localStorage.setItem(uploadsKey, JSON.stringify(uploads));
                 };
                 reader.readAsDataURL(file);
             }
         });
 
+        updateUploadsCount();
         const uploadsKey = getUserUploadsKey();
         let uploads = JSON.parse(localStorage.getItem(uploadsKey) || '[]');
         uploads.forEach((dataUrl, index) => {
@@ -351,7 +447,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 let currentUploads = JSON.parse(localStorage.getItem(uploadsKey) || '[]');
                 currentUploads.splice(index, 1);
                 localStorage.setItem(uploadsKey, JSON.stringify(currentUploads));
-                location.reload();
+                updateUploadsCount();
+                card.remove();
             });
         });
     }
@@ -361,6 +458,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const userId = localStorage.getItem('userId');
         if (!savedContent) return;
         const artworksGrid = savedContent.querySelector('.artworks-grid');
+        const savedCountSpan = document.getElementById('saved-count');
         if (!artworksGrid) return;
 
         artworksGrid.innerHTML = '';
@@ -373,6 +471,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(`/saved-artworks/${userId}`)
             .then(response => response.json())
             .then(savedArtworks => {
+                if (savedCountSpan) savedCountSpan.textContent = savedArtworks.length;
                 if (savedArtworks.length === 0) {
                     artworksGrid.innerHTML = '<p>No saved artworks yet.</p>';
                     return;
@@ -439,6 +538,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const userId = localStorage.getItem('userId');
         if (!followedContent) return;
         const artistsGrid = followedContent.querySelector('.artworks-grid');
+        const followedCountSpan = document.getElementById('followed-count');
         if (!artistsGrid) return;
 
         artistsGrid.innerHTML = '';
@@ -451,6 +551,7 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch(`/followed-artists/${userId}`)
             .then(response => response.json())
             .then(followedArtists => {
+                if (followedCountSpan) followedCountSpan.textContent = followedArtists.length;
                 if (followedArtists.length === 0) {
                     artistsGrid.innerHTML = '<p>No followed artists yet.</p>';
                     return;
