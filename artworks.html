@@ -300,41 +300,57 @@
                 <h2 id="forgot-password-title">Change Password</h2>
                 <p class="modal-subtitle">Securely update your account credentials</p>
                 <form id="forgot-password-form">
-                    <div class="input-group">
-                        <i class="fas fa-envelope input-icon"></i>
-                        <input type="email" id="reset-email" placeholder="Email Address" required>
-                    </div>
-                    <div class="password-requirements">
-                        New password must contain:
-                        <ul>
-                            <li>8-32 characters</li>
-                            <li>At least one uppercase letter</li>
-                            <li>At least one lowercase letter</li>
-                            <li>At least one number</li>
-                            <li>At least one special character</li>
-                        </ul>
-                    </div>
-                    <div class="password-field">
+                    <!-- Step 1: Email -->
+                    <div id="forgot-step-1">
                         <div class="input-group">
-                            <i class="fas fa-lock input-icon"></i>
-                            <input type="password" id="reset-new-password" class="password-input" placeholder="New Password" required>
+                            <i class="fas fa-envelope input-icon"></i>
+                            <input type="email" id="reset-email" placeholder="Email Address" required>
                         </div>
-                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility(this)" aria-label="Show password">
-                            <i class="far fa-eye"></i>
-                        </button>
+                        <button type="button" id="forgot-next-btn" class="submit-btn" style="margin-top: 15px;">Next</button>
                     </div>
-                    <div class="password-field">
+
+                    <!-- Step 2: Security Question & New Password -->
+                    <div id="forgot-step-2" style="display: none;">
+                        <div class="security-question-box" style="background: #f8f9fa; padding: 10px; border-radius: 4px; margin-bottom: 15px; border-left: 4px solid #007bff;">
+                            <p style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">Security Question:</p>
+                            <p id="display-security-question" style="font-weight: 500; color: #333;"></p>
+                        </div>
                         <div class="input-group">
-                            <i class="fas fa-shield-alt input-icon"></i>
-                            <input type="password" id="reset-confirm-password" class="password-input" placeholder="Confirm New Password" required>
+                            <i class="fas fa-key input-icon"></i>
+                            <input type="text" id="reset-security-answer" placeholder="Your Answer" required>
                         </div>
-                        <button type="button" class="password-toggle" onclick="togglePasswordVisibility(this)" aria-label="Show password">
-                            <i class="far fa-eye"></i>
-                        </button>
+                        <div class="password-requirements">
+                            New password must contain:
+                            <ul>
+                                <li>8-32 characters</li>
+                                <li>At least one uppercase letter</li>
+                                <li>At least one lowercase letter</li>
+                                <li>At least one number</li>
+                                <li>At least one special character</li>
+                            </ul>
+                        </div>
+                        <div class="password-field">
+                            <div class="input-group">
+                                <i class="fas fa-lock input-icon"></i>
+                                <input type="password" id="reset-new-password" class="password-input" placeholder="New Password" required>
+                            </div>
+                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility(this)" aria-label="Show password">
+                                <i class="far fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="password-field">
+                            <div class="input-group">
+                                <i class="fas fa-shield-alt input-icon"></i>
+                                <input type="password" id="reset-confirm-password" class="password-input" placeholder="Confirm New Password" required>
+                            </div>
+                            <button type="button" class="password-toggle" onclick="togglePasswordVisibility(this)" aria-label="Show password">
+                                <i class="far fa-eye"></i>
+                            </button>
+                        </div>
+                        <button type="submit" class="submit-btn">Update Password</button>
                     </div>
-                    <button type="submit" class="submit-btn">Update Password</button>
-                    <div id="forgot-password-error" class="error-message" style="display: none;"></div>
-                    <div id="forgot-password-success" class="success-message" style="display: none;"></div>
+                    <div id="forgot-password-error" class="error-message" style="display: none; color: red; margin-top: 10px;"></div>
+                    <div id="forgot-password-success" class="success-message" style="display: none; color: green; margin-top: 10px;"></div>
                 </form>
                 <div class="back-to-login">
                     <a href="#" id="back-to-login-link"><i class="fas fa-arrow-left"></i> Back to Login</a>

@@ -96,8 +96,22 @@
                         <input type="text" id="settings-name" required>
                         <label for="settings-location">Location:</label>
                         <input type="text" id="settings-location" required>
+                        <label for="settings-bio">Bio:</label>
+                        <textarea id="settings-bio" rows="4" placeholder="Tell us about yourself..." style="width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 4px; font-family: inherit; resize: vertical;"></textarea>
+
+                        <!-- Security Question Box for Edit Profile (Dynamic) -->
+                        <div id="profile-security-question-container" style="display: none; margin-bottom: 15px;">
+                            <div class="security-question-box" style="background: #f8f9fa; padding: 15px; border-radius: 4px; border-left: 4px solid #007bff; margin-bottom: 10px; margin-top: 15px;">
+                                <p style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">Identity Verification - Security Question:</p>
+                                <p id="profile-display-security-question" style="font-weight: 500; color: #333; margin: 0;"></p>
+                            </div>
+                            <label for="profile-security-answer">Your Answer:</label>
+                            <input type="text" id="profile-security-answer" placeholder="Enter your security answer">
+                        </div>
+
                         <button type="submit">Save Changes</button>
                     </form>
+                    <div id="settings-message" class="password-message" style="display: none; margin-top: 15px;"></div>
                 </div>
 
                 <!-- Change Password Section -->
@@ -109,6 +123,17 @@
                     <form id="change-password-form">
                         <label for="current-password">Current Password:</label>
                         <input type="password" id="current-password" placeholder="Enter your current password" required>
+
+                        <!-- Security Question Box (Dynamic) -->
+                        <div id="security-question-container" style="display: none; margin-bottom: 15px;">
+                            <div class="security-question-box" style="background: #f8f9fa; padding: 15px; border-radius: 4px; border-left: 4px solid #007bff; margin-bottom: 10px;">
+                                <p style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">Identity Verification - Security Question:</p>
+                                <p id="display-security-question" style="font-weight: 500; color: #333; margin: 0;"></p>
+                            </div>
+                            <label for="security-answer">Your Answer:</label>
+                            <input type="text" id="security-answer" placeholder="Enter your security answer" required>
+                        </div>
+
                         <label for="new-password">New Password:</label>
                         <div class="password-requirements">
                             New password must contain:
@@ -126,6 +151,33 @@
                         <button type="submit" id="change-password-btn">Change Password</button>
                     </form>
                     <div id="password-message" class="password-message" style="display: none;"></div>
+                </div>
+
+                <!-- Delete Account Section -->
+                <div class="settings-form-section" style="border-top: 1px solid #ffebeb; margin-top: 30px; padding-top: 20px;">
+                    <h2 style="color: #dc3545;">Delete Account</h2>
+                    <p style="font-size: 0.9rem; color: #666; margin-bottom: 15px;">Permanently delete your account and all your data. This action cannot be undone.</p>
+                    
+                    <button type="button" id="show-delete-confirm-btn" style="background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: 500;">Delete My Account</button>
+
+                    <div id="delete-confirm-container" style="display: none; margin-top: 20px; padding: 20px; background: #fff5f5; border: 1px solid #ffd1d1; border-radius: 4px;">
+                        <p style="font-weight: bold; color: #dc3545; margin-bottom: 15px;">Are you absolutely sure?</p>
+                        
+                        <!-- Security Question Box for Delete Account (Dynamic) -->
+                        <div id="delete-security-question-container" style="margin-bottom: 15px;">
+                            <div class="security-question-box" style="background: white; padding: 15px; border-radius: 4px; border-left: 4px solid #dc3545; margin-bottom: 10px;">
+                                <p style="font-size: 0.85rem; color: #666; margin-bottom: 5px;">Identity Verification - Security Question:</p>
+                                <p id="delete-display-security-question" style="font-weight: 500; color: #333; margin: 0;"></p>
+                            </div>
+                            <label for="delete-security-answer">Your Answer:</label>
+                            <input type="text" id="delete-security-answer" placeholder="Enter your security answer" style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px;">
+                        </div>
+
+                        <div style="display: flex; gap: 10px; margin-top: 20px;">
+                            <button type="button" id="confirm-delete-btn" style="background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Yes, Delete Everything</button>
+                            <button type="button" id="cancel-delete-btn" style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer;">Cancel</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>

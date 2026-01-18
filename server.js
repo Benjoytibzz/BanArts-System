@@ -1255,7 +1255,7 @@ app.get('/user-auth-status/:email', (req, res) => {
 
 // Change password
 app.post('/change-password', (req, res) => {
-  const { email, currentPassword, newPassword } = req.body;
+  const { email, currentPassword, newPassword, security_answer } = req.body;
 
   if (!email || !currentPassword || !newPassword) {
     return res.status(400).json({ success: false, message: 'All fields are required' });
@@ -1276,6 +1276,16 @@ app.post('/change-password', (req, res) => {
         success: false, 
         message: `Cannot change password for accounts registered with ${user.oauth_provider}. Please manage your password through ${user.oauth_provider}.` 
       });
+    }
+
+    // Verify security answer if it's set for the user
+    if (user.security_question) {
+      if (!security_answer) {
+        return res.status(400).json({ success: false, message: 'Security answer is required' });
+      }
+      if (!user.security_answer || user.security_answer.toLowerCase() !== security_answer.toLowerCase()) {
+        return res.status(401).json({ success: false, message: 'Incorrect security answer' });
+      }
     }
 
     if (user.password !== currentPassword) {
@@ -1301,34 +1311,64 @@ app.post('/change-password', (req, res) => {
   });
 });
 
-// Forgot password / Reset password
-app.post('/auth/forgot-password', (req, res) => {
-  const { email, newPassword } = req.body;
+// Get security question for forgot password
+app.post('/auth/forgot-password/get-question', (req, res) => {
+  const { email } = req.body;
 
-  if (!email || !newPassword) {
-    return res.status(400).json({ success: false, message: 'Email and new password are required' });
+  if (!email) {
+    return res.status(400).json({ error: 'Email is required' });
   }
 
-  db.get('SELECT * FROM Users WHERE email = ?', [email], (err, user) => {
+  db.get('SELECT security_question, oauth_provider FROM Users WHERE email = ?', [email], (err, user) => {
     if (err) {
-      console.error('Forgot password error:', err);
-      return res.status(500).json({ success: false, message: 'Server error' });
+      console.error('Error fetching security question:', err);
+      return res.status(500).json({ error: 'Server error' });
     }
 
     if (!user) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+      return res.status(404).json({ error: 'User not found' });
     }
 
     if (user.oauth_provider) {
       return res.status(403).json({ 
-        success: false, 
-        message: `Cannot change password for accounts registered with ${user.oauth_provider}.` 
+        error: `Cannot change password for accounts registered with ${user.oauth_provider}.` 
       });
+    }
+
+    if (!user.security_question) {
+      return res.status(400).json({ error: 'No security question set for this account.' });
+    }
+
+    res.json({ security_question: user.security_question });
+  });
+});
+
+// Reset password after verifying security answer
+app.post('/auth/forgot-password/reset', (req, res) => {
+  const { email, security_answer, newPassword } = req.body;
+
+  if (!email || !security_answer || !newPassword) {
+    return res.status(400).json({ error: 'All fields are required' });
+  }
+
+  db.get('SELECT * FROM Users WHERE email = ?', [email], (err, user) => {
+    if (err) {
+      console.error('Reset password error:', err);
+      return res.status(500).json({ error: 'Server error' });
+    }
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Case-insensitive answer check
+    if (!user.security_answer || user.security_answer.toLowerCase() !== security_answer.toLowerCase()) {
+      return res.status(401).json({ error: 'Incorrect security answer.' });
     }
 
     const passwordCheck = validatePassword(newPassword);
     if (!passwordCheck.valid) {
-      return res.status(400).json({ success: false, message: passwordCheck.message });
+      return res.status(400).json({ error: passwordCheck.message });
     }
 
     db.run(
@@ -1337,9 +1377,9 @@ app.post('/auth/forgot-password', (req, res) => {
       function(err) {
         if (err) {
           console.error('Reset password update error:', err);
-          return res.status(500).json({ success: false, message: 'Server error' });
+          return res.status(500).json({ error: 'Server error' });
         }
-        res.json({ success: true, message: 'Password has been reset successfully' });
+        res.json({ message: 'Password has been reset successfully' });
       }
     );
   });
@@ -3343,108 +3383,107 @@ app.post('/users', requireAuth, (req, res) => {
 });
 
 app.put('/users/:id', requireAuth, (req, res) => {
-  const fields = [];
-  const params = [];
-  const allowedFields = ['email', 'role', 'is_active', 'first_name', 'last_name', 'bio', 'location'];
-  
-  allowedFields.forEach(field => {
-    if (req.body[field] !== undefined) {
-      fields.push(`${field} = ?`);
-      params.push(req.body[field]);
-    }
-  });
+  const { security_answer } = req.body;
+  const userId = req.params.id;
 
-  if (fields.length === 0) {
-    return res.status(400).json({ message: 'No fields to update' });
-  }
-
-  const sql = `UPDATE Users SET ${fields.join(', ')}, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?`;
-  params.push(req.params.id);
-
-  db.run(sql, params, function(err) {
+  // First check if the user has a security question set
+  db.get('SELECT security_question, security_answer FROM Users WHERE user_id = ?', [userId], (err, user) => {
     if (err) {
-      console.error('Update user error:', err);
+      console.error('Get user for update error:', err);
       return res.status(500).json({ message: 'Server error' });
     }
-    if (this.changes === 0) {
+
+    if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    // Get the updated record
-    db.get('SELECT user_id, email, first_name, last_name, bio, location, role, is_active, created_at, profile_picture FROM Users WHERE user_id = ?', [req.params.id], (err, row) => {
+
+    // Verify security answer if a question is set
+    if (user.security_question) {
+      if (!security_answer) {
+        return res.status(400).json({ message: 'Security answer is required to update profile' });
+      }
+      if (!user.security_answer || user.security_answer.toLowerCase() !== security_answer.toLowerCase()) {
+        return res.status(401).json({ message: 'Incorrect security answer' });
+      }
+    }
+
+    // Proceed with update
+    const fields = [];
+    const params = [];
+    const allowedFields = ['email', 'role', 'is_active', 'first_name', 'last_name', 'bio', 'location'];
+    
+    allowedFields.forEach(field => {
+      if (req.body[field] !== undefined) {
+        fields.push(`${field} = ?`);
+        params.push(req.body[field]);
+      }
+    });
+
+    if (fields.length === 0) {
+      return res.status(400).json({ message: 'No fields to update' });
+    }
+
+    const sql = `UPDATE Users SET ${fields.join(', ')}, updated_at = CURRENT_TIMESTAMP WHERE user_id = ?`;
+    params.push(userId);
+
+    db.run(sql, params, function(err) {
       if (err) {
-        console.error('Get updated user error:', err);
+        console.error('Update user error:', err);
         return res.status(500).json({ message: 'Server error' });
       }
-      res.json(processImageFields(row));
+      if (this.changes === 0) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      // Get the updated record
+      db.get('SELECT user_id, email, first_name, last_name, bio, location, role, is_active, created_at, profile_picture FROM Users WHERE user_id = ?', [userId], (err, row) => {
+        if (err) {
+          console.error('Get updated user error:', err);
+          return res.status(500).json({ message: 'Server error' });
+        }
+        res.json(processImageFields(row));
+      });
     });
   });
 });
 
 app.delete('/users/:id', requireAuth, (req, res) => {
-  db.run('DELETE FROM Users WHERE user_id = ?', [req.params.id], function(err) {
+  const { security_answer } = req.body;
+  const userId = req.params.id;
+
+  // First check if the user has a security question set
+  db.get('SELECT security_question, security_answer FROM Users WHERE user_id = ?', [userId], (err, user) => {
     if (err) {
-      console.error('Delete user error:', err);
+      console.error('Get user for delete error:', err);
       return res.status(500).json({ message: 'Server error' });
-    }
-    if (this.changes === 0) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-    res.json({ message: 'User deleted' });
-  });
-});
-
-app.post('/test-endpoint', (req, res) => {
-  console.log('Test endpoint called');
-  res.setHeader('Content-Type', 'application/json');
-  res.json({ success: true, message: 'Test successful' });
-});
-
-app.post('/change-password', (req, res) => {
-  res.setHeader('Content-Type', 'application/json');
-  
-  const { email, currentPassword, newPassword } = req.body;
-  
-  console.log('Change password request for email:', email);
-  
-  if (!email || !currentPassword || !newPassword) {
-    console.warn('Missing required fields:', { email: !!email, currentPassword: !!currentPassword, newPassword: !!newPassword });
-    return res.status(400).json({ success: false, message: 'Email, current password, and new password are required' });
-  }
-
-  if (newPassword.length < 4) {
-    return res.status(400).json({ success: false, message: 'New password must be at least 4 characters long' });
-  }
-
-  db.get('SELECT * FROM Users WHERE email = ?', [email], (err, user) => {
-    if (err) {
-      console.error('Database query error:', err);
-      return res.status(500).json({ success: false, message: 'Database error' });
     }
 
     if (!user) {
-      console.warn('User not found for email:', email);
-      return res.status(404).json({ success: false, message: 'User not found' });
+      return res.status(404).json({ message: 'User not found' });
     }
 
-    console.log('User found, comparing passwords');
-    if (user.password !== currentPassword) {
-      console.warn('Password mismatch for user:', email);
-      return res.status(401).json({ success: false, message: 'Current password is incorrect' });
-    }
-
-    console.log('Password match, updating password for user:', email);
-    db.run(
-      'UPDATE Users SET password = ?, updated_at = CURRENT_TIMESTAMP WHERE email = ?',
-      [newPassword, email],
-      function(err) {
-        if (err) {
-          console.error('Update password error:', err);
-          return res.status(500).json({ success: false, message: 'Failed to update password' });
-        }
-        console.log('Password updated successfully for user:', email);
-        res.json({ success: true, message: 'Password changed successfully' });
+    // Verify security answer if a question is set AND a security_answer was provided in body
+    // (This allows admin deletion to still work if they don't provide a body, 
+    // but enforces it for the user-initiated delete which sends the body)
+    if (user.security_question && security_answer !== undefined) {
+      if (!user.security_answer || user.security_answer.toLowerCase() !== security_answer.toLowerCase()) {
+        return res.status(401).json({ message: 'Incorrect security answer' });
       }
-    );
+    } else if (user.security_question && !security_answer) {
+        // If it's a sensitive delete and no answer is provided, we might want to block it
+        // but for now we'll allow it for admin compatibility if the body is empty
+        console.log(`Delete requested for user ${userId} without security answer.`);
+    }
+
+    db.run('DELETE FROM Users WHERE user_id = ?', [userId], function(err) {
+      if (err) {
+        console.error('Delete user error:', err);
+        return res.status(500).json({ message: 'Server error' });
+      }
+      if (this.changes === 0) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      res.json({ message: 'User deleted' });
+    });
   });
 });
 
@@ -3951,7 +3990,8 @@ app.get('/artwork/:id', (req, res) => {
 });
 
 
-// Dynamic museum details route
+// Dynamic museum details route (replaced by redirect at line 4618)
+/*
   app.get('/museum/:id', (req, res) => {
     const museumId = req.params.id;
 
@@ -4181,8 +4221,10 @@ app.get('/artwork/:id', (req, res) => {
     });
 
   });
+*/
 
-  // Dynamic gallery details route
+  // Dynamic gallery details route (replaced by redirect at line 4614)
+/*
   app.get('/gallery/:id', (req, res) => {
     const galleryId = req.params.id;
 
@@ -4588,6 +4630,7 @@ app.get('/artwork/:id', (req, res) => {
     });
 
   });
+*/
 
   // Dynamic artist details route
   app.get('/artist/:id', (req, res) => {

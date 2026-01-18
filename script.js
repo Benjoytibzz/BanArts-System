@@ -424,6 +424,19 @@ function openForgotPasswordModal() {
             modalContent.style.top = (window.scrollY + 20) + 'px';
         }
 
+        // Reset steps and messages
+        const step1 = document.getElementById('forgot-step-1');
+        const step2 = document.getElementById('forgot-step-2');
+        const errorDiv = document.getElementById('forgot-password-error');
+        const successDiv = document.getElementById('forgot-password-success');
+        const form = document.getElementById('forgot-password-form');
+        
+        if (step1) step1.style.display = 'block';
+        if (step2) step2.style.display = 'none';
+        if (errorDiv) errorDiv.style.display = 'none';
+        if (successDiv) successDiv.style.display = 'none';
+        if (form) form.reset();
+
         setTimeout(() => {
             modal.classList.add('show');
             modal.setAttribute('aria-hidden', 'false');
@@ -537,56 +550,100 @@ if (backToLoginLink) backToLoginLink.addEventListener('click', function(e) {
 
 if (closeForgotPasswordBtn) closeForgotPasswordBtn.addEventListener('click', closeForgotPasswordModal);
 
-if (forgotPasswordForm) forgotPasswordForm.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    const email = document.getElementById('reset-email').value;
-    const newPassword = document.getElementById('reset-new-password').value;
-    const confirmPassword = document.getElementById('reset-confirm-password').value;
+if (forgotPasswordForm) {
+    const nextBtn = document.getElementById('forgot-next-btn');
+    const step1 = document.getElementById('forgot-step-1');
+    const step2 = document.getElementById('forgot-step-2');
     const errorDiv = document.getElementById('forgot-password-error');
     const successDiv = document.getElementById('forgot-password-success');
+    const displayQuestion = document.getElementById('display-security-question');
 
-    errorDiv.style.display = 'none';
-    successDiv.style.display = 'none';
+    if (nextBtn) {
+        nextBtn.addEventListener('click', async function() {
+            const email = document.getElementById('reset-email').value;
+            if (!email) {
+                errorDiv.textContent = 'Please enter your email.';
+                errorDiv.style.display = 'block';
+                return;
+            }
 
-    if (newPassword !== confirmPassword) {
-        errorDiv.textContent = 'Passwords do not match.';
-        errorDiv.style.display = 'block';
-        return;
-    }
+            try {
+                const response = await fetch('/auth/forgot-password/get-question', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
 
-    const passwordCheck = validatePassword(newPassword);
-    if (!passwordCheck.valid) {
-        errorDiv.textContent = passwordCheck.message;
-        errorDiv.style.display = 'block';
-        return;
-    }
-
-    try {
-        const response = await fetch('/auth/forgot-password', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, newPassword })
+                const data = await response.json();
+                if (response.ok) {
+                    displayQuestion.textContent = data.security_question;
+                    step1.style.display = 'none';
+                    step2.style.display = 'block';
+                    errorDiv.style.display = 'none';
+                } else {
+                    errorDiv.textContent = data.error || 'User not found.';
+                    errorDiv.style.display = 'block';
+                }
+            } catch (error) {
+                errorDiv.textContent = 'Network error. Please try again.';
+                errorDiv.style.display = 'block';
+            }
         });
+    }
 
-        const data = await response.json();
-        if (response.ok) {
-            successDiv.textContent = data.message || 'Password changed successfully!';
-            successDiv.style.display = 'block';
-            forgotPasswordForm.reset();
-            setTimeout(() => {
-                closeForgotPasswordModal();
-                openModal();
-                openTab('login');
-            }, 2000);
-        } else {
-            errorDiv.textContent = data.error || data.message || 'Something went wrong. Please try again.';
+    forgotPasswordForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const email = document.getElementById('reset-email').value;
+        const securityAnswer = document.getElementById('reset-security-answer').value;
+        const newPassword = document.getElementById('reset-new-password').value;
+        const confirmPassword = document.getElementById('reset-confirm-password').value;
+
+        errorDiv.style.display = 'none';
+        successDiv.style.display = 'none';
+
+        if (newPassword !== confirmPassword) {
+            errorDiv.textContent = 'Passwords do not match.';
+            errorDiv.style.display = 'block';
+            return;
+        }
+
+        const passwordCheck = validatePassword(newPassword);
+        if (!passwordCheck.valid) {
+            errorDiv.textContent = passwordCheck.message;
+            errorDiv.style.display = 'block';
+            return;
+        }
+
+        try {
+            const response = await fetch('/auth/forgot-password/reset', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, security_answer: securityAnswer, newPassword })
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                successDiv.textContent = data.message || 'Password changed successfully!';
+                successDiv.style.display = 'block';
+                forgotPasswordForm.reset();
+                setTimeout(() => {
+                    closeForgotPasswordModal();
+                    openModal();
+                    openTab('login');
+                    // Reset steps for next time
+                    step1.style.display = 'block';
+                    step2.style.display = 'none';
+                }, 2000);
+            } else {
+                errorDiv.textContent = data.error || data.message || 'Incorrect answer or something went wrong.';
+                errorDiv.style.display = 'block';
+            }
+        } catch (error) {
+            errorDiv.textContent = 'Network error. Please try again.';
             errorDiv.style.display = 'block';
         }
-    } catch (error) {
-        errorDiv.textContent = 'Network error. Please try again.';
-        errorDiv.style.display = 'block';
-    }
-});
+    });
+}
 
 // Close modal when clicking outside
 window.addEventListener('click', function(e) {

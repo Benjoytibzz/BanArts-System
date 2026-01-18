@@ -39,11 +39,16 @@ async function checkAuthProviderStatus(email) {
         const response = await fetch(`/user-auth-status/${encodeURIComponent(email)}`);
         const data = await response.json();
 
-        if (data.success && data.hasOAuthProvider) {
-            const changePasswordSection = document.getElementById('change-password-section');
-            if (changePasswordSection) {
-                changePasswordSection.style.display = 'none';
-                console.log('Hiding Change Password section for OAuth user');
+        if (data.success) {
+            if (data.hasOAuthProvider) {
+                const changePasswordSection = document.getElementById('change-password-section');
+                if (changePasswordSection) {
+                    changePasswordSection.style.display = 'none';
+                    console.log('Hiding Change Password section for OAuth user');
+                }
+            } else {
+                // If not OAuth, fetch security question
+                fetchSecurityQuestion(email);
             }
         }
     } catch (error) {
@@ -51,10 +56,50 @@ async function checkAuthProviderStatus(email) {
     }
 }
 
+async function fetchSecurityQuestion(email) {
+    try {
+        const response = await fetch('/auth/forgot-password/get-question', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+        const data = await response.json();
+        
+        if (response.ok && data.security_question) {
+            // Populate Change Password security question
+            const pwContainer = document.getElementById('security-question-container');
+            const pwDisplay = document.getElementById('display-security-question');
+            if (pwContainer && pwDisplay) {
+                pwDisplay.textContent = data.security_question;
+                pwContainer.style.display = 'block';
+                document.getElementById('security-answer').required = true;
+            }
+
+            // Populate Edit Profile security question
+            const profileContainer = document.getElementById('profile-security-question-container');
+            const profileDisplay = document.getElementById('profile-display-security-question');
+            if (profileContainer && profileDisplay) {
+                profileDisplay.textContent = data.security_question;
+                profileContainer.style.display = 'block';
+                document.getElementById('profile-security-answer').required = true;
+            }
+
+            // Populate Delete Account security question
+            const deleteDisplay = document.getElementById('delete-display-security-question');
+            if (deleteDisplay) {
+                deleteDisplay.textContent = data.security_question;
+            }
+        }
+    } catch (error) {
+        console.error('Error fetching security question:', error);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const settingsForm = document.getElementById('settings-form');
     const settingsName = document.getElementById('settings-name');
     const settingsLocation = document.getElementById('settings-location');
+    const settingsBio = document.getElementById('settings-bio');
     const dropdownProfileName = document.querySelector('.dropdown-profile-name');
     const navProfileAvatar = document.getElementById('nav-profile-avatar');
     const dropdownProfileIcon = document.getElementById('dropdown-profile-icon');
@@ -65,6 +110,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load current values from localStorage
     const savedName = localStorage.getItem('userName') || 'John Doe';
     const savedLocation = localStorage.getItem('userLocation') || 'Philippines';
+    const savedBio = localStorage.getItem('userBio') || '';
     const savedInitials = localStorage.getItem('userInitials') || 'JD';
     const savedProfileImage = localStorage.getItem(getUserProfileImageKey());
     const userEmail = localStorage.getItem('userEmail') || localStorage.getItem('registeredEmail');
@@ -128,6 +174,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     settingsName.value = savedName;
     settingsLocation.value = savedLocation;
+    if (settingsBio) settingsBio.value = savedBio;
     if (dropdownProfileName) dropdownProfileName.textContent = savedName;
     updateProfileIcons(savedProfileImage, savedInitials);
 
@@ -143,15 +190,87 @@ document.addEventListener('DOMContentLoaded', function() {
         if (dropdownProfileIcon) dropdownProfileIcon.src = imageSrc || 'img/profile icon.webp';
     }
 
-    settingsForm.addEventListener('submit', function(e) {
+    settingsForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        localStorage.setItem('userName', settingsName.value);
-        localStorage.setItem('userLocation', settingsLocation.value);
-        const initials = settingsName.value.split(' ').map(n => n[0]).join('').toUpperCase();
-        localStorage.setItem('userInitials', initials);
-        alert('Profile updated successfully!');
-        window.location.href = 'profile.html';
+        
+        const name = settingsName.value.trim();
+        const location = settingsLocation.value.trim();
+        const bio = settingsBio ? settingsBio.value.trim() : '';
+        const securityAnswer = document.getElementById('profile-security-answer').value.trim();
+        const settingsMessage = document.getElementById('settings-message');
+
+        const securityContainer = document.getElementById('profile-security-question-container');
+        if (securityContainer && securityContainer.style.display !== 'none' && !securityAnswer) {
+            showSettingsMessage('Please provide the answer to your security question', 'error');
+            return;
+        }
+
+        const userId = localStorage.getItem('userId');
+        const userEmail = localStorage.getItem('userEmail');
+
+        if (!userId) {
+            showSettingsMessage('Please log in first to update your profile', 'error');
+            return;
+        }
+
+        try {
+            showSettingsMessage('Updating profile...', 'info');
+
+            // Split name into first and last
+            const nameParts = name.split(' ');
+            const firstName = nameParts[0];
+            const lastName = nameParts.slice(1).join(' ');
+
+            const response = await fetch(`/users/${userId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+                },
+                body: JSON.stringify({
+                    first_name: firstName,
+                    last_name: lastName,
+                    location: location,
+                    bio: bio,
+                    security_answer: securityAnswer,
+                    email: userEmail // Also send email for identification if needed
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                localStorage.setItem('userName', name);
+                localStorage.setItem('userLocation', location);
+                localStorage.setItem('userBio', bio);
+                const initials = name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
+                localStorage.setItem('userInitials', initials);
+                
+                showSettingsMessage('Profile updated successfully! Redirecting...', 'success');
+                setTimeout(() => {
+                    window.location.href = 'profile.html';
+                }, 2000);
+            } else {
+                showSettingsMessage(data.message || 'Failed to update profile', 'error');
+            }
+        } catch (error) {
+            console.error('Error updating profile:', error);
+            showSettingsMessage('Error: ' + error.message, 'error');
+        }
     });
+
+    function showSettingsMessage(message, type) {
+        const settingsMessage = document.getElementById('settings-message');
+        if (!settingsMessage) return;
+        settingsMessage.textContent = message;
+        settingsMessage.className = `password-message ${type}`;
+        settingsMessage.style.display = 'block';
+        setTimeout(() => {
+            if (type === 'success') {
+                settingsMessage.style.display = 'none';
+            }
+        }, 5000);
+    }
 
     const changePasswordForm = document.getElementById('change-password-form');
     const currentPasswordInput = document.getElementById('current-password');
@@ -172,9 +291,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const currentPassword = currentPasswordInput.value.trim();
         const newPassword = newPasswordInput.value.trim();
         const confirmPassword = confirmPasswordInput.value.trim();
+        const securityAnswer = document.getElementById('security-answer').value.trim();
 
         if (!currentPassword || !newPassword || !confirmPassword) {
             showPasswordMessage('All fields are required', 'error');
+            return;
+        }
+
+        const securityContainer = document.getElementById('security-question-container');
+        if (securityContainer && securityContainer.style.display !== 'none' && !securityAnswer) {
+            showPasswordMessage('Please provide the answer to your security question', 'error');
             return;
         }
 
@@ -217,7 +343,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify({
                     email: userEmail,
                     currentPassword: currentPassword,
-                    newPassword: newPassword
+                    newPassword: newPassword,
+                    security_answer: securityAnswer
                 })
             });
 
@@ -258,5 +385,66 @@ document.addEventListener('DOMContentLoaded', function() {
                 passwordMessage.style.display = 'none';
             }
         }, 5000);
+    }
+
+    // Delete Account Logic
+    const showDeleteBtn = document.getElementById('show-delete-confirm-btn');
+    const deleteConfirmContainer = document.getElementById('delete-confirm-container');
+    const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
+    const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+    const deleteSecurityAnswer = document.getElementById('delete-security-answer');
+
+    if (showDeleteBtn) {
+        showDeleteBtn.addEventListener('click', () => {
+            deleteConfirmContainer.style.display = 'block';
+            showDeleteBtn.style.display = 'none';
+        });
+    }
+
+    if (cancelDeleteBtn) {
+        cancelDeleteBtn.addEventListener('click', () => {
+            deleteConfirmContainer.style.display = 'none';
+            showDeleteBtn.style.display = 'block';
+            deleteSecurityAnswer.value = '';
+        });
+    }
+
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', async () => {
+            const answer = deleteSecurityAnswer.value.trim();
+            const userId = localStorage.getItem('userId');
+            
+            if (!answer) {
+                alert('Please provide your security answer to confirm account deletion.');
+                return;
+            }
+
+            if (!confirm('FINAL CONFIRMATION: Are you sure you want to permanently delete your account? This cannot be undone.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/users/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ security_answer: answer })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert('Your account has been successfully deleted.');
+                    localStorage.clear();
+                    window.location.href = '/';
+                } else {
+                    alert(data.message || 'Failed to delete account.');
+                }
+            } catch (error) {
+                console.error('Error deleting account:', error);
+                alert('An error occurred while deleting your account.');
+            }
+        });
     }
 });
