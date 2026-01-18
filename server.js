@@ -345,8 +345,8 @@ function initializeAuth() {
     `);
   });
   
-  app.use((req, res) => {
-    res.status(404).json({ error: 'Route not found' });
+  app.use((req, res, next) => {
+    next();
   });
 }
 
@@ -3991,7 +3991,6 @@ app.get('/artwork/:id', (req, res) => {
 
 
 // Dynamic museum details route (replaced by redirect at line 4618)
-/*
   app.get('/museum/:id', (req, res) => {
     const museumId = req.params.id;
 
@@ -4221,10 +4220,8 @@ app.get('/artwork/:id', (req, res) => {
     });
 
   });
-*/
 
   // Dynamic gallery details route (replaced by redirect at line 4614)
-/*
   app.get('/gallery/:id', (req, res) => {
     const galleryId = req.params.id;
 
@@ -4630,19 +4627,10 @@ app.get('/artwork/:id', (req, res) => {
     });
 
   });
-*/
 
   // Dynamic artist details route
   app.get('/artist/:id', (req, res) => {
     res.redirect(`/artist-details.html?id=${req.params.id}`);
-  });
-
-  app.get('/gallery/:id', (req, res) => {
-    res.redirect(`/gallery-details.html?id=${req.params.id}`);
-  });
-
-  app.get('/museum/:id', (req, res) => {
-    res.redirect(`/museum_details.html?id=${req.params.id}`);
   });
 
   app.get('/event/:id', (req, res) => {
@@ -4656,6 +4644,24 @@ app.get('/artwork/:id', (req, res) => {
 
   app.get('/deletion', (req, res) => {
     res.send('<h1>Data Deletion Instructions</h1><p>To request data deletion, please contact us at tibalanbenjo123@gmail.com with your account email address. Your data will be removed within 30 days.</p>');
+  });
+
+  // Explicit routes for detail pages to prevent 404
+  app.get('/artist-details.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'artist-details.html'));
+  });
+
+  app.get('/event-details.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'event-details.html'));
+  });
+
+  app.get('/artwork-details.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'artwork-details.html'));
+  });
+
+  // Catch-all 404 handler
+  app.use((req, res) => {
+    res.status(404).json({ error: 'Route not found' });
   });
 
   // Server startup is handled after DB initialization by `startServer()`.

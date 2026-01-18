@@ -41,8 +41,6 @@ function setActiveNavLink() {
     const pageMapping = {
         'artist-details.html': 'artists.html',
         'artwork-details.html': 'artworks.html',
-        'museum_details.html': 'museums.html',
-        'gallery-details.html': 'galleries.html',
         'browse-galleries.html': 'galleries.html',
         'browse-museums.html': 'museums.html',
         'event-details.html': 'events.html'
